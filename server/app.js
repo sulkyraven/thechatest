@@ -6,6 +6,7 @@ const FileStore = require('session-file-store')(session);
 const { ExpressPeerServer } = require('peer');
 const { peerKey } = require('./js/helper');
 const app = express();
+const db = require('./js/db');
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -27,7 +28,7 @@ const appservice = app.listen(Number(process.env.APP_PORT), () => {
 
 const server = ExpressPeerServer(appservice, {
   key: peerKey,
-  allow_discovery: false
+  allow_discovery: true
 });
 
 server.on('disconnect', (c) => console.log('disconnected:', c.getId()));
