@@ -1,5 +1,46 @@
 # KIRIMIN ELEMENTS
 
+## SIGN IN
+```html
+<div class="fuwi sign">
+  <div class="card">
+    <div class="title">
+      <h1><img src="./assets/kirimin_icon.png" alt="Kirimin" width="50"> KIRIMIN</h1>
+    </div>
+    <form class="form" action="/login" method="post">
+      <div class="field">
+        <div class="center note">
+          <p>Login to continue</p>
+        </div>
+      </div>
+      <div class="field">
+        <div class="input">
+          <div class="text">
+            <p><label for="email">Email:</label></p>
+          </div>
+          <input type="email" name="email" id="email" autocomplete="email" placeholder="example@example.com" required/>
+        </div>
+        <div class="input">
+          <div class="text">
+            <p><label for="code">6 Digits Code</label></p>
+            <div class="btn"><i class="fa-duotone fa-circle-question"></i></div>
+          </div>
+          <input type="number" class="code" name="code" id="code" min="0" max="999999" placeholder="------" required />
+        </div>
+      </div>
+      <div class="field">
+        <button type="submit">LOGIN</button>
+      </div>
+      <div class="field">
+        <div class="oldschool">
+          <p class="center"><a href="#old-provider">My previous login method was Google - GitHub - Facebook. <span>Can I still login with any of them?</span></a></p>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+```
+
 ## PM
 ### PM - OUTER
 ```html
@@ -166,6 +207,19 @@
         </div>
       </div>
     </div>
+    <div class="attach">
+      <div class="media">
+        <div class="img">
+          <img src="./assets/fivem_wp.jpg" alt="Image" />
+        </div>
+        <div class="name"><p>fivem_wp.jpg</p></div>
+        <!-- <div class="document">
+          <p>fivem_wp.jpg</p>
+        </div> -->
+      </div>
+      <div class="close"><div class="btn"><i class="fa-duotone fa-circle-x"></i></div></div>
+    </div>
+
     <div class="field">
       <div class="input">
         <div class="emoji">
@@ -189,6 +243,17 @@
         <div class="btn btn-voice">
           <i class="fa-solid fa-microphone"></i>
         </div>
+      </div>
+    </div>
+  </div>
+  <div class="chatpop">
+    <div class="box">
+      <div class="chats"></div>
+      <div class="actions trio">
+        <div class="btn btn-reply"><i class="fa-solid fa-reply"></i> REPLY</div>
+        <div class="btn btn-edit"><i class="fa-solid fa-pen-to-square"></i> EDIT</div>
+        <div class="btn btn-delete"><i class="fa-solid fa-trash-can"></i> DELETE</div>
+        <div class="btn btn-cancel"><i class="fa-solid fa-circle-x"></i> CANCEL</div>
       </div>
     </div>
   </div>
