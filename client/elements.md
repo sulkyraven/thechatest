@@ -86,10 +86,86 @@
   </div>
   <div class="mid">
     <div class="chats">
-      <div class="card"></div>
+      <div class="card">
+        <div class="chp sender">
+          <div class="name">Devanka</div>
+          <div class="actions">
+            <div class="btn"><i class="fa-solid fa-ellipsis"></i></div>
+          </div>
+        </div>
+        <div class="chp embed">
+          <div class="name">Bukan Devanka</div>
+          <div class="msg">
+            <p><i class="fa-solid fa-image"></i> Ini pesan yang dibalas</p>
+          </div>
+        </div>
+        <div class="chp attach">
+          <div class="img">
+            <img src="./assets/fivem_wp.jpg" alt="image"/>
+          </div>
+          <div class="document">
+            <p>ini_file_apa_ya.txt</p>
+          </div>
+        </div>
+        <div class="chp text">
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facilis facere amet eius dicta! Quibusdam tenetur minus saepe cum, officia reiciendis nam soluta fugit ab laboriosam, reprehenderit quidem. Explicabo, voluptates ducimus!</p>
+        </div>
+        <div class="chp time">
+          <p>11:12 11/12/2024</p>
+        </div>
+      </div>
+      <div class="card me short">
+        <div class="chp sender">
+          <div class="name">Devanka</div>
+          <div class="actions">
+            <div class="btn"><i class="fa-solid fa-ellipsis"></i></div>
+          </div>
+        </div>
+        <div class="chp text">
+          <p>lorem ipsum</p>
+        </div>
+        <div class="chp time">
+          <p>11:12 11/12/2024</p>
+        </div>
+      </div>
+      <div class="card short">
+        <div class="chp sender">
+          <div class="name">Devanka</div>
+          <div class="actions">
+            <div class="btn"><i class="fa-solid fa-ellipsis"></i></div>
+          </div>
+        </div>
+        <div class="chp attach">
+          <div class="voice">
+            <div class="control">
+              <div class="btn"><i class="fa-solid fa-play"></i></div>
+            </div>
+            <div class="range">
+              <input type="range" name="chat_range_id" id="chat_range_id">
+            </div>
+            <div class="duration">
+              <p>00:00</p>
+            </div>
+          </div>
+        </div>
+        <div class="chp time">
+          <p>11:12 11/12/2024</p>
+        </div>
+      </div>
     </div>
   </div>
   <div class="bottom">
+    <div class="embed">
+      <div class="box">
+        <div class="left">
+          <p>Devanka</p>
+          <p>Lorem ipsum dol ...</p>
+        </div>
+        <div class="right">
+          <div class="btn"><i class="fa-duotone fa-circle-x"></i></div>
+        </div>
+      </div>
+    </div>
     <div class="field">
       <div class="input">
         <div class="emoji">
