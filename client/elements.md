@@ -259,3 +259,35 @@
   </div>
 </div>
 ```
+
+### PM - PROFILE
+```html
+<div class="prof">
+  <div class="top">
+    <div class="btn"><i class="fa-solid fa-arrow-left"></i></div>
+    <div class="sect-title">User Detail</div>
+  </div>
+  <div class="wall">
+    <div class="chp img">
+      <img src="./assets/user.jpg" alt="User" width="125" />
+    </div>
+    <div class="chp username"><p>rudi02</p></div>
+    <div class="chp bio">
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt soluta velit explicabo temporibus et excepturi. Provident veritatis, sapiente, perferendis explicabo repudiandae quo, perspiciatis tenetur facilis consectetur aperiam culpa magni consequatur!</p>
+    </div>
+    <div class="chp actions">
+      <div class="btn"><i class="fa-solid fa-comment-dots"></i><p>Open Chat</p></div>
+      <div class="btn"><i class="fa-solid fa-phone"></i><p>Voice Call</p></div>
+      <div class="btn"><i class="fa-solid fa-video"></i><p>Video Call</p></div>
+    </div>
+    <div class="chp options">
+      <div class="btn sb"><i class="fa-solid fa-user-plus"></i> Add Friend</div>
+      <div class="btn sg"><i class="fa-solid fa-user-check"></i> Accept Friend Request</div>
+      <div class="btn sr"><i class="fa-solid fa-user-xmark"></i> Deny Friend Request</div>
+      <div class="note sy">Your Friend Request Has Been Sent</div>
+      <div class="btn sr"><i class="fa-solid fa-user-xmark"></i> Cancel Friend Request</div>
+      <div class="btn sr"><i class="fa-solid fa-user-minus"></i> Unfriend</div>
+    </div>
+  </div>
+</div>
+```
