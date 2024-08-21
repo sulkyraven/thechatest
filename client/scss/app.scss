@@ -62,5 +62,7 @@ input[type=number] {
   text-align: center;
 }
 
+@import "./other/animation";
+@import "./other/props";
 @import "./app/sign";
 @import "./app/pm";

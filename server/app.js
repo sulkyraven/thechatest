@@ -17,13 +17,22 @@ app.use(session({
 }));
 
 app.use(express.static('client'));
+app.set('view engine', 'ejs')
+
+app.get('/app', (req, res) => {
+  return res.render('app');
+});
+
+app.get('/', (req, res) => {
+  return res.json({code:200,msg:"ok"});
+});
 
 app.use('/', (req, res) => {
   res.sendStatus(404);
 });
 
 const appservice = app.listen(Number(process.env.APP_PORT), () => {
-  console.log(`ONLINE NOW >> http://${process.env.APP_HOST}:${process.env.APP_PORT}`);
+  console.log(`ONLINE NOW >> http://${process.env.APP_HOST}:${process.env.APP_PORT}/app`);
 });
 
 const server = ExpressPeerServer(appservice, {

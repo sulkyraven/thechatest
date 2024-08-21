@@ -1,5 +1,36 @@
 # KIRIMIN ELEMENTS
 
+## MODAL
+```html
+<div class="modal">
+  <div class="box">
+    <div class="icons">
+      <i class="fa-duotone fa-circle-exclamation"></i>
+    </div>
+    <div class="messages">
+      <p><label for="prompt-field">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ratione, officia.</label></p>
+      <input type="text" name="prompt-field" id="prompt-field" autocomplete="off" maxlength="300" placeholder="Tulis di sini" />
+    </div>
+    <div class="actions">
+      <div class="btn btn-cancel" role="button">BATAL</div>
+      <div class="btn btn-ok" role="button">OK</div>
+    </div>
+  </div>
+</div>
+```
+
+## LOADING
+```html
+<div class="loading">
+  <div class="box">
+    <div class="spinner">
+      <i class="fa-solid fa-spinner"></i>
+    </div>
+    <p>LOADING</p>
+  </div>
+</div>
+```
+
 ## SIGN IN
 ```html
 <div class="fuwi sign">
