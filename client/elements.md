@@ -65,9 +65,9 @@
 </div>
 ```
 
-### PM - LIST
+### PM - CHATS LIST
 ```html
-<div class="list">
+<div class="chts">
   <div class="top">
     <div class="title">KIRIMIN</div>
     <div class="actions">
@@ -80,6 +80,25 @@
       <input type="text" name="card-input" id="card-input" placeholder="Type Here" />
     </div>
     <div class="card-list">
+      <div class="freq">
+        <div class="note">
+          <p>Friend Requests:</p>
+        </div>
+        <div class="card">
+          <div class="left">
+            <div class="img">
+              <img src="./assets/user.jpg" alt="user" width="50"/>
+            </div>
+            <div class="detail">
+              <div class="name"><p>Devanka</p></div>
+              <div class="last">Aowkwk</div>
+            </div>
+          </div>
+          <div class="right">
+            <div class="btn"><i class="fa-light fa-user"></i></div>
+          </div>
+        </div>
+      </div>
       <div class="card">
         <div class="left">
           <div class="img">
