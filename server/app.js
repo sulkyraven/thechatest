@@ -3,10 +3,13 @@ require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
+const app = express();
+const authRouter = require('./routes/auth');
 const { ExpressPeerServer } = require('peer');
 const { peerKey } = require('./js/helper');
-const app = express();
 const db = require('./js/db');
+
+db.load();
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -18,6 +21,8 @@ app.use(session({
 
 app.use(express.static('client'));
 app.set('view engine', 'ejs')
+
+app.use('/auth', authRouter);
 
 app.get('/app', (req, res) => {
   return res.render('app');

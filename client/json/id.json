@@ -1,0 +1,13 @@
+{
+  "SIGN_01A": "MASUK AKUN",
+  "SIGN_01B": "MASUK",
+  "SIGN_02": "VERIFIKASI",
+  "SIGN_03": "Metode loginku sebelumnya pake Google - GitHub - Facebook. <span>Masih bisa pake itu nggak?</span>",
+  "SIGN_HELP_01": "Semua akun dari metode-metode login lain seperti Google, GitHub, Discord, dan Facebook telah kami migrasi menjadi akun Kirimin.\n\nSehingga akun tersebut tentu saja bisa diakses menggunakan email yang sama dengan email yang terhubung ke metode login tersebut.",
+  "AUTH_SUCCESS_01": "Kami telah mengirimkan email yang berisi kode verifikasi 6 digit.\nPeriksa folder spam jika tidak muncul di kontak masuk.",
+  "AUTH_ERR_01": "Silakan masukkan alamat email",
+  "AUTH_ERR_02": "Alamat email yang kamu masukkan tidak valid",
+  "AUTH_ERR_03": "Silakan masukkan kode verifikasi 6 digit",
+  "AUTH_ERR_04": "Kode yang kamu kirimkan tidak cocok dengan akun manapun",
+  "AUTH_ERR_05": "Kode yang kamu kirim telah kadaluarsa.\nSilakan ulangi proses login dari awal."
+}

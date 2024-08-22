@@ -1,0 +1,13 @@
+{
+  "SIGN_01A": "LOGIN",
+  "SIGN_01B": "LOGIN",
+  "SIGN_02": "VERIFY",
+  "SIGN_03": "My previous login method was Google - GitHub - Facebook. <span>Can I still login with any of them?</span>",
+  "SIGN_HELP_01": "All accounts from other login methods such as Google, GitHub, Discord, and Facebook have been migrated to Kirimin accounts.\n\nNow, your account can be accessed using the same email address that connected to your previous login method.",
+  "AUTH_SUCCESS_01": "We have sent you an email for your 6-digit verification code.\nCheck the spam folder if it does not appear in your inbox.",
+  "AUTH_ERR_01": "Please enter your email address",
+  "AUTH_ERR_02": "Your email address is not valid",
+  "AUTH_ERR_03": "Please enter 6-digit verification code",
+  "AUTH_ERR_04": "The code you sent doesn't match any account",
+  "AUTH_ERR_05": "The code you sent has expired.\nPlease generate new code by relogin."
+}

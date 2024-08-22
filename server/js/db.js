@@ -1,10 +1,24 @@
-const firebase = require('firebase-admin');
+const fs = require('fs');
 
-const serviceAccount = require('../config/firebase-adminsdk.json');
+const dirpath = './server/db';
+class DevankaDatabase {
+  constructor() {
+    this.ref = { users: {}, temp: {} };
+  }
+  load() {
+    Object.keys(this.ref).forEach(file => {
+      if(!fs.existsSync(dirpath)) fs.mkdirSync(dirpath);
+      if(!fs.existsSync(`${dirpath}/${file}.json`)) fs.writeFileSync(`${dirpath}/${file}.json`, JSON.stringify(this.ref[file]), 'utf-8');
 
-firebase.initializeApp({
-  credential: firebase.credential.cert(serviceAccount),
-  databaseURL: 'https://chat-app-34cb9-default-rtdb.firebaseio.com'
-});
-
-module.exports = firebase.database();
+      let filebuffer = fs.readFileSync(`${dirpath}/${file}.json`, 'utf-8');
+      this.ref[file] = JSON.parse(filebuffer);
+      console.log(`{${file}} data loaded!`);
+    });
+  }
+  save(s) {
+    if(typeof s === 'string') s = [s];
+    s.forEach(file => fs.writeFileSync(`${dirpath}/${file}.json`, JSON.stringify(this.ref[file]), 'utf-8'));
+  }
+}
+// const db = new DevankaDatabase();
+module.exports = new DevankaDatabase();

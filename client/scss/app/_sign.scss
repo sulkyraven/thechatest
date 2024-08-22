@@ -17,6 +17,7 @@ $bg3: #5d6d80;
     max-width: 500px;
     background-color: $bg2;
     border-radius: 20px;
+    animation: popup_in 0.5s;
     .title {
       width: 100%;
       border-bottom: 1px solid v.$white;
@@ -26,6 +27,20 @@ $bg3: #5d6d80;
         justify-content: center;
         align-items: center;
         gap: 5px;
+      }
+    }
+    .language {
+      margin-bottom: 10px;
+      .sel-lang {
+        margin: 0 auto;
+        background-color: $bg2;
+        color: v.$white;
+        border-radius: 5px;
+        border-bottom: 1px solid v.$white;
+        padding: 10px;
+        option:first-child {
+          display: none;
+        }
       }
     }
     .form {
@@ -86,5 +101,10 @@ $bg3: #5d6d80;
         margin-bottom: 0;
       }
     }
+  }
+}
+.sign.out {
+  .card {
+    animation: popup_out 0.5s forwards;
   }
 }

@@ -39,7 +39,7 @@ export default {
       el.innerHTML = `
       <div class="box">
         <div class="icons">
-          <i class="fa-duotone fa-${s.icon?s.icon:'circle-exclamation'}"></i>
+          <i class="fa-duotone fa-${s.ic?s.ic:'circle-exclamation'}"></i>
         </div>
         <div class="messages"><p></p></div>
         <div class="action">
@@ -70,7 +70,7 @@ export default {
       el.innerHTML = `
       <div class="box">
         <div class="icons">
-          <i class="fa-duotone fa-${s.icon?s.icon:'circle-exclamation'}"></i>
+          <i class="fa-duotone fa-${s.ic?s.ic:'circle-exclamation'}"></i>
         </div>
         <div class="messages"><p></p></div>
         <div class="actions">
@@ -111,7 +111,7 @@ export default {
       el.innerHTML = `
       <div class="box">
         <div class="icons">
-          <i class="fa-duotone fa-${s.icon?s.icon:'circle-exclamation'}"></i>
+          <i class="fa-duotone fa-${s.ic?s.ic:'circle-exclamation'}"></i>
         </div>
         <div class="messages">
           <p><label for="prompt-field"></label></p>
