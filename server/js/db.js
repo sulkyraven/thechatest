@@ -3,7 +3,7 @@ const fs = require('fs');
 const dirpath = './server/db';
 class DevankaDatabase {
   constructor() {
-    this.ref = { users: {}, temp: {}, chats: {} };
+    this.ref = {u:{},t:{},c:{},f:{},p:{}};
   }
   load() {
     Object.keys(this.ref).forEach(file => {
@@ -12,7 +12,7 @@ class DevankaDatabase {
 
       let filebuffer = fs.readFileSync(`${dirpath}/${file}.json`, 'utf-8');
       this.ref[file] = JSON.parse(filebuffer);
-      console.log(`{${file}} data loaded!`);
+      console.log(`[${file}] data loaded!`);
     });
   }
   save(s) {
@@ -20,5 +20,4 @@ class DevankaDatabase {
     s.forEach(file => fs.writeFileSync(`${dirpath}/${file}.json`, JSON.stringify(this.ref[file]), 'utf-8'));
   }
 }
-// const db = new DevankaDatabase();
 module.exports = new DevankaDatabase();

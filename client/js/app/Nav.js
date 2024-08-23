@@ -21,14 +21,9 @@ export default class {
     });
   }
   destroy() {
-    return new Promise(async resolve => {
-      this.el.classList.add('out');
-      await modal.waittime();
-      this.el.remove();
-      this.isLocked = false;
-      userState.pmtop = null;
-      resolve();
-    });
+    this.isLocked = false;
+    this.el.remove();
+    userState.pmtop = null;
   }
   run() {
     userState.pmtop = this;

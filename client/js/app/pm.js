@@ -1,5 +1,7 @@
 import Nav from "./Nav.js";
 import Chts from "./Chts.js";
+import Empty from "./Empty.js";
+import Account from "./Account.js";
 
 export default class {
   constructor() {}
@@ -12,11 +14,13 @@ export default class {
     <div class="content"></div>`;
   }
   renderSects() {
-    // nav - chts - content
     new Nav().run();
     new Chts().run();
+    console.log('isfirst', this.isfirst);
+    this.isfirst ? new Account().run() : new Empty().run();
   }
-  run() {
+  run(isfirst = false) {
+    this.isfirst = isfirst;
     this.createElement();
     document.querySelector('.app').append(this.el);
     this.renderSects();

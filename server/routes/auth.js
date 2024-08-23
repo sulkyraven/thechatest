@@ -16,7 +16,7 @@ router.post('/verify', (req, res) => {
 });
 
 router.get('/isUser', isUser, (req, res) => {
-  return res.json({code:200,msg:'ok'})
+  return res.json({code:200,msg:'ok'});
 });
 
 module.exports = router;

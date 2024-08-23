@@ -1,7 +1,7 @@
-import checkuser from "../helper/checkuser.js";
 import modal from "../helper/modal.js";
 import xhr from "../helper/xhr.js";
 import userState from "../manager/userState.js";
+import pm from "./pm.js";
 let lang = {};
 
 export default class Sign {
@@ -102,7 +102,9 @@ export default class Sign {
         this.path = '/login';
         this.islocked = false;
         await this.destroy();
-        checkuser();
+        console.log('sign first', loginreq.data.first);
+        if(loginreq.data.first) return new pm().run(true);
+        return new pm().run();
       }
     }
   }
