@@ -1,6 +1,4 @@
-import Sign from "./app/sign.js";
-import modal from "./helper/modal.js";
-import xhr from "./helper/xhr.js";
+import checkuser from "./helper/checkuser.js";
 import userState from "./manager/userState.js";
 
 let lang = {};
@@ -12,10 +10,4 @@ userState.langs = lang;
 
 userState.load();
 
-async function checkUser() {
-  const isUser = await modal.loading(xhr.get('/auth/isUser'));
-  if(!isUser || isUser.code !== 200) return new Sign().run();
-  return console.log('JALANKAN DASHBOARD');
-}
-
-checkUser();
+checkuser();

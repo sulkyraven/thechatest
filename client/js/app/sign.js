@@ -1,3 +1,4 @@
+import checkuser from "../helper/checkuser.js";
 import modal from "../helper/modal.js";
 import xhr from "../helper/xhr.js";
 import userState from "../manager/userState.js";
@@ -100,11 +101,13 @@ export default class Sign {
       } else if(loginreq.data.step === 2) {
         this.path = '/login';
         this.islocked = false;
-        this.destroy();
+        await this.destroy();
+        checkuser();
       }
     }
   }
   renderCode() {
+    document.querySelector('#email').readOnly = true;
     const field = document.querySelector('[data-input]');
     const inpt = document.createElement('div');
     inpt.classList.add('input');

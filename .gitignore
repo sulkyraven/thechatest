@@ -8,4 +8,6 @@ client/**.html
 !client/index.html
 server/db/**.json
 server/config/firebase-adminsdk.json
+server/sessions/
+!server/sessions/df.txt
 ex

@@ -2,6 +2,9 @@ class userState {
   constructor() {
     this.lang = 'en';
     this.langs = ['id','en'];
+    this.pmtop = null;
+    this.pmmid = null;
+    this.pmbottom = null;
   }
   save() {
     window.localStorage.setItem('kirimin_cache_01', JSON.stringify({

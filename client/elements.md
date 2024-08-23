@@ -77,7 +77,7 @@
 ```html
 <div class="fuwi pm">
   <div class="nav"></div>
-  <div class="list"></div>
+  <div class="chts"></div>
   <div class="content"></div>
 </div>
 ```
