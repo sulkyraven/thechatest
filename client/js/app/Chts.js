@@ -1,6 +1,7 @@
 import db from "../manager/db.js";
 import elgen from "../manager/elgen.js";
 import userState from "../manager/userState.js";
+import Account from "./Account.js";
 
 export default class {
   constructor() {
@@ -15,7 +16,7 @@ export default class {
       <div class="title">KIRIMIN</div>
       <div class="actions">
         <div class="btn"><i class="fa-solid fa-magnifying-glass"></i></div>
-        <div class="btn"><i class="fa-solid fa-gear"></i></div>
+        <div class="btn btn-settings"><i class="fa-solid fa-gear"></i></div>
       </div>
     </div>
     <div class="bottom">
@@ -50,6 +51,13 @@ export default class {
       this.cardlist.append(card);
     });
   }
+  btnListener() {
+    const btnSettings = this.el.querySelector('.btn-settings');
+    btnSettings.onclick = async() => {
+      await userState.pmbottom?.destroy?.();
+      new Account().run();
+    }
+  }
   destroy() {
     this.el.remove();
     userState.pmmid = null;
@@ -58,5 +66,6 @@ export default class {
     userState.pmmid = this;
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
+    this.btnListener();
   }
 }

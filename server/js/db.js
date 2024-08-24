@@ -12,6 +12,11 @@ class DevankaDatabase {
 
       let filebuffer = fs.readFileSync(`${dirpath}/${file}.json`, 'utf-8');
       this.ref[file] = JSON.parse(filebuffer);
+      if(file == 'u') {
+        Object.keys(this.ref[file]).forEach(k => {
+          if(this.ref[file][k].peer) delete this.ref[file][k].peer;
+        });
+      }
       console.log(`[${file}] data loaded!`);
     });
   }

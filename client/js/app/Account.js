@@ -1,7 +1,13 @@
+import modal from "../helper/modal.js";
+import xhr from "../helper/xhr.js";
+import db from "../manager/db.js";
 import userState from "../manager/userState.js";
+let lang = {};
 
 export default class {
-  constructor() {}
+  constructor() {
+    this.isLocked = false;
+  }
   createElement() {
     this.el = document.createElement('div');
     this.el.classList.add('acc');
@@ -13,28 +19,28 @@ export default class {
     <div class="wall">
       <div class="chp userphoto">
         <div class="outer-img">
-          <img src="./assets/user.jpg" alt="user" width="150" />
-          <div class="btn"><i class="fa-solid fa-pen-to-square"></i></div>
+          <img src="${db.ref.account.img || '/assets/user.jpg'}" alt="${db.ref.account.username}" width="150" />
+          <div class="btn btn-img"><i class="fa-solid fa-pen-to-square"></i></div>
         </div>
       </div>
       <div class="chp userid">
         <div class="outer">
           <div class="chp-t">ID</div>
-          <div class="chp-f"><p>761761</p></div>
+          <div class="chp-f"><p>${db.ref.account.id}</p></div>
         </div>
       </div>
       <div class="chp username">
         <div class="outer">
           <div class="chp-t">Username</div>
-          <div class="chp-f"><p>@dvnkz_</p></div>
-          <div class="chp-e"><i class="fa-solid fa-pen-to-square"></i> Edit</div>
+          <div class="chp-f"><p>@${db.ref.account.username}</p></div>
+          <div class="chp-e btn-username"><i class="fa-solid fa-pen-to-square"></i> Edit</div>
         </div>
       </div>
       <div class="chp userdisplayname">
         <div class="outer">
           <div class="chp-t">Display Name</div>
           <div class="chp-f"><p>Deva Krista Aranda</p></div>
-          <div class="chp-e"><i class="fa-solid fa-pen-to-square"></i> Edit</div>
+          <div class="chp-e btn-displayname"><i class="fa-solid fa-pen-to-square"></i> Edit</div>
         </div>
       </div>
       <div class="chp userbio">
@@ -43,13 +49,13 @@ export default class {
           <div class="chp-f">
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestiae nisi odio id veniam reprehenderit earum praesentium animi quam, expedita similique?</p>
           </div>
-          <div class="chp-e"><i class="fa-solid fa-pen-to-square"></i> Edit</div>
+          <div class="chp-e btn-bio"><i class="fa-solid fa-pen-to-square"></i> Edit</div>
         </div>
       </div>
       <div class="chp useremail">
         <div class="outer">
           <div class="chp-t">Email</div>
-          <div class="chp-f"><p>contoh@example.com</p></div>
+          <div class="chp-f"><p>${db.ref.account.email}</p></div>
           <div class="chp-n"><p>*other user cannot see this information</p></div>
         </div>
       </div>
@@ -70,6 +76,101 @@ export default class {
         <p><a href="/auth/logout"><i class="fa-light fa-triangle-exclamation"></i> LOG OUT</a></p>
       </div>
     </div>`;
+    this.ephoto = this.el.querySelector('.userphoto .outer-img');
+    this.euname = this.el.querySelector('.username .outer .chp-f p');
+    this.edname = this.el.querySelector('.userdisplayname .outer .chp-f p');
+    this.ebio = this.el.querySelector('.userbio .outer .chp-f p');
+
+    this.edname.innerText = db.ref.account.displayName;
+    this.ebio.innerText = db.ref.account.bio;
+  }
+  btnListener() {
+    const btnUname = this.el.querySelector('.btn-username');
+    btnUname.onclick = async() => {
+      if(this.isLocked === true) return;
+      this.isLocked = true
+      const getUname = await modal.prompt({
+        msg: lang.ACC_USERNAME,
+        ic: 'pencil',
+        val: db.ref.account.username,
+        nows: true
+      });
+      if(!getUname) {
+        this.isLocked = false;
+        return;
+      }
+      const setUname = await modal.loading(xhr.post('/uwu/set-username', {uname:getUname}));
+      if(!setUname || setUname.status !== 200) {
+        await modal.alert(setUname.msg || lang.ERROR);
+        this.isLocked = false;
+        return;
+      }
+      this.euname.innerText = getUname;
+      this.isLocked = false;
+    }
+    const btnDname = this.el.querySelector('.btn-displayname');
+    btnDname.onclick = async() => {
+      if(this.isLocked === true) return;
+      this.isLocked = true
+      const getDname = await modal.prompt({
+        ic: 'marker',
+        msg: lang.ACC_DISPLAYNAME,
+        val: db.ref.account.displayName,
+      });
+      if(!getDname) {
+        this.isLocked = false;
+        return;
+      }
+      const setDname = await modal.loading(xhr.post('/uwu/set-displayname', {dname:getDname}));
+      if(!setDname || setDname.status !== 200) {
+        await modal.alert(setDname.msg || lang.ERROR);
+        this.isLocked = false;
+        return;
+      }
+      this.edname.innerText = getDname;
+      this.isLocked = false;
+    }
+
+    const btnBio = this.el.querySelector('.btn-bio');
+    btnBio.onclick = async() => {
+      if(this.isLocked === true) return;
+      this.isLocked = true
+      const getBio = await modal.prompt({
+        msg: lang.ACC_BIO, tarea: true, val: db.ref.account.bio, ic:'book-open-cover'
+      });
+      if(!getBio) {
+        this.isLocked = false;
+        return;
+      }
+      const setBio = await modal.loading(xhr.post('/uwu/set-bio', {bio:getBio}));
+      if(!setBio || setBio.status !== 200) {
+        await modal.alert(setBio.msg || lang.ERROR);
+        this.isLocked = false;
+        return;
+      }
+      this.ebio.innerText = getBio;
+      this.isLocked = false;
+    }
+    const btnImg = this.el.querySelector('.btn-img');
+    btnImg.onclick = () => {
+      const inp = document.createElement('input');
+      inp.type = 'file';
+      inp.accept = 'image/*';
+      inp.onchange = async() => {
+        if(this.isLocked === true) return;
+        this.isLocked = true
+        const file = inp.files[0];
+        let tempsrc = URL.createObjectURL(file);
+        const getImg = await modal.confirm({
+          ic: 'circle-question',
+          msg: lang.ACC_IMG,
+          img: tempsrc
+        });
+        this.isLocked = false;
+        return;
+      }
+      inp.click();
+    }
   }
   destroy() {
     this.el.remove();
@@ -77,7 +178,9 @@ export default class {
   }
   run() {
     userState.pmbottom = this;
+    lang = userState.langs[userState.lang];
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
+    this.btnListener();
   }
 }

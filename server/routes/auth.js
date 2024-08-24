@@ -1,6 +1,7 @@
 const express = require('express');
 const hauth = require('../js/handler/hauth');
 const { isUser } = require('../js/middlewares');
+const hcloud = require('../js/handler/hcloud');
 const router = express.Router();
 
 router.use(express.json({limit:'100kb'}));
@@ -16,7 +17,7 @@ router.post('/verify', (req, res) => {
 });
 
 router.get('/isUser', isUser, (req, res) => {
-  return res.json({code:200,msg:'ok'});
+  return res.json({code:200,msg:'ok',data:hcloud.getAll(req.session.user.id)});
 });
 
 module.exports = router;

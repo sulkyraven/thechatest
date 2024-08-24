@@ -1,4 +1,7 @@
 {
+  "TYPE_HERE": "Tulis Sesuatu",
+  "ERROR": "Terjadi kesalahan",
+  "IMG_ERR": "Gambarnya ga bisa ditampilin",
   "SIGN_01A": "MASUK AKUN",
   "SIGN_01B": "MASUK",
   "SIGN_02": "VERIFIKASI",
@@ -9,5 +12,9 @@
   "AUTH_ERR_02": "Alamat email yang kamu masukkan tidak valid",
   "AUTH_ERR_03": "Silakan masukkan kode verifikasi 6 digit",
   "AUTH_ERR_04": "Kode yang kamu kirimkan tidak cocok dengan akun manapun",
-  "AUTH_ERR_05": "Kode yang kamu kirim telah kadaluarsa.\nSilakan ulangi proses login dari awal."
+  "AUTH_ERR_05": "Kode yang kamu kirim telah kadaluarsa.\nSilakan ulangi proses login dari awal.",
+  "ACC_USERNAME": "Username baru",
+  "ACC_DISPLAYNAME": "Display name baru",
+  "ACC_BIO": "About me Baru",
+  "ACC_IMG": "Konfirmasi upload foto profil baru?"
 }

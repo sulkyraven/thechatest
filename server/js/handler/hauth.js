@@ -1,6 +1,7 @@
 const fs = require('fs');
 const helper = require('../helper');
 const db = require('../db');
+const hcloud = require('./hcloud');
 
 // const mailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
 // const usernameregex = /^[A-Za-z0-9_]+$/;
@@ -58,6 +59,7 @@ module.exports = {
     delete db.ref.t[dbkey];
     db.save('t');
 
+    data.cloud = hcloud.getAll(ukey);
     return {code:200,msg:'ok',data};
   }
 }

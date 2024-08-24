@@ -1,6 +1,7 @@
 class db {
   constructor() {
     this.ref = {};
+    this.peer = new Map();
   }
 }
 

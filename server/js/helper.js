@@ -1,6 +1,7 @@
 module.exports = {
-  peerKey() {
-    return require('crypto').randomBytes(16).toString('hex');
+  peerKey:require('crypto').randomBytes(16).toString('hex'),
+  genPeer() {
+    return require('crypto').randomBytes(8).toString('hex') + Date.now().toString(32);
   },
   rNumber(n = 6) {
      let a = "";

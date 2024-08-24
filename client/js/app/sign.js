@@ -1,5 +1,6 @@
 import modal from "../helper/modal.js";
 import xhr from "../helper/xhr.js";
+import cloud from "../manager/cloud.js";
 import userState from "../manager/userState.js";
 import pm from "./pm.js";
 let lang = {};
@@ -102,7 +103,8 @@ export default class Sign {
         this.path = '/login';
         this.islocked = false;
         await this.destroy();
-        console.log('sign first', loginreq.data.first);
+        cloud.run(loginreq.data.cloud.find(ls => ls.name === 'peers').data);
+        loginreq.data.cloud.forEach(obj => cloud.clientData(obj));
         if(loginreq.data.first) return new pm().run(true);
         return new pm().run();
       }

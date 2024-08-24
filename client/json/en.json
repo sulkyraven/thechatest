@@ -1,4 +1,7 @@
 {
+  "TYPE_HERE": "Type Here",
+  "ERROR": "Something went wrong",
+  "IMG_ERR": "This image cannot be displayed",
   "SIGN_01A": "LOGIN",
   "SIGN_01B": "LOGIN",
   "SIGN_02": "VERIFY",
@@ -9,5 +12,9 @@
   "AUTH_ERR_02": "Your email address is not valid",
   "AUTH_ERR_03": "Please enter 6-digit verification code",
   "AUTH_ERR_04": "The code you sent doesn't match any account",
-  "AUTH_ERR_05": "The code you sent has expired.\nPlease generate new code by relogin."
+  "AUTH_ERR_05": "The code you sent has expired.\nPlease generate new code by relogin.",
+  "ACC_USERNAME": "New username",
+  "ACC_DISPLAYNAME": "New display name",
+  "ACC_BIO": "New about me",
+  "ACC_IMG": "Confirm your new profile picture"
 }

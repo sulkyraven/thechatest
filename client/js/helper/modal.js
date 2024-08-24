@@ -1,3 +1,6 @@
+import userState from "../manager/userState.js";
+let lang = {};
+
 export default {
   async waittime(ms = 450) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -29,6 +32,7 @@ export default {
     });
   },
   element() {
+    lang = userState.langs[userState.lang];
     const el = document.createElement('div');
     el.classList.add('modal');
     return el;
@@ -41,14 +45,23 @@ export default {
         <div class="icons">
           <i class="fa-duotone fa-${s.ic?s.ic:'circle-exclamation'}"></i>
         </div>
-        <div class="messages"><p></p></div>
+        <div class="messages"><p>${typeof(s) === 'string' ? (s || '') : (s.msg || '')}</p></div>
         <div class="action">
           <div class="btn btn-ok" role="button">OK</div>
         </div>
       </div>`;
       
-      const p = el.querySelector('.box .messages p');
-      p.innerText = typeof(s) === 'string' ? s : (s.msg || '');
+      if(s.img) {
+        const img = new Image();
+        img.src = s.img;
+        el.querySelector('.box .messages').append(img);
+        img.onerror = async() => {
+          el.classList.add('out');
+          await this.waittime();
+          el.remove();
+          return resolve(await this.alert({msg:lang.IMG_ERR,ic:'image-slash'}));
+        }
+      }
 
       const btn = el.querySelector('.action .btn-ok');
       if(s.okx) btn.innerText = s.okx;
@@ -59,7 +72,7 @@ export default {
         el.classList.add('out');
         await this.waittime();
         el.remove();
-        resolve(true);
+        resolve(false);
         if(s.ok) s.ok();
       }
     });
@@ -72,16 +85,25 @@ export default {
         <div class="icons">
           <i class="fa-duotone fa-${s.ic?s.ic:'circle-exclamation'}"></i>
         </div>
-        <div class="messages"><p></p></div>
+        <div class="messages"><p>${typeof(s) === 'string' ? (s || '') : (s.msg || '')}</p></div>
         <div class="actions">
           <div class="btn btn-cancel" role="button">BATAL</div>
           <div class="btn btn-ok" role="button">OK</div>
         </div>
       </div>`;
       
-      const p = el.querySelector('.box .messages p');
-      p.innerText = typeof(s) === 'string' ? s : (s.msg || '');
-      
+      if(s.img) {
+        const img = new Image();
+        img.src = s.img;
+        el.querySelector('.box .messages').append(img);
+        img.onerror = async() => {
+          el.classList.add('out');
+          await this.waittime();
+          el.remove();
+          return resolve(await this.alert({msg:lang.IMG_ERR,ic:'image-slash'}));
+        }
+      }
+
       const btnOk = el.querySelector('.actions .btn-ok');
       if(s.okx) btnOk.innerText = s.okx;
       const btnCancel = el.querySelector('.actions .btn-cancel');
@@ -114,24 +136,34 @@ export default {
           <i class="fa-duotone fa-${s.ic?s.ic:'circle-exclamation'}"></i>
         </div>
         <div class="messages">
-          <p><label for="prompt-field"></label></p>
-          <input type="text" name="prompt-field" id="prompt-field" autocomplete="off" maxlength="${s.max ? s.max : '100'}" placeholder="Type Here"/>
+          <p><label for="prompt-field">${typeof(s) === 'string' ? (s || '') : (s.msg || '')}</label></p>
+          ${s.tarea ? `<textarea name="prompt-field" id="prompt-field" maxlength="${s.max ? s.max : '300'}" placeholder="${s.pholder || lang.TYPE_HERE}">${s.val || ''}</textarea>` : `<input type="text" name="prompt-field" id="prompt-field" autocomplete="off" maxlength="${s.max ? s.max : '100'}" placeholder="${s.pholder || lang.TYPE_HERE}" ${s.val ? `value="${s.val}"` : ''}/>`}
         </div>
         <div class="actions">
           <div class="btn btn-cancel" role="button">BATAL</div>
           <div class="btn btn-ok" role="button">OK</div>
         </div>
       </div>`;
-      
-      const p = el.querySelector('.box .messages p');
-      p.innerText = typeof(s) === 'string' ? s : (s.msg || '');
-      
+
+      if(s.img) {
+        const img = new Image();
+        img.src = s.img;
+        el.querySelector('.box .messages').append(img);
+        img.onerror = async() => {
+          el.classList.add('out');
+          await this.waittime();
+          el.remove();
+          return resolve(await this.alert({msg:lang.IMG_ERR,ic:'image-slash'}));
+        }
+      }
+
       const btnOk = el.querySelector('.actions .btn-ok');
       if(s.okx) btnOk.innerText = s.okx;
       const btnCancel = el.querySelector('.actions .btn-cancel');
       if(s.cancelx) btnCancel.innerText = s.cancelx;
 
       const input = el.querySelector('.box .messages #prompt-field');
+      if(s.nows) input.oninput = () =>  input.value = input.value.replace(/\s/g, '');
 
       document.querySelector('.app').append(el);
 

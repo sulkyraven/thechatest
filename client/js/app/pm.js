@@ -16,7 +16,6 @@ export default class {
   renderSects() {
     new Nav().run();
     new Chts().run();
-    console.log('isfirst', this.isfirst);
     this.isfirst ? new Account().run() : new Empty().run();
   }
   run(isfirst = false) {

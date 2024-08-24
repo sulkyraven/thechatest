@@ -64,7 +64,7 @@ $bg: #3f464e;
       margin: 20px 0;
       font-weight: 300;
       font-size: 1.2em;
-      input {
+      input, textarea {
         margin-top: 10px;
         width: 100%;
         padding: 10px;
@@ -72,7 +72,17 @@ $bg: #3f464e;
         background-color: v.$card_secondary;
         color: v.$white;
         font-size: 1rem;
+      }
+      input {
         text-align: center;
+      }
+      img {
+        display: block;
+        margin: 0 auto;
+        max-width: 200px;
+        max-height: 200px;
+        margin-top: 10px;
+        border: 1px solid v.$sblurple;
       }
     }
     .actions {
