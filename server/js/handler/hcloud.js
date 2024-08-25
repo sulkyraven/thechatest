@@ -18,7 +18,6 @@ module.exports = {
     } else {
       peerid = genPeer();
       db.ref.u[uid].peer = peerid;
-      db.save('u');
     }
 
     return {name:'peers', data: { peerKey, peerid, otherpeers: db.ref.x }};

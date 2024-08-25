@@ -173,7 +173,7 @@ export default {
         el.classList.add('out');
         await this.waittime();
         el.remove();
-        resolve({val:input.value});
+        resolve(input.value);
         if(s.ok) s.ok();
       }
       btnCancel.onclick = async() => {

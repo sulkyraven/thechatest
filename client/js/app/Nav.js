@@ -13,11 +13,18 @@ export default class {
   getNav() {
     _navlist.forEach(btn => {
       const elnav = document.createElement('div');
-      elnav.classList.add('btn');
+      elnav.classList.add('btn', `nav-${btn.id}`);
       if(btn.id === 'chats') elnav.classList.add('selected');
       elnav.innerHTML = btn.text;
       this.el.append(elnav);
-      elnav.onclick = () => btn.run();
+      elnav.onclick = () => {
+        let midtop = [userState.pmmid?.id||'none',userState.pmbottom?.id||'none'];
+        if(!midtop.includes(btn.id)) {
+          this.el.querySelectorAll('.selected').forEach(elod=>elod.classList.remove('selected'));
+          elnav.classList.add('selected');
+          btn.run();
+        }
+      }
     });
   }
   destroy() {

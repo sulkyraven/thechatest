@@ -1,7 +1,9 @@
 import userState from "../manager/userState.js";
 
 export default class {
-  constructor() {}
+  constructor() {
+    this.id = 'empty';
+  }
   createElement() {
     this.el = document.createElement('div');
     this.el.classList.add('empty');
@@ -20,7 +22,8 @@ export default class {
     this.el.remove();
     userState.pmbottom = null;
   }
-  run() {
+  async run() {
+    await userState.pmbottom?.destroy?.();
     userState.pmbottom = this;
     this.createElement();
     document.querySelector('.app .pm').append(this.el);

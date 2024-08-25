@@ -5,6 +5,7 @@ const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const app = express();
 const authRouter = require('./routes/auth');
+const uwuRouter = require('./routes/uwu');
 const { ExpressPeerServer } = require('peer');
 const { peerKey } = require('./js/helper');
 const db = require('./js/db');
@@ -31,6 +32,7 @@ app.use(express.static('client'));
 app.set('view engine', 'ejs')
 
 app.use('/auth', authRouter);
+app.use('/uwu', uwuRouter);
 
 app.get('/app', (req, res) => {
   return res.render('app');

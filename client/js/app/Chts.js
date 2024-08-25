@@ -5,6 +5,7 @@ import Account from "./Account.js";
 
 export default class {
   constructor() {
+    this.id = 'chats';
     this.isLocked = false;
     this.list = [];
   }
@@ -62,7 +63,8 @@ export default class {
     this.el.remove();
     userState.pmmid = null;
   }
-  run() {
+  async run() {
+    await userState.pmmid?.destroy?.();
     userState.pmmid = this;
     this.createElement();
     document.querySelector('.app .pm').append(this.el);

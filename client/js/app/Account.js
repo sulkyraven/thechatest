@@ -6,6 +6,7 @@ let lang = {};
 
 export default class {
   constructor() {
+    this.id = 'account';
     this.isLocked = false;
   }
   createElement() {
@@ -39,16 +40,14 @@ export default class {
       <div class="chp userdisplayname">
         <div class="outer">
           <div class="chp-t">Display Name</div>
-          <div class="chp-f"><p>Deva Krista Aranda</p></div>
+          <div class="chp-f"><p>/p></div>
           <div class="chp-e btn-displayname"><i class="fa-solid fa-pen-to-square"></i> Edit</div>
         </div>
       </div>
       <div class="chp userbio">
         <div class="outer">
           <div class="chp-t">About</div>
-          <div class="chp-f">
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestiae nisi odio id veniam reprehenderit earum praesentium animi quam, expedita similique?</p>
-          </div>
+          <div class="chp-f"><p></p></div>
           <div class="chp-e btn-bio"><i class="fa-solid fa-pen-to-square"></i> Edit</div>
         </div>
       </div>
@@ -93,19 +92,26 @@ export default class {
         msg: lang.ACC_USERNAME,
         ic: 'pencil',
         val: db.ref.account.username,
-        nows: true
+        nows: true,
+        max: 20
       });
       if(!getUname) {
         this.isLocked = false;
         return;
       }
       const setUname = await modal.loading(xhr.post('/uwu/set-username', {uname:getUname}));
-      if(!setUname || setUname.status !== 200) {
-        await modal.alert(setUname.msg || lang.ERROR);
+      if(setUname?.code === 402) {
+        await modal.alert(`${lang.ACC_FAIL_UNAME_COOLDOWN}<br/><b>${new Date(setUname.msg).toLocaleString()}</b>`);
         this.isLocked = false;
         return;
       }
-      this.euname.innerText = getUname;
+      if(setUname?.code !== 200) {
+        await modal.alert(lang[setUname.msg] || lang.ERROR);
+        this.isLocked = false;
+        return;
+      }
+      db.ref.account.username = setUname.data.text;
+      this.euname.innerText = '@'+setUname.data.text;
       this.isLocked = false;
     }
     const btnDname = this.el.querySelector('.btn-displayname');
@@ -122,12 +128,12 @@ export default class {
         return;
       }
       const setDname = await modal.loading(xhr.post('/uwu/set-displayname', {dname:getDname}));
-      if(!setDname || setDname.status !== 200) {
+      if(!setDname || setDname.code !== 200) {
         await modal.alert(setDname.msg || lang.ERROR);
         this.isLocked = false;
         return;
       }
-      this.edname.innerText = getDname;
+      this.edname.innerText = setDname.data.text;
       this.isLocked = false;
     }
 
@@ -143,12 +149,12 @@ export default class {
         return;
       }
       const setBio = await modal.loading(xhr.post('/uwu/set-bio', {bio:getBio}));
-      if(!setBio || setBio.status !== 200) {
+      if(!setBio || setBio.code !== 200) {
         await modal.alert(setBio.msg || lang.ERROR);
         this.isLocked = false;
         return;
       }
-      this.ebio.innerText = getBio;
+      this.ebio.innerText = setBio.data.text;
       this.isLocked = false;
     }
     const btnImg = this.el.querySelector('.btn-img');
@@ -176,7 +182,8 @@ export default class {
     this.el.remove();
     userState.pmbottom = null;
   }
-  run() {
+  async run() {
+    await userState.pmbottom?.destroy?.();
     userState.pmbottom = this;
     lang = userState.langs[userState.lang];
     this.createElement();
