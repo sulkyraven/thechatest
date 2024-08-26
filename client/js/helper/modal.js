@@ -163,7 +163,7 @@ export default {
       if(s.cancelx) btnCancel.innerText = s.cancelx;
 
       const input = el.querySelector('.box .messages #prompt-field');
-      if(s.nows) input.oninput = () =>  input.value = input.value.replace(/\s/g, '');
+      if(s.iregex) input.oninput = () => input.value = input.value.replace(s.iregex, '');
 
       document.querySelector('.app').append(el);
 

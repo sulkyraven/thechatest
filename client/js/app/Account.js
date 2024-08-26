@@ -20,7 +20,7 @@ export default class {
     <div class="wall">
       <div class="chp userphoto">
         <div class="outer-img">
-          <img src="${db.ref.account.img || '/assets/user.jpg'}" alt="${db.ref.account.username}" width="150" />
+          <img src="${db.ref.account.img ? `/img/user/${db.ref.account.id}` : '/assets/user.jpg'}" alt="${db.ref.account.username}"/>
           <div class="btn btn-img"><i class="fa-solid fa-pen-to-square"></i></div>
         </div>
       </div>
@@ -55,7 +55,7 @@ export default class {
         <div class="outer">
           <div class="chp-t">Email</div>
           <div class="chp-f"><p>${db.ref.account.email}</p></div>
-          <div class="chp-n"><p>*other user cannot see this information</p></div>
+          <div class="chp-n"><p>${lang.ACC_ONLY_YOU}</p></div>
         </div>
       </div>
       <div class="chp userlang">
@@ -92,10 +92,14 @@ export default class {
         msg: lang.ACC_USERNAME,
         ic: 'pencil',
         val: db.ref.account.username,
-        nows: true,
+        iregex: /\s/g,
         max: 20
       });
       if(!getUname) {
+        this.isLocked = false;
+        return;
+      }
+      if(getUname === db.ref.account.username) {
         this.isLocked = false;
         return;
       }
@@ -119,20 +123,31 @@ export default class {
       if(this.isLocked === true) return;
       this.isLocked = true
       const getDname = await modal.prompt({
-        ic: 'marker',
+        ic: 'marker', max: 45,
         msg: lang.ACC_DISPLAYNAME,
         val: db.ref.account.displayName,
+        iregex: /(\s)(?=\s)/g
       });
       if(!getDname) {
         this.isLocked = false;
         return;
       }
-      const setDname = await modal.loading(xhr.post('/uwu/set-displayname', {dname:getDname}));
-      if(!setDname || setDname.code !== 200) {
-        await modal.alert(setDname.msg || lang.ERROR);
+      if(getDname === db.ref.account.displayName) {
         this.isLocked = false;
         return;
       }
+      const setDname = await modal.loading(xhr.post('/uwu/set-displayname', {dname:getDname}));
+      if(setDname?.code === 402) {
+        await modal.alert(`${lang.ACC_FAIL_DNAME_COOLDOWN}<br/><b>${new Date(setDname.msg).toLocaleString()}</b>`);
+        this.isLocked = false;
+        return;
+      }
+      if(!setDname || setDname.code !== 200) {
+        await modal.alert(lang[setDname.msg] || lang.ERROR);
+        this.isLocked = false;
+        return;
+      }
+      db.ref.account.displayName = setDname.data.text;
       this.edname.innerText = setDname.data.text;
       this.isLocked = false;
     }
@@ -142,18 +157,29 @@ export default class {
       if(this.isLocked === true) return;
       this.isLocked = true
       const getBio = await modal.prompt({
-        msg: lang.ACC_BIO, tarea: true, val: db.ref.account.bio, ic:'book-open-cover'
+        msg: lang.ACC_BIO, tarea: true, val: db.ref.account.bio, ic:'book-open-cover', max: 220,
+        iregex: /(\s)(?=\s)/g
       });
       if(!getBio) {
         this.isLocked = false;
         return;
       }
-      const setBio = await modal.loading(xhr.post('/uwu/set-bio', {bio:getBio}));
-      if(!setBio || setBio.code !== 200) {
-        await modal.alert(setBio.msg || lang.ERROR);
+      if(getBio === db.ref.account.bio) {
         this.isLocked = false;
         return;
       }
+      const setBio = await modal.loading(xhr.post('/uwu/set-bio', {bio:getBio}));
+      if(setBio?.code === 402) {
+        await modal.alert(`${lang.ACC_FAIL_BIO_COOLDOWN}<br/><b>${new Date(setBio.msg).toLocaleString()}</b>`);
+        this.isLocked = false;
+        return;
+      }
+      if(setBio?.code !== 200) {
+        await modal.alert(lang[setBio.msg] || lang.ERROR);
+        this.isLocked = false;
+        return;
+      }
+      db.ref.account.bio = setBio.data.text;
       this.ebio.innerText = setBio.data.text;
       this.isLocked = false;
     }
@@ -172,6 +198,28 @@ export default class {
           msg: lang.ACC_IMG,
           img: tempsrc
         });
+        if(!getImg) {
+          this.isLocked = false;
+          return;
+        }
+        const imgsrc = await new Promise(resolve => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            return resolve(reader.result);
+          }
+          reader.readAsDataURL(file);
+        });
+
+        const setImg = await modal.loading(xhr.post('/uwu/set-img', {img:imgsrc,name:file.name}, '.loading .box p'), 'UPLOADING');
+        if(setImg?.code !== 200) {
+          await modal.alert(lang[setImg.msg] || lang.ERROR);
+          this.isLocked = false;
+        }
+        this.ephoto.querySelector('img').remove();
+        const img = new Image();
+        img.src = tempsrc;
+        this.ephoto.prepend(img);
+
         this.isLocked = false;
         return;
       }

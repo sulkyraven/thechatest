@@ -6,6 +6,7 @@ const FileStore = require('session-file-store')(session);
 const app = express();
 const authRouter = require('./routes/auth');
 const uwuRouter = require('./routes/uwu');
+const imgRouter = require('./routes/img');
 const { ExpressPeerServer } = require('peer');
 const { peerKey } = require('./js/helper');
 const db = require('./js/db');
@@ -33,6 +34,7 @@ app.set('view engine', 'ejs')
 
 app.use('/auth', authRouter);
 app.use('/uwu', uwuRouter);
+app.use('/img', imgRouter);
 
 app.get('/app', (req, res) => {
   return res.render('app');
