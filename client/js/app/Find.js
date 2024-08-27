@@ -14,26 +14,18 @@ export default class {
     this.el = document.createElement('div');
     this.el.classList.add('chts');
     this.el.innerHTML = `
-    <div class="top">
-      <div class="title">KIRIMIN</div>
-      <div class="actions">
-        <div class="btn"><i class="fa-solid fa-gear"></i></div>
-      </div>
+    <div class="search">
+      <p>${lang.FIND_RANDOM}</p>
+      <div class="btn"><i class="fa-solid fa-play"></i> ${lang.FIND_START}</div>
     </div>
-    <div class="bottom">
-      <div class="search">
-        <p>${lang.FIND_RANDOM}</p>
-        <div class="btn"><i class="fa-solid fa-play"></i> ${lang.FIND_START}</div>
-      </div>
-      <div class="search">
-        <form action="/find/uwu/search-user" class="form form-search-user">
-          <p><label for="search_input">${lang.FIND_ID}</label></p>
-          <input type="text" name="search_input" id="search_input" placeholder="${lang.TYPE_HERE}" maxLength="30"/>
-          <button class="btn"><i class="fa-solid fa-magnifying-glass"></i> ${lang.FIND_SEARCH}</button>
-        </form>
-      </div>
-      <div class="card-list"></div>
-    </div>`;
+    <div class="search">
+      <form action="/find/uwu/search-user" class="form form-search-user">
+        <p><label for="search_input">${lang.FIND_ID}</label></p>
+        <input type="text" name="search_input" id="search_input" placeholder="${lang.TYPE_HERE}" maxLength="30"/>
+        <button class="btn"><i class="fa-solid fa-magnifying-glass"></i> ${lang.FIND_SEARCH}</button>
+      </form>
+    </div>
+    <div class="card-list"></div>`;
   }
   btnListener() {
     const form = this.el.querySelector('.form-search-user');
@@ -51,7 +43,6 @@ export default class {
       cardlist.prepend(eloading);
       
       const getSearch = await xhr.get('/find/uwu/search-user?id='+inp.value);
-      await modal.waittime();
       eloading.remove();
       if(!getSearch || getSearch.code !== 200) {
         await modal.alert(lang[getSearch.msg]);

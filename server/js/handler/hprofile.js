@@ -18,13 +18,14 @@ module.exports = {
       id: s.id, username: udb.uname,
       displayName: udb.dname,
     }
+    if(udb.peer) data.peer = udb.peer;
     if(udb.bio) data.bio = udb.bio;
     if(udb.img) data.img = udb.img;
     if(udb.req && udb.req.includes(uid)) data.myreq = true;
     const mdb = db.ref.u[uid];
     if(mdb.req && mdb.req.includes(s.id)) data.theirreq = true;
     const isFriend = Object.keys(db.ref.f).find(k => {
-      return db.ref.f[k].u1 === uid && db.ref.f[k].u2 === s.id || db.ref.f[k].u2 === uid && db.ref.f[k].u1 === s.id 
+      return db.ref.f[k].includes(s.id) && db.ref.f[k].includes(uid);
     });
     if(isFriend) data.isfriend = true;
     return data;
@@ -53,7 +54,7 @@ module.exports = {
     if(mdb.req?.includes(s.id)) db.ref.u[uid].req = mdb.req.filter(key => key !== s.id);
 
     const friendkey = Object.keys(db.ref.f).find(k => {
-      return db.ref.f[k].u1 === uid && db.ref.f[k].u2 === s.id || db.ref.f[k].u2 === uid && db.ref.f[k].u1 === s.id 
+      return db.ref.f[k].includes(s.id) && db.ref.f[k].includes(uid);
     });
     if(friendkey) delete db.ref.f[friendkey];
 
@@ -69,12 +70,12 @@ module.exports = {
     if(mdb.req?.includes(s.id)) db.ref.u[uid].req = mdb.req.filter(key => key !== s.id);
     
     const friendkey = Object.keys(db.ref.f).find(k => {
-      return db.ref.f[k].u1 === uid && db.ref.f[k].u2 === s.id || db.ref.f[k].u2 === uid && db.ref.f[k].u1 === s.id 
+      return db.ref.f[k].includes(s.id) && db.ref.f[k].includes(uid);
     });
     if(friendkey) return {code:400};
 
     const newfriendkey = 'D' + Date.now().toString(32);
-    db.ref.f[newfriendkey] = { u1: s.id, u2: uid };
+    db.ref.f[newfriendkey] = [ s.id, uid ];
 
     db.save('f','u');
     return {code:200,data:{user:this.getUser(uid, s)}};

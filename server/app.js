@@ -14,6 +14,7 @@ const { peerKey } = require('./js/helper');
 const db = require('./js/db');
 
 const fs = require('fs');
+const hcloud = require('./js/handler/hcloud');
 if(!fs.existsSync('./server/sessions')) {
   fs.mkdirSync('./server/sessions');
   fs.writeFileSync('./server/sessions/df.txt', '', 'utf-8');
@@ -57,6 +58,13 @@ const server = ExpressPeerServer(appservice, {
   allow_discovery: true
 });
 
+server.on('message', (c, m) => {
+  const udb = db.ref.u;
+  const uid = Object.keys(udb).find(key => udb[key].peer === c.getId());
+
+  if(m.d761) return c.send(hcloud.socket(uid, m.d761));
+  // if(uid) return c.send(hcloud.getAll(uid));
+});
 server.on('connection', (c) => {
   db.ref.x.push(c.getId());
 });

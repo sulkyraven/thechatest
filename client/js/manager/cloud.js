@@ -3,13 +3,12 @@ import db from "./db.js";
 import xhr from "../helper/xhr.js";
 
 async function waittime(ms = 200) {return new Promise(resolve => setTimeout(resolve, ms))}
-
+// this.peer.socket._socket.send(JSON.stringify({selfadded: {data:"aaw"}}));
 class cloud {
   constructor() {
     this.pair = new Map();
   }
   processData(data) {
-    console.log(data);
   }
   clientData(obj) {
     if(!['peers'].includes(obj.name)) {
@@ -17,8 +16,18 @@ class cloud {
     }
 
     if(['chats', 'friends'].includes(obj.name)) {
-      if(!db.peer.get(obj.data.userid)) db.peer.set(obj.data.userid, obj.data.peerid);
-      if(!this.pair.get(obj.data.peerid)) this.connectTo([obj.data.peerid]);
+      obj.data.forEach(ch => {
+        ch.users.forEach(k => {
+          if(k.peer) {
+            if(!db.peer.get(k.id)) db.peer.set(k.id, k.peer);
+            if(!this.pair.get(k.peer)) this.connectTo([k.peer]);
+          }
+        });
+        // if(ch.users.peer) {
+        //   if(!db.peer.get(ch.user.id)) db.peer.set(ch.user.id, ch.user.peer);
+        //   if(!this.pair.get(ch.user.peer)) this.connectTo([ch.user.peer]);
+        // }
+      });
     }
   }
   listenTo() {

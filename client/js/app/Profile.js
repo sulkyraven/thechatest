@@ -2,6 +2,7 @@ import modal from "../helper/modal.js";
 import xhr from "../helper/xhr.js";
 import db from "../manager/db.js";
 import userState from "../manager/userState.js";
+import Content from "./Content.js";
 let lang = {};
 
 export default class {
@@ -27,9 +28,9 @@ export default class {
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt soluta velit explicabo temporibus et excepturi. Provident veritatis, sapiente, perferendis explicabo repudiandae quo, perspiciatis tenetur facilis consectetur aperiam culpa magni consequatur!</p>
       </div>
       <div class="chp actions">
-        <div class="btn"><i class="fa-solid fa-comment-dots"></i><p>Open Chat</p></div>
-        <div class="btn"><i class="fa-solid fa-phone"></i><p>Voice Call</p></div>
-        <div class="btn"><i class="fa-solid fa-video"></i><p>Video Call</p></div>
+        <div class="btn btn-chat"><i class="fa-solid fa-comment-dots"></i><p>Open Chat</p></div>
+        <div class="btn btn-call"><i class="fa-solid fa-phone"></i><p>Voice Call</p></div>
+        <div class="btn btn-video"><i class="fa-solid fa-video"></i><p>Video Call</p></div>
       </div>
       <div class="chp options">
         <div class="btn sb"><i class="fa-solid fa-user-plus"></i> Add Friend</div>
@@ -122,7 +123,12 @@ export default class {
       this.renderActions();
     }
   }
-  btnListener() {}
+  btnListener() {
+    const btnChat = this.el.querySelector('.actions .btn-chat');
+    btnChat.onclick = () => new Content({user:this.user}).run();
+    const btnCall = this.el.querySelector('.actions .btn-call');
+    const btnVideo = this.el.querySelector('.actions .btn-video');
+  }
   destroy() {
     return new Promise(async resolve => {
       this.el.classList.add('out');
@@ -140,5 +146,6 @@ export default class {
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
     this.renderActions();
+    this.btnListener();
   }
 }

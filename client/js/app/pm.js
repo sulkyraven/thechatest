@@ -1,4 +1,5 @@
 import Nav from "./Nav.js";
+import AppName from "./AppName.js";
 import Chts from "./Chts.js";
 import Empty from "./Empty.js";
 import Account from "./Account.js";
@@ -11,6 +12,7 @@ export default class {
   }
   renderSects() {
     new Nav().run();
+    new AppName().run();
     new Chts().run();
     this.isfirst ? new Account().run() : new Empty().run();
   }

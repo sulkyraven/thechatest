@@ -1,6 +1,6 @@
 import db from "./db.js";
 
-function contentCard(ch) {
+function chtsCard(ch) {
   const card = document.createElement('div');
   card.classList.add('card');
   card.innerHTML = `
@@ -18,20 +18,23 @@ function contentCard(ch) {
   const card_b = card.querySelector('.right');
   return {card, card_a, card_b};
 }
+function txtSS(txt, n = 100) {
+  return txt.length > 20 ? txt.substring(0, 17) + '...' : txt;
+}
 
 export default {
   findCard(ch) {
-    const {card, card_a, card_b} = contentCard(ch);
+    const {card, card_a, card_b} = chtsCard(ch);
     card_a.innerText = ch.bio.length > 20 ? ch.bio.substring(0, 17) + '...' : ch.bio;
     const friend = db.ref.friends?.find(fr => fr.id === ch.id) || null;
     if(friend) card_b.innerHTML = '<div class="btn"><i class="fa-light fa-user-check"></i></div>';
     return card;
   },
   chatCard(ch) {
-    const {card, card_b} = contentCard(ch);
+    const {card, card_b} = chtsCard(ch);
     card_b.innerHTML = `<div class="last"></div><div class="unread"></div>`;
 
-    const content = db.ref.content.find(ct => ct.id === ch.id);
+    const content = db.ref.chats?.find(ct => ct.users.find(k => k.id === ch.id)).chats;
     const unread = content.filter(ct => ct.unread === true).length;
     const lastObj = content[content.length - 1];
     
@@ -50,21 +53,51 @@ export default {
   
     const elLastText = card.querySelector('.detail .last');
     if(lastObj.type === 'img') {
-      if(lastObj.text && lastObj.text.length > 1) {
+      if(lastObj.txt && lastObj.txt.length > 1) {
         elLastText.innerHTML = '<i class="fa-light fa-image"></i> ';
-        elLastText.innerText += lastObj.text.replace(/\n/g, ' ');
+        elLastText.innerText += txtSS(lastObj.txt.replace(/\s/g, ' '), 20);
       }
       elLastText.innerHTML = '<i class="fa-light fa-image"></i> Image';
     } else if(lastObj.type === 'file') {
-      if(lastObj.text && lastObj.text.length > 1) {
+      if(lastObj.txt && lastObj.txt.length > 1) {
         elLastText.innerHTML = '<i class="fa-light fa-file"></i> ';
-        elLastText.innerText += lastObj.text.replace(/\n/g, ' ');
+        elLastText.innerText += txtSS(lastObj.txt.replace(/\s/g, ' '), 20);
       }
       elLastText.innerHTML = '<i class="fa-light fa-file"></i> Image';
     } else if(lastObj.type === 'voice') {
       elLastText.innerHTML = '<i class="fa-light fa-microphone"></i> Voice Chat';
     } else {
-      elLastText.innerText = lastObj.text.replace(/\n/g, ' ');
+      elLastText.innerText = txtSS(lastObj.txt.replace(/\s/g, ' '), 20);
     }
+    return card;
+  },
+  contentCard(ch) {
+    const card = document.createElement('div');
+    card.classList.add('card');
+    if(ch.u === db.ref.account.id) card.classList.add('me');
+    card.innerHTML = `
+    <div class="chp sender">
+      <div class="name">${ch.id}</div>
+      <div class="actions">
+        <div class="btn"><i class="fa-solid fa-ellipsis"></i></div>
+      </div>
+    </div>
+    <div class="chp text">
+      <p>lorem ipsum</p>
+    </div>
+    <div class="chp time">
+      <p>11:12 11/12/2024</p>
+    </div>`;
+
+    const chTxt = card.querySelector('.chp.text p');
+    chTxt.innerText = ch.txt;
+    if(ch.txt.includes('\n')) {
+      const textlongest = ch.txt.split('\n').sort((a,b) => b.length - a.length)[0];
+      if(textlongest.length < 33) card.classList.add('short');
+    } else {
+      if(ch.txt.length < 33) card.classList.add('short');
+    }
+
+    return card;
   }
 }
