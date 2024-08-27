@@ -1,6 +1,8 @@
 import modal from "../helper/modal.js";
+import xhr from "../helper/xhr.js";
 import elgen from "../manager/elgen.js";
 import userState from "../manager/userState.js";
+import Profile from "./Profile.js";
 let lang = {};
 
 export default class {
@@ -24,42 +26,35 @@ export default class {
         <div class="btn"><i class="fa-solid fa-play"></i> ${lang.FIND_START}</div>
       </div>
       <div class="search">
-        <form action="/uwu/search-user" class="form form-search-user">
+        <form action="/find/uwu/search-user" class="form form-search-user">
           <p><label for="search_input">${lang.FIND_ID}</label></p>
           <input type="text" name="search_input" id="search_input" placeholder="${lang.TYPE_HERE}" maxLength="30"/>
           <button class="btn"><i class="fa-solid fa-magnifying-glass"></i> ${lang.FIND_SEARCH}</button>
         </form>
       </div>
-      <div class="card-list">
-        <div class="card">
-          <div class="left">
-            <div class="img">
-              <img src="./assets/user.jpg" alt="user" width="50"/>
-            </div>
-            <div class="detail">
-              <div class="name"><p>Devanka</p></div>
-              <div class="last">Aowkwk</div>
-            </div>
-          </div>
-          <div class="right">
-            <div class="last">11/12/24</div>
-            <div class="unread">7</div>
-          </div>
-        </div>
-      </div>
+      <div class="card-list"></div>
     </div>`;
   }
   btnListener() {
     const form = this.el.querySelector('.form-search-user');
     const inp = this.el.querySelector('#search_input');
+    const cardlist = this.el.querySelector('.card-list');
     inp.oninput = () => inp.value = inp.value.replace(/\s/g, '');
     form.onsubmit = async e => {
       e.preventDefault();
       if(this.isLocked === true) return;
       this.isLocked = true;
-      const getSearch = await modal.loading('/uwu/search-user', {id:inp.value});
+
+      const eloading = document.createElement('div');
+      eloading.classList.add('card');
+      eloading.innerHTML = `<div class="getload"><div class="spinner"><i class="fa-solid fa-spinner"></i></div>LOADING</div>`;
+      cardlist.prepend(eloading);
+      
+      const getSearch = await xhr.get('/find/uwu/search-user?id='+inp.value);
+      await modal.waittime();
+      eloading.remove();
       if(!getSearch || getSearch.code !== 200) {
-        await modal.alert(lang.ERROR);
+        await modal.alert(lang[getSearch.msg]);
         this.isLocked = false;
         return;
       }
@@ -69,16 +64,20 @@ export default class {
         return;
       }
 
+      cardlist.innerHTML = '';
+      inp.value = '';
       getSearch.data.users.forEach(usr => {
-        const card = elgen.contentCard(usr);
-        this.el.querySelector('.card-list').append(card);
+        const card = elgen.findCard(usr);
+        cardlist.append(card);
         this.isLocked = false;
+        card.onclick = async() => new Profile({user:usr}).run();
       });
-
     }
   }
   destroy() {
-    return new Promise(resolve => {
+    return new Promise(async resolve => {
+      this.el.classList.add('out');
+      await modal.waittime();
       this.el.remove();
       this.isLocked = false;
       userState.pmmid = null;
@@ -91,5 +90,6 @@ export default class {
     userState.pmmid = this;
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
+    this.btnListener();
   }
 }

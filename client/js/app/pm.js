@@ -8,10 +8,6 @@ export default class {
   createElement() {
     this.el = document.createElement('div');
     this.el.classList.add('fuwi', 'pm');
-    this.el.innerHTML = `
-    <div class="nav"></div>
-    <div class="list"></div>
-    <div class="content"></div>`;
   }
   renderSects() {
     new Nav().run();

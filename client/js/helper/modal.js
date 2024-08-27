@@ -2,7 +2,7 @@ import userState from "../manager/userState.js";
 let lang = {};
 
 export default {
-  async waittime(ms = 450) {
+  async waittime(ms = 495) {
     return new Promise(resolve => setTimeout(resolve, ms));
   },
   async loading(newfunc, msg = 'LOADING') {
@@ -43,7 +43,7 @@ export default {
       el.innerHTML = `
       <div class="box">
         <div class="icons">
-          <i class="fa-duotone fa-${s.ic?s.ic:'circle-exclamation'}"></i>
+          <i class="fa-duotone fa-${s.ic ? s.ic:'circle-exclamation'}"></i>
         </div>
         <div class="messages"><p>${typeof(s) === 'string' ? (s || '') : (s.msg || '')}</p></div>
         <div class="action">
@@ -83,7 +83,7 @@ export default {
       el.innerHTML = `
       <div class="box">
         <div class="icons">
-          <i class="fa-duotone fa-${s.ic?s.ic:'circle-exclamation'}"></i>
+          <i class="fa-duotone fa-${s.ic ? s.ic:'circle-exclamation'}"></i>
         </div>
         <div class="messages"><p>${typeof(s) === 'string' ? (s || '') : (s.msg || '')}</p></div>
         <div class="actions">
@@ -133,7 +133,7 @@ export default {
       el.innerHTML = `
       <div class="box">
         <div class="icons">
-          <i class="fa-duotone fa-${s.ic?s.ic:'circle-exclamation'}"></i>
+          <i class="fa-duotone fa-${s.ic ? s.ic:'circle-exclamation'}"></i>
         </div>
         <div class="messages">
           <p><label for="prompt-field">${typeof(s) === 'string' ? (s || '') : (s.msg || '')}</label></p>

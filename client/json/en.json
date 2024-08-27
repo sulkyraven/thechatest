@@ -1,6 +1,7 @@
 {
   "TYPE_HERE": "Type Here",
   "ERROR": "Something went wrong",
+  "UNAUTHORIZED": "Unauthorized<br/>Please relogin by refreshing the page",
   "IMG_ERR": "This image cannot be displayed",
   "SIGN_01A": "LOGIN",
   "SIGN_01B": "LOGIN",
@@ -31,5 +32,15 @@
   "FIND_ID": "Find by Username/ID",
   "FIND_START": "Start Now",
   "FIND_SEARCH": "Search",
-  "FIND_NOTFOUND": "Users not found"
+  "FIND_NOTFOUND": "Users not found",
+  "FIND_LENGTH": "Enter a minimum of 4 characters and a maximum of 20 characters",
+  "PROF_CONF_UNFRIEND": "Remove <b>@{user}</b> from your friend list?",
+  "PROF_CONF_IGNORE": "Ignore friend request from <b>@{user}</b>?",
+  "PROF_CONF_CANCEL": "Cancel friend request to <b>@{user}</b>?",
+  "PROF_UNFRIEND": "Unfriend",
+  "PROF_ACCEPT": "Accept Friend Request",
+  "PROF_IGNORE": "Ignore Friend Request",
+  "PROF_ADD": "Add Friend",
+  "PROF_WAIT": "Your friend request has been sent",
+  "PROF_CANCEL": "Cancel Friend Request"
 }

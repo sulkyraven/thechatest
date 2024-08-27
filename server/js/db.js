@@ -20,9 +20,10 @@ class DevankaDatabase {
       console.log(`[${file}] data loaded!`);
     });
   }
-  save(s) {
-    if(typeof s === 'string') s = [s];
-    s.forEach(file => fs.writeFileSync(`${dirpath}/${file}.json`, JSON.stringify(this.ref[file]), 'utf-8'));
+  save() {
+    for(const s of arguments) {
+      fs.writeFileSync(`${dirpath}/${s}.json`, JSON.stringify(this.ref[s]), 'utf-8')
+    }
   }
 }
 module.exports = new DevankaDatabase();

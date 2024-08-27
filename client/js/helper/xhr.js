@@ -6,10 +6,10 @@ export default {
       data.body = JSON.stringify(s);
     }
     return await fetch(url, data).then(res => {
-      if(!res.ok) return {code:500,msg:'Something went wrong', data:`${res.status} ${res.statusText} ${res.url}`};
+      if(!res.ok) return {code:500,msg:'ERROR', data:`${res.status} ${res.statusText} ${res.url}`};
       return res.json();
     }).then(res => res).catch(err => {
-      return {code:500,msg:'Something went wrong',data:err};
+      return {code:500,msg:'ERROR',data:err};
     });
   },
   request(method, url, s = {}, el = null) {
@@ -31,12 +31,12 @@ export default {
 
       xhr.onload = () => {
         if(xhr.status >= 400) {
-          resolve({code:xhr.status,msg:'Something went wrong',data:xhr.response});
+          resolve({code:xhr.status,msg:'ERROR',data:xhr.response});
         } else {
           resolve(xhr.response);
         }
       }
-       xhr.onerror = (err) => resolve({code:500,msg:'Something went wrong',data:err});
+       xhr.onerror = (err) => resolve({code:500,msg:'ERROR',data:err});
 
        if(method === 'POST') {
          xhr.setRequestHeader('Content-Type', 'application/json');

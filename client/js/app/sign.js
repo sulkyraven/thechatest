@@ -84,7 +84,7 @@ export default class Sign {
       for(const [key,val] of formData) { data[key] = val }
       const loginreq = await modal.loading(xhr.post(`/auth${this.path}`, data));
       if(!loginreq || loginreq.code !== 200) {
-        await modal.alert(lang[loginreq.msg] || 'Something went wrong');
+        await modal.alert(lang[loginreq.msg]);
         this.islocked = false;
         if(loginreq.code === 402) {
           await this.destroy();

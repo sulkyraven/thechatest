@@ -1,3 +1,4 @@
+import modal from "../helper/modal.js";
 import userState from "../manager/userState.js";
 
 export default class {
@@ -19,8 +20,14 @@ export default class {
     </div>`;
   }
   destroy() {
-    this.el.remove();
-    userState.pmbottom = null;
+    return new Promise(async resolve => {
+      this.el.classList.add('out');
+      await modal.waittime();
+      this.el.remove();
+      this.isLocked = false;
+      userState.pmbottom = null;
+      resolve();
+    });
   }
   async run() {
     await userState.pmbottom?.destroy?.();

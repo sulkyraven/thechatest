@@ -1,6 +1,7 @@
 {
   "TYPE_HERE": "Tulis Sesuatu",
   "ERROR": "Terjadi kesalahan",
+  "UNAUTHORIZED": "Kesalahan<br/>Silakan login ulang dengan refresh halaman ini",
   "IMG_ERR": "Gambarnya ga bisa ditampilin",
   "SIGN_01A": "MASUK AKUN",
   "SIGN_01B": "MASUK",
@@ -31,5 +32,15 @@
   "FIND_ID": "Cari berdasarkan Username/ID",
   "FIND_START": "Mulai",
   "FIND_SEARCH": "Temukan",
-  "FIND_NOTFOUND": "Pengguna tidak ditemukan"
+  "FIND_NOTFOUND": "Pengguna tidak ditemukan",
+  "FIND_LENGTH": "Masukkan minimal 4 karakter dan maksimal 20 karakter",
+  "PROF_CONF_UNFRIEND": "Hapus pertemanan dengan <b>@{user}</b>?",
+  "PROF_CONF_IGNORE": "Abaikan permintaan pertemanan dari <b>@{user}</b>?",
+  "PROF_CONF_CANCEL": "Batalin permintaan yang udah terkirim ke <b>@{user}</b>?",
+  "PROF_UNFRIEND": "Hapus Pertemanan",
+  "PROF_ACCEPT": "Terima Permintaan Pertemanan",
+  "PROF_IGNORE": "Nanti Saja",
+  "PROF_ADD": "Tambah Sebagai Teman",
+  "PROF_WAIT": "Permintaan Pertemanan Terkirim",
+  "PROF_CANCEL": "Batalakan Permintaan Pertemanan"
 }

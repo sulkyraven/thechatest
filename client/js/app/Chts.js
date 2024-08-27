@@ -1,3 +1,4 @@
+import modal from "../helper/modal.js";
 import db from "../manager/db.js";
 import elgen from "../manager/elgen.js";
 import userState from "../manager/userState.js";
@@ -60,8 +61,14 @@ export default class {
     }
   }
   destroy() {
-    this.el.remove();
-    userState.pmmid = null;
+    return new Promise(async resolve => {
+      this.el.classList.add('out');
+      await modal.waittime();
+      this.el.remove();
+      this.isLocked = false;
+      userState.pmmid = null;
+      resolve();
+    })
   }
   async run() {
     await userState.pmmid?.destroy?.();

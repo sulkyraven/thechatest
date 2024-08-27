@@ -84,5 +84,5 @@ module.exports = {
     db.save('u');
 
     return {code:200,msg:'ok'};
-  }
+  },
 }

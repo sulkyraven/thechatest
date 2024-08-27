@@ -81,7 +81,7 @@ export default class {
     this.ebio = this.el.querySelector('.userbio .outer .chp-f p');
 
     this.edname.innerText = db.ref.account.displayName;
-    this.ebio.innerText = db.ref.account.bio;
+    this.ebio.innerText = db.ref.account.bio || 'No bio yet.';
   }
   btnListener() {
     const btnUname = this.el.querySelector('.btn-username');
@@ -103,7 +103,7 @@ export default class {
         this.isLocked = false;
         return;
       }
-      const setUname = await modal.loading(xhr.post('/uwu/set-username', {uname:getUname}));
+      const setUname = await modal.loading(xhr.post('/account/uwu/set-username', {uname:getUname}));
       if(setUname?.code === 402) {
         await modal.alert(`${lang.ACC_FAIL_UNAME_COOLDOWN}<br/><b>${new Date(setUname.msg).toLocaleString()}</b>`);
         this.isLocked = false;
@@ -136,7 +136,7 @@ export default class {
         this.isLocked = false;
         return;
       }
-      const setDname = await modal.loading(xhr.post('/uwu/set-displayname', {dname:getDname}));
+      const setDname = await modal.loading(xhr.post('/account/uwu/set-displayname', {dname:getDname}));
       if(setDname?.code === 402) {
         await modal.alert(`${lang.ACC_FAIL_DNAME_COOLDOWN}<br/><b>${new Date(setDname.msg).toLocaleString()}</b>`);
         this.isLocked = false;
@@ -168,7 +168,7 @@ export default class {
         this.isLocked = false;
         return;
       }
-      const setBio = await modal.loading(xhr.post('/uwu/set-bio', {bio:getBio}));
+      const setBio = await modal.loading(xhr.post('/account/uwu/set-bio', {bio:getBio}));
       if(setBio?.code === 402) {
         await modal.alert(`${lang.ACC_FAIL_BIO_COOLDOWN}<br/><b>${new Date(setBio.msg).toLocaleString()}</b>`);
         this.isLocked = false;
@@ -210,7 +210,7 @@ export default class {
           reader.readAsDataURL(file);
         });
 
-        const setImg = await modal.loading(xhr.post('/uwu/set-img', {img:imgsrc,name:file.name}, '.loading .box p'), 'UPLOADING');
+        const setImg = await modal.loading(xhr.post('/account/uwu/set-img', {img:imgsrc,name:file.name}, '.loading .box p'), 'UPLOADING');
         if(setImg?.code !== 200) {
           await modal.alert(lang[setImg.msg] || lang.ERROR);
           this.isLocked = false;
@@ -227,8 +227,14 @@ export default class {
     }
   }
   destroy() {
-    this.el.remove();
-    userState.pmbottom = null;
+    return new Promise(async resolve => {
+      this.el.classList.add('out');
+      await modal.waittime();
+      this.el.remove();
+      this.isLocked = false;
+      userState.pmbottom = null;
+      resolve();
+    });
   }
   async run() {
     await userState.pmbottom?.destroy?.();
