@@ -2,12 +2,12 @@ import modal from "../helper/modal.js";
 import db from "../manager/db.js";
 import elgen from "../manager/elgen.js";
 import userState from "../manager/userState.js";
-import Content from "./Content.js";
+import Profile from "./Profile.js";
 let lang = {};
 
 export default class {
   constructor() {
-    this.id = 'chats';
+    this.id = 'friends';
     this.isLocked = false;
     this.list = [];
   }
@@ -16,20 +16,18 @@ export default class {
     this.el.classList.add('chts');
     this.el.innerHTML = `<div class="card-list"></div>`;
   }
-  getChatList() {
+  getFriendlist() {
     this.cardlist = this.el.querySelector('.card-list');
 
-    const ndb = db.ref?.chats || [];
+    const ndb = db.ref?.friends || [];
     const odb = this.list || [];
 
     const fdb = ndb.filter(ch => !odb.map(och => och.id).includes(ch.id));
     fdb.forEach(ch => {
       this.list.push(ch);
-      const user = ch.users.find(k => k.id !== db.ref.account.id);
-
-      const card = elgen.chatCard(user);
+      const card = elgen.friendCard(ch);
       this.cardlist.append(card);
-      card.onclick = () => new Content({user}).run();
+      card.onclick = () => new Profile({user:ch}).run();
     });
     if(this.list.length < 1) {
       this.cardlist.innerHTML = `<p class="center"><i>${lang.CHTS_NOCHAT}</i></p>`;
@@ -47,10 +45,10 @@ export default class {
   }
   async run() {
     await userState.pmmid?.destroy?.();
-    userState.pmmid = this;
     lang = userState.langs[userState.lang];
+    userState.pmmid = this;
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
-    this.getChatList();
+    this.getFriendlist();
   }
 }

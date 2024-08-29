@@ -19,6 +19,22 @@
     gap: 10px;
     font-size: 1.25rem;
   }
+  .top.flex {
+    justify-content: space-between;
+    align-items: center;
+    gap: 0;
+    .left {
+      display: flex;
+      justify-content: left;
+      align-items: center;
+      gap: 10px;
+    }
+    .right {
+      .btn {
+        padding-left: 10px;
+      }
+    }
+  }
   .wall {
     position: absolute;
     top: 60px;left: 0;
@@ -117,6 +133,46 @@
           p {
             text-align: justify;
             text-align-last: left;
+          }
+        }
+      }
+    }
+    .groupmember {
+      .chp-u {
+        ul {
+          list-style: none;
+          li {
+            padding: 10px;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .left {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              gap: 10px;
+              cursor: pointer;
+              img {
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                object-fit: cover;
+                object-position: center;
+                -o-object-fit: cover;
+                -o-object-position: center;
+              }
+            }
+            .right {
+              color: v.$cred;
+              cursor: pointer;
+            }
+          }
+          li:last-child {
+            border-bottom: none;
+          }
+          li:has(:hover) {
+            background-color: v.$sgray;
           }
         }
       }

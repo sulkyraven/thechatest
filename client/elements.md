@@ -99,47 +99,24 @@
 ### PM - CHATS LIST
 ```html
 <div class="chts">
-  <div class="top">
-    <div class="title">KIRIMIN</div>
-    <div class="actions">
-      <div class="btn"><i class="fa-solid fa-magnifying-glass"></i></div>
-      <div class="btn"><i class="fa-solid fa-ellipsis-vertical"></i></div>
-    </div>
+  <div class="search">
+    <p>Find Random User</p>
+    <div class="btn"><i class="fa-solid fa-play"></i> Start Now</div>
   </div>
-  <div class="bottom">
-    <div class="search">
-      <p>Find Random User</p>
-      <div class="btn"><i class="fa-solid fa-play"></i> Start Now</div>
-    </div>
-    <div class="search">
-      <form action="/uwu/search-user" class="form">
-        <p><label for="search_input">Find By Username</label></p>
-        <input type="text" name="search_input" id="search_input" placeholder="Type Here" />
-        <button class="btn"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
-      </form>
-    </div>
-    <div class="search">
-      <input type="text" name="card-input" id="card-input" placeholder="Type Here" />
-    </div>
-    <div class="card-list">
-      <div class="freq">
-        <div class="note">
-          <p>Friend Requests:</p>
-        </div>
-        <div class="card">
-          <div class="left">
-            <div class="img">
-              <img src="./assets/user.jpg" alt="user" width="50"/>
-            </div>
-            <div class="detail">
-              <div class="name"><p>Devanka</p></div>
-              <div class="last">Aowkwk</div>
-            </div>
-          </div>
-          <div class="right">
-            <div class="btn"><i class="fa-light fa-user"></i></div>
-          </div>
-        </div>
+  <div class="search">
+    <form action="/uwu/search-user" class="form">
+      <p><label for="search_input">Find By Username</label></p>
+      <input type="text" name="search_input" id="search_input" placeholder="Type Here" />
+      <button class="btn"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+    </form>
+  </div>
+  <div class="search">
+    <input type="text" name="card-input" id="card-input" placeholder="Type Here" />
+  </div>
+  <div class="card-list">
+    <div class="freq">
+      <div class="note">
+        <p>Friend Requests:</p>
       </div>
       <div class="card">
         <div class="left">
@@ -152,9 +129,23 @@
           </div>
         </div>
         <div class="right">
-          <div class="last">11/12/24</div>
-          <div class="unread">7</div>
+          <div class="btn"><i class="fa-light fa-user"></i></div>
         </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="left">
+        <div class="img">
+          <img src="./assets/user.jpg" alt="user" width="50"/>
+        </div>
+        <div class="detail">
+          <div class="name"><p>Devanka</p></div>
+          <div class="last">Aowkwk</div>
+        </div>
+      </div>
+      <div class="right">
+        <div class="last">11/12/24</div>
+        <div class="unread">7</div>
       </div>
     </div>
   </div>
@@ -430,6 +421,99 @@
     </div>
     <div class="chp usersign">
       <p><a href="/auth/logout"><i class="fa-light fa-triangle-exclamation"></i> LOG OUT</a></p>
+    </div>
+  </div>
+</div>
+```
+### PM - GROUP SETTING
+```html
+<div class="acc">
+  <div class="top flex">
+    <div class="left">
+      <div class="btn"><i class="fa-solid fa-arrow-left"></i></div>
+      <div class="sect-title">Groups</div>
+    </div>
+    <div class="right">
+      <div class="btn"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+    </div>
+  </div>
+  <div class="wall">
+    <div class="chp userphoto">
+      <div class="outer-img">
+        <img src="./assets/group.jpg" alt="user" width="150" />
+        <div class="btn"><i class="fa-solid fa-pen-to-square"></i></div>
+      </div>
+    </div>
+    <div class="chp groupname">
+      <div class="outer">
+        <div class="chp-t">Group Name</div>
+        <div class="chp-f"><p>Deva Krista Aranda</p></div>
+        <div class="chp-e"><i class="fa-solid fa-pen-to-square"></i> Edit</div>
+      </div>
+    </div>
+    <div class="chp groupid">
+      <div class="outer">
+        <div class="chp-t">Group ID</div>
+        <div class="chp-f"><p>62989231</p></div>
+      </div>
+    </div>
+    <div class="chp grouptype">
+      <div class="outer">
+        <div class="chp-t">Visibility</div>
+        <div class="chp-f"><p>Private</p></div>
+        <div class="chp-l">
+          <select name="sel-lang" id="sel-lang">
+            <option value="null">Change Visibility</option>
+            <option value="id">Private</option>
+            <option value="en">Public</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="chp groupmember">
+      <div class="outer">
+        <div class="chp-t">Members</div>
+        <div class="chp-u">
+          <ul>
+            <li>
+              <div class="left">
+                <img src="./assets/user.jpg" alt="user" width="30" />
+                <p class="uname">username</p>
+              </div>
+              <div class="right">
+                <div class="btn btn-kick"><i class="fa-solid fa-circle-x"></i></div>
+              </div>
+            </li>
+            <li>
+              <div class="left">
+                <img src="./assets/user.jpg" alt="user" width="30" />
+                <p class="uname">username</p>
+              </div>
+              <div class="right">
+                <div class="btn btn-kick"><i class="fa-solid fa-circle-x"></i></div>
+              </div>
+            </li>
+            <li>
+              <div class="left">
+                <img src="./assets/user.jpg" alt="user" width="30" />
+                <p class="uname">username</p>
+              </div>
+              <div class="right">
+                <div class="btn btn-kick"><i class="fa-solid fa-circle-x"></i></div>
+              </div>
+            </li>
+            <li>
+              <div class="left">
+                <img src="./assets/user.jpg" alt="user" width="30" />
+                <p class="uname">username</p>
+              </div>
+              <div class="right">
+                <div class="btn btn-kick"><i class="fa-solid fa-circle-x"></i></div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </div>

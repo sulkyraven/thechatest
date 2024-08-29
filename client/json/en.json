@@ -42,5 +42,9 @@
   "PROF_IGNORE": "Ignore Friend Request",
   "PROF_ADD": "Add Friend",
   "PROF_WAIT": "Your friend request has been sent",
-  "PROF_CANCEL": "Cancel Friend Request"
+  "PROF_CANCEL": "Cancel Friend Request",
+  "CHTS_NOCHAT": "- Empty -",
+  "GRPS_CREATE": "CREATE",
+  "GRPS_JOIN": "JOIN",
+  "GRPS_ALR_NAME": "Group Name"
 }

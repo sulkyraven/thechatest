@@ -78,7 +78,7 @@ export default class {
     const fdb = ndb.filter(ch => !odb.map(och => och.id).includes(ch.id));
     fdb.forEach(ch => {
       this.list.push(ch);
-      const card = elgen.contentCard(ch);
+      const card = elgen.contentCard(ch, chts);
       this.chatlist.append(card);
     });
   }

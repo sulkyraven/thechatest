@@ -26,8 +26,7 @@ export default {
   findCard(ch) {
     const {card, card_a, card_b} = chtsCard(ch);
     card_a.innerText = ch.bio.length > 20 ? ch.bio.substring(0, 17) + '...' : ch.bio;
-    const friend = db.ref.friends?.find(fr => fr.id === ch.id) || null;
-    if(friend) card_b.innerHTML = '<div class="btn"><i class="fa-light fa-user-check"></i></div>';
+    if(ch.isfriend) card_b.innerHTML = '<div class="btn"><i class="fa-light fa-user-check"></i></div>';
     return card;
   },
   chatCard(ch) {
@@ -71,17 +70,24 @@ export default {
     }
     return card;
   },
-  contentCard(ch) {
+  friendCard(ch) {
+    const {card, card_a, card_b} = chtsCard(ch);
+    card_a.innerText = ch.bio.length > 20 ? ch.bio.substring(0, 17) + '...' : ch.bio;
+    card_b.remove();
+    return card;
+  },
+  contentCard(ch, chts) {
     const card = document.createElement('div');
     card.classList.add('card');
-    if(ch.u === db.ref.account.id) card.classList.add('me');
+    let username = null;
+    if(ch.u === db.ref.account.id) {
+      card.classList.add('me');
+      username = db.ref.account.username;
+    } else {
+      username = chts.users.find(k => k.id === ch.u).username;
+    }
     card.innerHTML = `
-    <div class="chp sender">
-      <div class="name">${ch.id}</div>
-      <div class="actions">
-        <div class="btn"><i class="fa-solid fa-ellipsis"></i></div>
-      </div>
-    </div>
+    ${chts.users.length > 2 ? `<div class="chp sender"><div class="name">${username}</div></div>` : ''}
     <div class="chp text">
       <p>lorem ipsum</p>
     </div>

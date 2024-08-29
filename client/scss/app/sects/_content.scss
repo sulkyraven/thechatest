@@ -218,21 +218,12 @@
           margin-bottom: 0;
         }
         .sender {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 24px;
           .name {
             font-weight: bold;
           }
           .name::before {
             content: "~";
             margin-right: 3px;
-          }
-          .actions {
-            .btn {
-              font-size: 1.2rem;
-            }
           }
         }
         .embed {

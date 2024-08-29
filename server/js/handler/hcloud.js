@@ -42,6 +42,15 @@ module.exports = {
     });
     return {name:'chats',data:myChats}
   },
+  getFriends(uid) {
+    const fdb = db.ref.f;
+    const myFriends = Object.keys(fdb).filter(k => {
+      return fdb[k].includes(uid);
+    }).map(k => {
+      return hprofile.getUser(uid,{id:fdb[k].find(ck => ck !== uid)});
+    });
+    return {name:'friends',data:myFriends}
+  },
   getAll(uid) {
     return Object.keys(this).filter(key => clientData.includes(key)).map(key => this[key](uid));
   }

@@ -15,7 +15,7 @@ class cloud {
       db.ref[obj.name] = obj.data;
     }
 
-    if(['chats', 'friends'].includes(obj.name)) {
+    if(['chats'].includes(obj.name)) {
       obj.data.forEach(ch => {
         ch.users.forEach(k => {
           if(k.peer) {
@@ -23,11 +23,13 @@ class cloud {
             if(!this.pair.get(k.peer)) this.connectTo([k.peer]);
           }
         });
-        // if(ch.users.peer) {
-        //   if(!db.peer.get(ch.user.id)) db.peer.set(ch.user.id, ch.user.peer);
-        //   if(!this.pair.get(ch.user.peer)) this.connectTo([ch.user.peer]);
-        // }
       });
+    }
+    if(['friends'].includes(obj.name)) {
+      if(obj.data.peer) {
+        if(!db.peer.get(obj.data.id)) db.peer.set(obj.data.id, obj.data.peer);
+        if(!this.pair.get(obj.data.peer)) this.connectTo([obj.data.peer]);
+      }
     }
   }
   listenTo() {

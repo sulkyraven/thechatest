@@ -42,5 +42,9 @@
   "PROF_IGNORE": "Nanti Saja",
   "PROF_ADD": "Tambah Sebagai Teman",
   "PROF_WAIT": "Permintaan Pertemanan Terkirim",
-  "PROF_CANCEL": "Batalakan Permintaan Pertemanan"
+  "PROF_CANCEL": "Batalakan Permintaan Pertemanan",
+  "CHTS_NOCHAT": "- Masih kosong nih -",
+  "GRPS_CREATE": "BUAT",
+  "GRPS_JOIN": "GABUNG",
+  "GRPS_ALR_NAME": "Nama Grup"
 }
