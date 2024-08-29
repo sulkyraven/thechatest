@@ -2,12 +2,13 @@ const fs = require('fs');
 const helper = require('../helper');
 const db = require('../db');
 const hcloud = require('./hcloud');
+const { validate } = require('../middlewares');
 
 // const mailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
 // const usernameregex = /^[A-Za-z0-9_]+$/;
 module.exports = {
   login(s) {
-    if(!s || typeof s?.email !== 'string') return {code:400,msg:'AUTH_ERR_01'};
+    if(!validate(['email'], s)) return {code:400,msg:'AUTH_ERR_01'};
     const mailvalid = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
     if(!s.email.match(mailvalid)) return {code:400,msg:'AUTH_ERR_02'};
     if(s.email.length > 200) return  {code:400,msg:'AUTH_ERR_02'};
@@ -27,7 +28,7 @@ module.exports = {
     return {code:200,msg:'ok',data:{step:1}}
   },
   verify(s) {
-    if(!s || typeof s?.email !== 'string') return {code:400,msg:'AUTH_ERR_01'};
+    if(!validate(['email'], s)) return {code:400,msg:'AUTH_ERR_01'};
     const mailvalid = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
     if(!s.email.match(mailvalid)) return {code:400,msg:'AUTH_ERR_02'};
     if(s.email.length > 200) return  {code:400,msg:'AUTH_ERR_02'};
@@ -44,8 +45,7 @@ module.exports = {
   },
   processUser(email, dbkey) {
     const udb = db.ref.u;
-    let data = { step:2, user: { email }
-    }
+    let data = { step:2, user: { email }}
     let ukey = Object.keys(udb).find(key => udb[key].email == email);
     if(!ukey) {
       ukey = '7' + helper.rNumber(5).toString() + (Object.keys(udb).length + 1).toString();

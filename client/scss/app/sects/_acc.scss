@@ -162,6 +162,12 @@
                 -o-object-fit: cover;
                 -o-object-position: center;
               }
+              .uname {
+                i {
+                  font-size: 0.8rem;
+                  color: v.$yellow;
+                }
+              }
             }
             .right {
               color: v.$cred;

@@ -1,17 +1,9 @@
 const fs = require('fs');
 const db = require("../db");
-
+const { validate } = require('../middlewares');
 module.exports = {
-  validate(requires=[], snap) {
-    if(!snap) return {res:{code:400,msg:'ERROR'}};
-    const valids = requires.filter(s => {
-      return Object.keys(snap).find(key => key == s && typeof snap[key] === 'string');
-    });
-    if(valids.length !== requires.length) return {res:{code:400,msg:'ERROR'}};
-    return {valid:true,res:{code:200,msg:'ok'}};
-  },
   setUsername(uid, s) {
-    if(!this.validate(['uname'], s).valid) return this.validate.res;
+    if(!validate(['uname'], s)) return {code:400};
 
     const udb = db.ref.u[uid];
     if(udb.lastuname && udb.lastuname > Date.now()) return {code:402,msg:udb.lastuname};
@@ -31,7 +23,7 @@ module.exports = {
     return {code:200,msg:'ok',data:{text:s.uname}};
   },
   setBio(uid, s) {
-    if(!this.validate(['bio'], s).valid) return this.validate.res;
+    if(!validate(['bio'], s)) return {code:400};
     const udb = db.ref.u[uid];
     if(udb.lastbio && udb.lastbio > Date.now()) return {code:402,msg:udb.lastbio};
     const transbio = /(\s)(?=\s)/g;
@@ -48,7 +40,7 @@ module.exports = {
     return {code:200,msg:'ok',data:{text:s.bio}};
   },
   setDisplayName(uid, s) {
-    if(!this.validate(['dname'], s).valid) return this.validate.res;
+    if(!validate(['dname'], s)) return {code:400};
     const udb = db.ref.u[uid];
     if(udb.lastdname && udb.lastdname > Date.now()) return {code:402,msg:udb.lastdname};
     const transdname = /(\s)(?=\s)/g;
@@ -65,7 +57,7 @@ module.exports = {
     return {code:200,msg:'ok',data:{text:s.dname}};
   },
   setImage(uid, s) {
-    if(!this.validate(['img', 'name'], s).valid) return this.validate.res;
+    if(!validate(['img', 'name'], s)) return {code:400};
     const dataurl = decodeURIComponent(s.img);
     const buffer = Buffer.from(dataurl.split(',')[1], 'base64');
     if(buffer.length > 2000000) return {code:400,msg:'ACC_IMG_LIMIT'}

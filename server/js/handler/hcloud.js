@@ -2,7 +2,7 @@ const db = require("../db");
 const { genPeer, peerKey } = require("../helper");
 const hprofile = require("./hprofile");
 
-const clientData = ['getAccount','getPeers','getChats','getFriends'];
+const clientData = ['getAccount','getPeers','getChats','getFriends','getGroups'];
 
 module.exports = {
   socket(uid, s) {
@@ -50,6 +50,20 @@ module.exports = {
       return hprofile.getUser(uid,{id:fdb[k].find(ck => ck !== uid)});
     });
     return {name:'friends',data:myFriends}
+  },
+  getGroups(uid) {
+    const gdb = db.ref.g;
+    const myGroups = Object.keys(gdb).filter(k => {
+      return gdb[k].u.includes(uid);
+    }).map(k => {
+      return {
+        o: gdb[k].o, n: gdb[k].n, id: k,
+        users: gdb[k].u.filter(ck => ck !== uid).map(ck => hprofile.getUser(uid, {id:ck})),
+        chats: Object.keys(gdb[k].c).map(ck => { return {...gdb[k].c[ck], id:ck}})
+      }
+    });
+
+    return {name:'groups',data:myGroups};
   },
   getAll(uid) {
     return Object.keys(this).filter(key => clientData.includes(key)).map(key => this[key](uid));

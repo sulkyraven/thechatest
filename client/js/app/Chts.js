@@ -41,6 +41,7 @@ export default class {
       await modal.waittime();
       this.el.remove();
       this.isLocked = false;
+      this.list = [];
       userState.pmmid = null;
       resolve();
     })

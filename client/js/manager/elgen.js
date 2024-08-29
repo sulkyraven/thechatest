@@ -6,14 +6,16 @@ function chtsCard(ch) {
   card.innerHTML = `
   <div class="left">
     <div class="img">
-      <img src="${ch.img ? `/img/user/${ch.id}` : '/assets/user.jpg'}" alt="${ch.username}" alt="user" width="50"/>
+      <img src="${ch.img ? `/img/user/${ch.id}` : (ch.cy===0?'/assets/user.jpg':'/assets/group.jpg')}" alt="${ch.username}" alt="user" width="50"/>
     </div>
     <div class="detail">
-      <div class="name"><p>${ch.username}</p></div>
+      <div class="name"><p></p></div>
       <div class="last"></div>
     </div>
   </div>
   <div class="right"></div>`;
+  const euname = card.querySelector('.detail .name p');
+  euname.innerText = ch.username;
   const card_a = card.querySelector('.detail .last');
   const card_b = card.querySelector('.right');
   return {card, card_a, card_b};
@@ -30,12 +32,13 @@ export default {
     return card;
   },
   chatCard(ch) {
-    const {card, card_b} = chtsCard(ch);
+    const {card, card_b} = chtsCard({...ch, cy:0});
     card_b.innerHTML = `<div class="last"></div><div class="unread"></div>`;
 
     const content = db.ref.chats?.find(ct => ct.users.find(k => k.id === ch.id)).chats;
     const unread = content.filter(ct => ct.unread === true).length;
     const lastObj = content[content.length - 1];
+    if(!lastObj) return card;
     
     if(unread >= 1) card.querySelector('.right .unread').innerHTML = `<div class="circle">${unread}</div>`;
   
@@ -71,7 +74,7 @@ export default {
     return card;
   },
   friendCard(ch) {
-    const {card, card_a, card_b} = chtsCard(ch);
+    const {card, card_a, card_b} = chtsCard({...ch, cy:0});
     card_a.innerText = ch.bio.length > 20 ? ch.bio.substring(0, 17) + '...' : ch.bio;
     card_b.remove();
     return card;
@@ -105,5 +108,60 @@ export default {
     }
 
     return card;
-  }
+  },
+  groupMemberCard(usr, oid) {
+    const card = document.createElement('li');
+    card.innerHTML = `
+    <div class="left">
+      <img src="${usr.img?`/img/user/${usr.id}`:'/assets/user.jpg'}" alt="${usr.username}"/>
+      <p class="uname">${usr.username} ${usr.id === oid ? '<i class="fa-light fa-user-crown"></i>' : ''}</p>
+    </div>
+    ${db.ref.account.id === oid && db.ref.account.id !== usr.id ? `<div class="right"><div class="btn btn-kick"><i class="fa-solid fa-circle-x"></i></div></div>` : ''}`;
+    return card;
+  },
+  groupCard(ch) {
+    const {card, card_b} = chtsCard({username:ch.n, id:ch.id, img:ch.i||null, cy:1});
+    card_b.innerHTML = `<div class="last"></div><div class="unread"></div>`;
+
+    const content = db.ref.groups?.find(ct => ct.id === ch.id).chats;
+    const unread = content.filter(ct => ct.unread === true).length;
+    const lastObj = content[content.length - 1];
+    if(!lastObj) return card;
+
+    if(unread >= 1) card.querySelector('.right .unread').innerHTML = `<div class="circle">${unread}</div>`;
+  
+    const tNow = new Date(Date.now());
+    const tOld = new Date(lastObj.ts);
+  
+    const sameDay = tNow.getFullYear() === tOld.getFullYear() && tNow.getMonth() === tOld.getMonth() && tNow.getDate() === tOld.getDate();
+  
+    if(sameDay) {
+      card.querySelector('.right .last').innerText = `${tOld.getHours()}:${tOld.getMinutes()}`;
+    } else {
+      card.querySelector('.right .last').innerText = `${tOld.getDate()}/${tOld.getMonth()}/${tOld.getFullYear()}`;
+    }
+  
+    const elLastText = card.querySelector('.detail .last');
+    const user = lastObj.u === db.ref.account.id ? db.ref.account.username : ch.u.find(k => {
+      return k.id === lastObj.u;
+    }).username;
+    if(lastObj.type === 'img') {
+      if(lastObj.txt && lastObj.txt.length > 1) {
+        elLastText.innerHTML = '<i class="fa-light fa-image"></i> ';
+        elLastText.innerText += txtSS((`${user}: ${lastObj.txt}`).replace(/\s/g, ' '), 20);
+      }
+      elLastText.innerHTML = '<i class="fa-light fa-image"></i> Image';
+    } else if(lastObj.type === 'file') {
+      if(lastObj.txt && lastObj.txt.length > 1) {
+        elLastText.innerHTML = '<i class="fa-light fa-file"></i> ';
+        elLastText.innerText += txtSS((`${user}: ${lastObj.txt}`).replace(/\s/g, ' '), 20);
+      }
+      elLastText.innerHTML = '<i class="fa-light fa-file"></i> Image';
+    } else if(lastObj.type === 'voice') {
+      elLastText.innerHTML = '<i class="fa-light fa-microphone"></i> Voice Chat';
+    } else {
+      elLastText.innerText = txtSS((`${user}: ${lastObj.txt}`).replace(/\s/g, ' '), 20);
+    }
+    return card;
+  },
 }

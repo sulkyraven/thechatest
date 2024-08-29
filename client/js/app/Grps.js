@@ -1,36 +1,25 @@
 import modal from "../helper/modal.js";
+import xhr from "../helper/xhr.js";
+import db from "../manager/db.js";
+import elgen from "../manager/elgen.js";
 import userState from "../manager/userState.js";
+import GroupSetting from "./GroupSetting.js";
 let lang = {};
 
 export default class {
   constructor() {
     this.isLocked = false;
+    this.list = [];
   }
   createElement() {
     this.el = document.createElement('div');
     this.el.classList.add('chts');
     this.el.innerHTML = `
     <div class="search flex">
-      <div class="btn-join"><i class="fa-solid fa-right-to-bracket"></i> Join</div>
-      <div class="btn-create"><i class="fa-solid fa-plus"></i> Create</div>
+      <div class="btn btn-join"><i class="fa-solid fa-right-to-bracket"></i> Join</div>
+      <div class="btn btn-create"><i class="fa-solid fa-plus"></i> Create</div>
     </div>
-    <div class="card-list">
-      <div class="card">
-        <div class="left">
-          <div class="img">
-            <img src="./assets/group.jpg" alt="user" width="50"/>
-          </div>
-          <div class="detail">
-            <div class="name"><p>Ini group</p></div>
-            <div class="last">Deva: Aowkwkk</div>
-          </div>
-        </div>
-        <div class="right">
-          <div class="last">11/12/24</div>
-          <div class="unread">7</div>
-        </div>
-      </div>
-    </div>`;
+    <div class="card-list"></div>`;
   }
   btnListener() {
     const btnCreate = this.el.querySelector('.btn-create');
@@ -38,15 +27,39 @@ export default class {
       if(this.isLocked) return;
       this.isLocked = true;
       const gname = await modal.prompt({
-        msg: lang.GROUP_ALR_NAME,
+        msg: lang.GRPS_ALR_NAME,
         ic: 'pencil'
       });
       if(!gname) {
         this.isLocked = false;
         return;
       }
-      console.log(gname);
-      // INI REQUEST KE SERVER BUAT BIKIN GRUP BARU
+      const cgroup = await modal.loading(xhr.post('/group/uwu/create', {name:gname}));
+      if(!cgroup || cgroup.code !== 200) {
+        await modal.alert(lang[cgroup.msg] || lang.ERROR);
+        this.isLocked = false;
+        return;
+      }
+
+      this.isLocked = false;
+      new GroupSetting({group:cgroup.data.group}).run();
+    }
+  }
+  getGroupList() {
+    this.cardlist = this.el.querySelector('.card-list');
+
+    const ndb = db.ref?.groups || [];
+    const odb = this.list || [];
+
+    const fdb = ndb.filter(ch => !odb.map(och => och.id).includes(ch.id));
+    fdb.forEach(ch => {
+      this.list.push(ch);
+      const card = elgen.groupCard(ch);
+      this.cardlist.append(card);
+      // card.onclick = () => new Group({user}).run();
+    });
+    if(this.list.length < 1) {
+      this.cardlist.innerHTML = `<p class="center"><i>${lang.CHTS_NOCHAT}</i></p>`;
     }
   }
   destroy() {
@@ -55,6 +68,7 @@ export default class {
       await modal.waittime();
       this.el.remove();
       this.isLocked = false;
+      this.list = [];
       userState.pmmid = null;
       resolve();
     });
@@ -66,5 +80,6 @@ export default class {
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
     this.btnListener();
+    this.getGroupList();
   }
 }

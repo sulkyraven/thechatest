@@ -1,16 +1,9 @@
 const db = require("../db");
+const {validate} = require('../middlewares');
 
 module.exports = {
-  validate(requires=[], snap) {
-    if(!snap) return {res:{code:400,msg:'ERROR'}};
-    const valids = requires.filter(s => {
-      return Object.keys(snap).find(key => key == s && typeof snap[key] === 'string');
-    });
-    if(valids.length !== requires.length) return {res:{code:400,msg:'ERROR'}};
-    return {valid:true,res:{code:200,msg:'ok'}};
-  },
   getUser(uid, s) {
-    if(!this.validate(['id'], s).valid) return this.validate.res;
+    if(!validate(['id'], s)) return {code:400}
     const udb = db.ref.u[s.id];
     if(!uid) return {code:400,msg:'FIND_NOTFOUND'};
 
@@ -31,7 +24,7 @@ module.exports = {
     return data;
   },
   addFriend(uid, s) {
-    if(!this.validate(['id'], s).valid) return this.validate.res;
+    if(!validate(['id'], s)) return {code:400};
     const udb = db.ref.u[s.id];
 
     if(!udb) return {code:400};
@@ -45,7 +38,7 @@ module.exports = {
     return {code:200,data:{user:this.getUser(uid,s)}};
   },
   unFriend(uid, s) {
-    if(!this.validate(['id'], s).valid) return this.validate.res;
+    if(!validate(['id'], s)) return {code:400};
     const udb = db.ref.u[s.id];
     if(!udb) return {code:400};
     
@@ -62,7 +55,7 @@ module.exports = {
     return {code:200,data:{user:this.getUser(uid,s)}};
   },
   acceptFriend(uid, s) {
-    if(!this.validate(['id'], s).valid) return this.validate.res;
+    if(!validate(['id'], s)) return {code:400};
     const udb = db.ref.u[s.id];
     if(!udb) return {code:400};
     if(udb.req?.includes(uid)) db.ref.u[s.id].req = udb.req.filter(key => key !== uid);
@@ -81,7 +74,7 @@ module.exports = {
     return {code:200,data:{user:this.getUser(uid, s)}};
   },
   ignoreFriend(uid, s) {
-    if(!this.validate(['id'], s).valid) return this.validate.res;
+    if(!validate(['id'], s)) return {code:400};
     const udb = db.ref.u[s.id];
     if(!udb) return {code:400};
     if(udb.req?.includes(uid)) db.ref.u[s.id].req = udb.req.filter(key => key !== uid);
@@ -92,7 +85,7 @@ module.exports = {
     return {code:200,data:{user:this.getUser(uid,s)}}
   },
   cancelFriend(uid, s) {
-    if(!this.validate(['id'], s).valid) return this.validate.res;
+    if(!validate(['id'], s)) return {code:400};
     const udb = db.ref.u[s.id];
     if(udb.req?.includes(uid)) db.ref.u[s.id].req = udb.req.filter(key => key !== uid);
 

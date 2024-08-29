@@ -9,6 +9,7 @@ const imgRouter = require('./routes/img');
 const accountRouter = require('./routes/account');
 const profileRouter = require('./routes/profile');
 const findRouter = require('./routes/find');
+const groupRouter = require('./routes/group');
 const { ExpressPeerServer } = require('peer');
 const { peerKey } = require('./js/helper');
 const db = require('./js/db');
@@ -40,6 +41,7 @@ app.use('/img', imgRouter);
 app.use('/account/uwu', accountRouter);
 app.use('/find/uwu', findRouter);
 app.use('/profile/uwu', profileRouter);
+app.use('/group/uwu', groupRouter);
 
 app.get('/app', (req, res) => {
   return res.render('app');

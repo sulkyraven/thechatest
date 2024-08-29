@@ -46,5 +46,6 @@
   "CHTS_NOCHAT": "- Masih kosong nih -",
   "GRPS_CREATE": "BUAT",
   "GRPS_JOIN": "GABUNG",
-  "GRPS_ALR_NAME": "Nama Grup"
+  "GRPS_ALR_NAME": "Nama Grup",
+  "GRPS_OWN_MAX": "Kamu cuma bisa bikin maksimal 2 grup"
 }
