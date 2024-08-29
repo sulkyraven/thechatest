@@ -45,6 +45,7 @@ export default class {
         this.isLocked = false;
         return;
       }
+      console.log(gname);
       // INI REQUEST KE SERVER BUAT BIKIN GRUP BARU
     }
   }
