@@ -87,7 +87,7 @@ export default class {
     const btnUname = this.el.querySelector('.btn-username');
     btnUname.onclick = async() => {
       if(this.isLocked === true) return;
-      this.isLocked = true
+      this.isLocked = true;
       const getUname = await modal.prompt({
         msg: lang.ACC_USERNAME,
         ic: 'pencil',
@@ -121,7 +121,7 @@ export default class {
     const btnDname = this.el.querySelector('.btn-displayname');
     btnDname.onclick = async() => {
       if(this.isLocked === true) return;
-      this.isLocked = true
+      this.isLocked = true;
       const getDname = await modal.prompt({
         ic: 'marker', max: 45,
         msg: lang.ACC_DISPLAYNAME,
@@ -155,7 +155,7 @@ export default class {
     const btnBio = this.el.querySelector('.btn-bio');
     btnBio.onclick = async() => {
       if(this.isLocked === true) return;
-      this.isLocked = true
+      this.isLocked = true;
       const getBio = await modal.prompt({
         msg: lang.ACC_BIO, tarea: true, val: db.ref.account.bio, ic:'book-open-cover', max: 220,
         iregex: /(\s)(?=\s)/g
@@ -190,7 +190,7 @@ export default class {
       inp.accept = 'image/*';
       inp.onchange = async() => {
         if(this.isLocked === true) return;
-        this.isLocked = true
+        this.isLocked = true;
         const file = inp.files[0];
         let tempsrc = URL.createObjectURL(file);
         const getImg = await modal.confirm({
@@ -214,6 +214,7 @@ export default class {
         if(setImg?.code !== 200) {
           await modal.alert(lang[setImg.msg] || lang.ERROR);
           this.isLocked = false;
+          return;
         }
         this.ephoto.querySelector('img').remove();
         const img = new Image();

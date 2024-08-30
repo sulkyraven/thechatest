@@ -79,7 +79,7 @@ export default {
     card_b.remove();
     return card;
   },
-  contentCard(ch, chts) {
+  contentCard(ch, chts, conty) {
     const card = document.createElement('div');
     card.classList.add('card');
     let username = null;
@@ -90,12 +90,12 @@ export default {
       username = chts.users.find(k => k.id === ch.u).username;
     }
     card.innerHTML = `
-    ${chts.users.length > 2 ? `<div class="chp sender"><div class="name">${username}</div></div>` : ''}
+    ${conty !== 1 ? `<div class="chp sender"><div class="name">${username}</div></div>` : ''}
     <div class="chp text">
       <p>lorem ipsum</p>
     </div>
     <div class="chp time">
-      <p>11:12 11/12/2024</p>
+      <p>${new Date(ch.ts).toLocaleString()}</p>
     </div>`;
 
     const chTxt = card.querySelector('.chp.text p');
@@ -142,7 +142,7 @@ export default {
     }
   
     const elLastText = card.querySelector('.detail .last');
-    const user = lastObj.u === db.ref.account.id ? db.ref.account.username : ch.u.find(k => {
+    const user = lastObj.u === db.ref.account.id ? db.ref.account.username : ch.users.find(k => {
       return k.id === lastObj.u;
     }).username;
     if(lastObj.type === 'img') {

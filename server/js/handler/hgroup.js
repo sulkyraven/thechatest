@@ -23,7 +23,7 @@ module.exports = {
     db.save('g');
 
     let retdata = {...data, id:gid};
-    retdata.u = data.u.filter(k => k !== uid).map(k => hprofile.getUser(uid, {id:k}));
+    retdata.users = data.u.filter(k => k !== uid).map(k => hprofile.getUser(uid, {id:k}));
 
     return {code:200,msg:'ok',data:{group:retdata}};
   },

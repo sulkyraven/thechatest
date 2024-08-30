@@ -3,6 +3,7 @@ import xhr from "../helper/xhr.js";
 import db from "../manager/db.js";
 import elgen from "../manager/elgen.js";
 import userState from "../manager/userState.js";
+import Content from "./Content.js";
 import GroupSetting from "./GroupSetting.js";
 let lang = {};
 
@@ -56,7 +57,7 @@ export default class {
       this.list.push(ch);
       const card = elgen.groupCard(ch);
       this.cardlist.append(card);
-      // card.onclick = () => new Group({user}).run();
+      card.onclick = () => new Content({user:ch, conty:2}).run();
     });
     if(this.list.length < 1) {
       this.cardlist.innerHTML = `<p class="center"><i>${lang.CHTS_NOCHAT}</i></p>`;

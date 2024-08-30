@@ -6,7 +6,7 @@ import Content from "./Content.js";
 let lang = {};
 
 export default class {
-  constructor({user} = {}) {
+  constructor({user}) {
     this.user = user;
     this.isLocked = false;
   }
@@ -125,7 +125,7 @@ export default class {
   }
   btnListener() {
     const btnChat = this.el.querySelector('.actions .btn-chat');
-    btnChat.onclick = () => new Content({user:this.user}).run();
+    btnChat.onclick = () => new Content({user:this.user,conty:1}).run();
     const btnCall = this.el.querySelector('.actions .btn-call');
     const btnVideo = this.el.querySelector('.actions .btn-video');
   }

@@ -47,5 +47,8 @@
   "GRPS_CREATE": "CREATE",
   "GRPS_JOIN": "JOIN",
   "GRPS_ALR_NAME": "Group Name",
-  "GRPS_OWN_MAX": "You can only create up to 2 groups"
+  "GRPS_OWN_MAX": "You can only create up to 2 groups",
+  "GRPS_DNAME": "New Group Name",
+  "GRPS_DNAME_COOLDOWN": "You have recently updated group name.<br/>You can make a change to your group name again after",
+  "GRPS_IMG": "Confirm your group image"
 }

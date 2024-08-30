@@ -26,10 +26,9 @@ export default class {
     fdb.forEach(ch => {
       this.list.push(ch);
       const user = ch.users.find(k => k.id !== db.ref.account.id);
-
       const card = elgen.chatCard(user);
       this.cardlist.append(card);
-      card.onclick = () => new Content({user}).run();
+      card.onclick = () => new Content({user, conty:1}).run();
     });
     if(this.list.length < 1) {
       this.cardlist.innerHTML = `<p class="center"><i>${lang.CHTS_NOCHAT}</i></p>`;

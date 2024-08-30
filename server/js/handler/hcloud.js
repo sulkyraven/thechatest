@@ -56,11 +56,13 @@ module.exports = {
     const myGroups = Object.keys(gdb).filter(k => {
       return gdb[k].u.includes(uid);
     }).map(k => {
-      return {
-        o: gdb[k].o, n: gdb[k].n, id: k,
+      const data = {
+        o: gdb[k].o, n: gdb[k].n, id: k, t: gdb[k].t,
         users: gdb[k].u.filter(ck => ck !== uid).map(ck => hprofile.getUser(uid, {id:ck})),
         chats: Object.keys(gdb[k].c).map(ck => { return {...gdb[k].c[ck], id:ck}})
       }
+      if(gdb[k].i) data.i = gdb[k].i;
+      return data;
     });
 
     return {name:'groups',data:myGroups};
