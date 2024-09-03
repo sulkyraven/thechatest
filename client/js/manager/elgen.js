@@ -6,7 +6,7 @@ function chtsCard(ch) {
   card.innerHTML = `
   <div class="left">
     <div class="img">
-      <img src="${ch.img ? `/img/user/${ch.id}` : (ch.cy===0?'/assets/user.jpg':'/assets/group.jpg')}" alt="${ch.username}" alt="user" width="50"/>
+      <img src="${ch.img ? `/img/${ch.cy===0?'user':'group'}/${ch.id}` : `/assets/${ch.cy===0?'user':'group'}.jpg`}" alt="${ch.username}" alt="user" width="50"/>
     </div>
     <div class="detail">
       <div class="name"><p></p></div>

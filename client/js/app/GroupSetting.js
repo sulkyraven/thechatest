@@ -100,7 +100,7 @@ export default class {
         this.isLocked = false;
         return;
       }
-      const setGname = await modal.loading(xhr.post('/group/uwu/set-groupname', {gname:getGname}));
+      const setGname = await modal.loading(xhr.post('/group/uwu/set-groupname', {id:this.group.id, gname:getGname}));
       if(setGname?.code === 402) {
         await modal.alert(`${lang.GRPS_DNAME_COOLDOWN}<br/><b>${new Date(setGname.msg).toLocaleString()}</b>`);
         this.isLocked = false;
@@ -148,7 +148,7 @@ export default class {
           reader.readAsDataURL(file);
         });
 
-        const setImg = await modal.loading(xhr.post('/group/uwu/set-img', {img:imgsrc,name:file.name}, '.loading .box p'), 'UPLOADING');
+        const setImg = await modal.loading(xhr.post('/group/uwu/set-img', {id:this.group.id,img:imgsrc,name:file.name}, '.loading .box p'), 'UPLOADING');
         if(setImg?.code !== 200) {
           await modal.alert(lang[setImg.msg] || lang.ERROR);
           this.isLocked = false;

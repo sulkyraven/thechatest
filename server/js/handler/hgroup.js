@@ -28,6 +28,37 @@ module.exports = {
     return {code:200,msg:'ok',data:{group:retdata}};
   },
   setImage(uid, s) {
-    if(!validate(['img', 'name'], s)) return {code:400};
+    if(!validate(['id', 'img', 'name'], s)) return {code:400};
+
+    const gdb = db.ref.g[s.id];
+    if(!gdb || gdb.o !== uid) return {code:400};
+
+    const dataurl = decodeURIComponent(s.img);
+    const buffer = Buffer.from(dataurl.split(',')[1], 'base64');
+    if(buffer.length > 2000000) return {code:400, msg: 'ACC_IMG_LIMIT'};
+
+    if(!fs.existsSync('./server/dbimg')) fs.mkdirSync('./server/dbimg');
+    if(!fs.existsSync(`./server/dbimg/group`)) fs.mkdirSync(`./server/dbimg/group`);
+
+    if(gdb.img) if(fs.existsSync(`./server/dbimg/group/${gdb.img}`)) fs.unlinkSync(`./server/dbimg/group/${gdb.img}`);
+
+    const imgExt = /\.([a-zA-Z0-9]+)$/;
+    const imgName = `${s.id}.${s.name.match(imgExt)[1]}`;
+    fs.writeFileSync(`./server/dbimg/group/${imgName}`, buffer);
+
+    db.ref.g[s.id].i = imgName;
+    db.save('g');
+
+    return {code:200,msg:'ok'};
+  },
+  setGname(uid, s) {
+    if(!validate(['id','gname'], s)) return {code:400};
+    const gdb = db.ref.g[s.id];
+
+    // FITUR GANTI NAMA
+    // FIX: NAMA MAKSIMAL 20 KARAKTER
+    // NAMA TIDAK BISA MENGGUNAKAN KARAKTER SIMBOL
+    // NAMA TIDAK BISA MENGGUNAKAN NEW LINE
+    // NAMA TIDAK BISA MENGGUNAKAN UNDERSCORE DAN TITIK
   }
 }

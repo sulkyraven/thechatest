@@ -61,7 +61,7 @@ module.exports = {
     const dataurl = decodeURIComponent(s.img);
     const buffer = Buffer.from(dataurl.split(',')[1], 'base64');
     if(buffer.length > 2000000) return {code:400,msg:'ACC_IMG_LIMIT'}
-    
+
     if(!fs.existsSync('./server/dbimg')) fs.mkdirSync('./server/dbimg');
     if(!fs.existsSync(`./server/dbimg/user`)) fs.mkdirSync(`./server/dbimg/user`);
 
