@@ -9,7 +9,7 @@ router.post('/set-img', express.json({limit: "2MB"}), (req, res) => {
 });
 router.use(express.json({limit:'100kb'}));
 router.post('/set-groupname', (req, res) => {
-  return res.json({code:400,msg:'ERROR'});
+  return res.json(hgroup.setGname(req.session.user.id, req.body));
 });
 
 router.post('/create', (req, res) => {

@@ -44,3 +44,17 @@
     opacity: 0;
   }
 }
+@keyframes slide_left_in {
+  0% {
+    transform: translateX(100%);
+  } 100% {
+    transform: translateX(0);
+  }
+}
+@keyframes slide_right_out {
+  0% {
+    transform: translateX(0);
+  } 100% {
+    transform: translateX(-100%);
+  }
+}

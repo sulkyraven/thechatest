@@ -6,6 +6,7 @@
   width: calc(100% - (350px + 100px));
   height: 100%;
   background-color: v.$bg;
+  animation: slide_left_in 0.5s;
   .top {
     position: absolute;
     top: 0;left: 0;
@@ -16,6 +17,7 @@
     justify-content: space-between;
     align-items: center;
     .left {
+      width: calc(100% - 130px);
       padding: 10px;
       display: flex;
       justify-content: left;
@@ -25,10 +27,12 @@
         font-size: 1.25rem;
       }
       .user {
+        width: calc(100% - 50px);
         display: flex;
-        justify-content: center;
+        justify-content: left;
         align-items: center;
         gap: 10px;
+        overflow: hidden;
         cursor: pointer;
         .img {
           img {
@@ -42,9 +46,10 @@
           }
         }
         .name {
-          max-width: 130px;
-          overflow: hidden;
+          max-width: 100%;
+          max-height: 30px;
           font-size: 1.25rem;
+          overflow: hidden;
         }
       }
     }
@@ -389,4 +394,8 @@
       }
     }
   }
+}
+.content.out {
+  z-index: -69;
+  animation: slide_right_out 0.5s forwards;
 }

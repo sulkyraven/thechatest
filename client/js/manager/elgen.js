@@ -26,7 +26,7 @@ function txtSS(txt, n = 100) {
 
 export default {
   findCard(ch) {
-    const {card, card_a, card_b} = chtsCard(ch);
+    const {card, card_a, card_b} = chtsCard({...ch, cy:0});
     card_a.innerText = ch.bio.length > 20 ? ch.bio.substring(0, 17) + '...' : ch.bio;
     if(ch.isfriend) card_b.innerHTML = '<div class="btn"><i class="fa-light fa-user-check"></i></div>';
     return card;

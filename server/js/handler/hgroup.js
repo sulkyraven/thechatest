@@ -54,11 +54,19 @@ module.exports = {
   setGname(uid, s) {
     if(!validate(['id','gname'], s)) return {code:400};
     const gdb = db.ref.g[s.id];
+    if(gdb.o !== uid) return {code:400};
+    if(gdb.lastgname && gdb.lastgname > Date.now()) return {code:402,msg:gdb.lastgname};
+    const transgname = /(\s)(?=\s)/g;
+    s.gname = s.gname.replace(transgname, '').trim();
+    if(s.gname === gdb.n) return {code:200,msg:'ok',data:{text:s.gname}};
+    if(s.gname.length > 35) return {code:400,msg:'GRPS_DNAME_LENGTH'};
+    const wsonly = /^\s+$/;
+    if(wsonly.test(s.gname)) return {code:200,msg:'ok',data:{text:gdb.n}};
 
-    // FITUR GANTI NAMA
-    // FIX: NAMA MAKSIMAL 20 KARAKTER
-    // NAMA TIDAK BISA MENGGUNAKAN KARAKTER SIMBOL
-    // NAMA TIDAK BISA MENGGUNAKAN NEW LINE
-    // NAMA TIDAK BISA MENGGUNAKAN UNDERSCORE DAN TITIK
+    db.ref.g[s.id].n = s.gname;
+    db.ref.g[s.id].lastgname = Date.now() + (1000*60*60*24*3);
+    db.save('g');
+
+    return {code:200,msg:'ok',data:{text:s.gname}};
   }
 }

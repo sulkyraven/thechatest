@@ -47,7 +47,7 @@ module.exports = {
     s.dname = s.dname.replace(transdname, '').trim();
     if(s.dname === udb.dname) return {code:200,msg:'ok',data:{text:s.dname}};
     if(s.dname.length > 35) return {code:400,msg:'ACC_FAIL_DNAME_LENGTH'};
-    const wsonly = /^\s+$/;``
+    const wsonly = /^\s+$/;
     if(wsonly.test(s.dname)) return {code:200,msg:'ok',data:{text:udb.dname}};
 
     db.ref.u[uid].dname = s.dname;

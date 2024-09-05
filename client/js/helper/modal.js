@@ -184,5 +184,73 @@ export default {
         if(s.cancel) s.cancel();
       }
     });
+  },
+  select(s) {
+    return new Promise(resolve => {
+      const el = this.element();
+      el.innerHTML = `
+      <div class="box">
+        <div class="icons">
+          <i class="fa-duotone fa-${s.ic ? s.ic:'circle-exclamation'}"></i>
+        </div>
+        <div class="messages">
+          <p>${typeof(s) === 'string' ? (s || '') : (s.msg || '')}</p>
+          <form class="radioform" id="radioform">
+          </form>
+        </div>
+        <div class="actions">
+          <div class="btn btn-cancel" role="button">BATAL</div>
+          <div class="btn btn-ok" role="button">OK</div>
+        </div>
+      </div>`;
+      const input = el.querySelector('.box .messages #radioform');
+      s.opt.items.forEach(opt => {
+        const radio = document.createElement('div');
+        radio.classList.add('radio');
+        radio.innerHTML = `<label for="${opt.id}"><input type="radio" name="${s.opt.name}" id="${opt.id}" value="${opt.val}" required /><p>${opt.label}</p></label>`;
+        input.append(radio);
+      });
+
+      if(s.img) {
+        const img = new Image();
+        img.src = s.img;
+        el.querySelector('.box .messages').append(img);
+        img.onerror = async() => {
+          el.classList.add('out');
+          await this.waittime();
+          el.remove();
+          return resolve(await this.alert({msg:lang.IMG_ERR,ic:'image-slash'}));
+        }
+      }
+
+      const btnOk = el.querySelector('.actions .btn-ok');
+      if(s.okx) btnOk.innerText = s.okx;
+      const btnCancel = el.querySelector('.actions .btn-cancel');
+      if(s.cancelx) btnCancel.innerText = s.cancelx;
+
+      if(s.iregex) input.oninput = () => input.value = input.value.replace(s.iregex, '');
+
+      document.querySelector('.app').append(el);
+
+      input.focus();
+
+      btnOk.onclick = async() => {
+        let data = {};
+        const formData = new FormData(input);
+        for(const [key, val] of formData) { data[key] = val };
+        el.classList.add('out');
+        await this.waittime();
+        el.remove();
+        resolve(data);
+        if(s.ok) s.ok();
+      }
+      btnCancel.onclick = async() => {
+        el.classList.add('out');
+        await this.waittime();
+        el.remove();
+        resolve(null);
+        if(s.cancel) s.cancel();
+      }
+    });
   }
 }

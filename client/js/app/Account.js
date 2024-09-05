@@ -62,13 +62,7 @@ export default class {
         <div class="outer">
           <div class="chp-t">Language</div>
           <div class="chp-f"><p>Bahasa Indonesia</p></div>
-          <div class="chp-l">
-            <select name="sel-lang" id="sel-lang">
-              <option value="null">Change Language</option>
-              <option value="id">Bahasa Indonesia</option>
-              <option value="en">English</option>
-            </select>
-          </div>
+          <div class="chp-e btn-lang">Change Language <i class="fa-solid fa-chevron-down"></i></div>
         </div>
       </div>
       <div class="chp usersign">
@@ -225,6 +219,20 @@ export default class {
         return;
       }
       inp.click();
+    }
+    const btnLang = this.el.querySelector('.btn-lang');
+    btnLang.onclick = async() => {
+      const selLang = await modal.select({
+        msg: lang.ACC_CHOOSE_LANG,
+        ic: 'globe',
+        opt: {
+          name: 'language',
+          items: [
+            {id: 'lang-id', val: 'id', label: 'Bahasa Indonesia'},
+            {id: 'lang-en', val: 'en', label: 'English'},
+          ]
+        }
+      });
     }
   }
   destroy() {

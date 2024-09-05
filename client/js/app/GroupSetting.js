@@ -166,6 +166,16 @@ export default class {
     }
 
   }
+  destroy() {
+    return new Promise(async resolve => {
+      this.el.classList.add('out');
+      await modal.waittime();
+      this.el.remove();
+      this.isLocked = false;
+      userState.pmbottom = null;
+      resolve();
+    });
+  }
   async run() {
     await userState.pmbottom?.destroy?.();
     userState.pmbottom = this;

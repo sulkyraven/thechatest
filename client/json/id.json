@@ -28,6 +28,7 @@
   "ACC_FAIL_DNAME_LENGTH": "Panjang maksimal display name adalah 35 karakter",
   "ACC_FAIL_DNAME_COOLDOWN": "Kamu baru-baru ini udah memperbarui display name.<br/>Baru bisa ganti lagi setelah",
   "ACC_IMG_LIMIT": "LIMIT",
+  "ACC_CHOOSE_LANG": "Pilih Bahasa",
   "FIND_RANDOM": "Temukan pengguna secara acak",
   "FIND_ID": "Cari berdasarkan Username/ID",
   "FIND_START": "Mulai",
@@ -49,6 +50,7 @@
   "GRPS_ALR_NAME": "Nama Grup",
   "GRPS_OWN_MAX": "Kamu cuma bisa bikin maksimal 2 grup",
   "GRPS_DNAME": "Nama Grup Baru",
+  "GRPS_DNAME_LENGTH": "Nama grup maksimal berisi 35 karakter",
   "GRPS_DNAME_COOLDOWN": "Kamu baru-baru ini udah memperbarui nama grup.<br/>Baru bisa ganti lagi setelah",
   "GRPS_IMG": "Konfirmasi upload gambar grup baru"
 }
