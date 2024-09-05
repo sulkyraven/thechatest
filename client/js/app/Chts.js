@@ -1,4 +1,5 @@
 import modal from "../helper/modal.js";
+import sceneIn from "../helper/sceneIn.js";
 import db from "../manager/db.js";
 import elgen from "../manager/elgen.js";
 import userState from "../manager/userState.js";
@@ -13,7 +14,7 @@ export default class {
   }
   createElement() {
     this.el = document.createElement('div');
-    this.el.classList.add('chts');
+    this.el.classList.add('chts', 'pmm');
     this.el.innerHTML = `<div class="card-list"></div>`;
   }
   getChatList() {
@@ -51,6 +52,7 @@ export default class {
     lang = userState.langs[userState.lang];
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
+    sceneIn(this.el);
     this.getChatList();
   }
 }

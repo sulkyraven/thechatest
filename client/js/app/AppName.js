@@ -23,7 +23,6 @@ export default class {
   btnListener() {
     const btnSettings = this.el.querySelector('.btn-settings');
     btnSettings.onclick = async() => {
-      await userState.pmbottom?.destroy?.();
       new Account().run();
     }
   }

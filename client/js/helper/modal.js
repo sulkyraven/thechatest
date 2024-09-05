@@ -208,6 +208,7 @@ export default {
         const radio = document.createElement('div');
         radio.classList.add('radio');
         radio.innerHTML = `<label for="${opt.id}"><input type="radio" name="${s.opt.name}" id="${opt.id}" value="${opt.val}" required /><p>${opt.label}</p></label>`;
+        if(opt.actived) radio.querySelector('input').checked = true;
         input.append(radio);
       });
 

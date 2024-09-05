@@ -1,4 +1,5 @@
 import modal from "../helper/modal.js";
+import sceneIn from "../helper/sceneIn.js";
 import xhr from "../helper/xhr.js";
 import db from "../manager/db.js";
 import userState from "../manager/userState.js";
@@ -12,7 +13,7 @@ export default class {
   }
   createElement() {
     this.el = document.createElement('div');
-    this.el.classList.add('prof');
+    this.el.classList.add('prof', 'pmb');
     this.el.innerHTML = `
     <div class="top">
       <div class="btn"><i class="fa-solid fa-arrow-left"></i></div>
@@ -145,6 +146,7 @@ export default class {
     userState.pmbottom = this;
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
+    sceneIn(this.el);
     this.renderActions();
     this.btnListener();
   }

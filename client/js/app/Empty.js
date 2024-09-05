@@ -1,4 +1,5 @@
 import modal from "../helper/modal.js";
+import sceneIn from "../helper/sceneIn.js";
 import userState from "../manager/userState.js";
 
 export default class {
@@ -7,7 +8,7 @@ export default class {
   }
   createElement() {
     this.el = document.createElement('div');
-    this.el.classList.add('empty');
+    this.el.classList.add('empty', 'pmb');
     this.el.innerHTML = `
     <div class="title">
       <div class="img">
@@ -34,5 +35,6 @@ export default class {
     userState.pmbottom = this;
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
+    sceneIn(this.el);
   }
 }

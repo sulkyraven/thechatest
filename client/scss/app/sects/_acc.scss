@@ -6,7 +6,6 @@
   width: calc(100% - (350px + 100px));
   height: 100%;
   background-color: v.$bg;
-  animation: slide_left_in 0.5s;
   .top {
     position: absolute;
     top: 0;left: 0;
@@ -197,8 +196,4 @@
       margin-bottom: 0;
     }
   }
-}
-.acc.out {
-  z-index: -69;
-  animation: slide_right_out 0.5s forwards;
 }

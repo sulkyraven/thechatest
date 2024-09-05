@@ -1,4 +1,5 @@
 import modal from "../helper/modal.js";
+import sceneIn from "../helper/sceneIn.js";
 import xhr from "../helper/xhr.js";
 import db from "../manager/db.js";
 import userState from "../manager/userState.js";
@@ -11,7 +12,7 @@ export default class {
   }
   createElement() {
     this.el = document.createElement('div');
-    this.el.classList.add('acc');
+    this.el.classList.add('acc', 'pmb');
     this.el.innerHTML = `
     <div class="top">
       <div class="btn"><i class="fa-solid fa-arrow-left"></i></div>
@@ -220,19 +221,46 @@ export default class {
       }
       inp.click();
     }
+
     const btnLang = this.el.querySelector('.btn-lang');
     btnLang.onclick = async() => {
+      if(this.isLocked) return;
+      this.isLocked = true;
+      const langlist = [
+        {id: 'lang-id', val: 'id', label: 'Bahasa Indonesia'},
+        {id: 'lang-en', val: 'en', label: 'English'},
+      ]
+      const langIndex = langlist.findIndex(llang => llang.val === userState.lang);
+      if(langIndex >= 0) langlist[langIndex].actived = true;
+  
       const selLang = await modal.select({
         msg: lang.ACC_CHOOSE_LANG,
         ic: 'globe',
         opt: {
           name: 'language',
-          items: [
-            {id: 'lang-id', val: 'id', label: 'Bahasa Indonesia'},
-            {id: 'lang-en', val: 'en', label: 'English'},
-          ]
+          items: langlist
         }
       });
+      if(!selLang) {
+        this.isLocked = false;
+        return;
+      }
+      const { language } = selLang;
+      if(language === userState.lang) {
+        this.isLocked = false;
+        return;
+      }
+      userState.lang = language;
+      userState.save();
+
+      userState.pmbottom?.el?.remove();
+      userState.pmmid?.el?.remove();
+      userState.pmtop?.el?.remove();
+      document.querySelector('.appname')?.remove();
+      await modal.alert(lang.ACC_CHOOSE_LANG_DONE);
+      window.location.reload();
+
+      this.isLocked = false;
     }
   }
   destroy() {
@@ -251,6 +279,7 @@ export default class {
     lang = userState.langs[userState.lang];
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
+    sceneIn(this.el);
     this.btnListener();
   }
 }

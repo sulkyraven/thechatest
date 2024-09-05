@@ -1,4 +1,5 @@
 import modal from "../helper/modal.js";
+import sceneIn from "../helper/sceneIn.js";
 import xhr from "../helper/xhr.js";
 import elgen from "../manager/elgen.js";
 import userState from "../manager/userState.js";
@@ -12,7 +13,7 @@ export default class {
   }
   createElement() {
     this.el = document.createElement('div');
-    this.el.classList.add('chts');
+    this.el.classList.add('chts', 'pmm');
     this.el.innerHTML = `
     <div class="search">
       <p>${lang.FIND_RANDOM}</p>
@@ -81,6 +82,7 @@ export default class {
     userState.pmmid = this;
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
+    sceneIn(this.el);
     this.btnListener();
   }
 }

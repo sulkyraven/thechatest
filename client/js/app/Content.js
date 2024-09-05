@@ -1,4 +1,5 @@
 import modal from "../helper/modal.js";
+import sceneIn from "../helper/sceneIn.js";
 import db from "../manager/db.js";
 import elgen from "../manager/elgen.js";
 import userState from "../manager/userState.js";
@@ -16,7 +17,7 @@ export default class {
   }
   createElement() {
     this.el = document.createElement('div');
-    this.el.classList.add('content');
+    this.el.classList.add('content', 'pmb');
     this.el.innerHTML = `
     <div class="top">
       <div class="left">
@@ -116,6 +117,7 @@ export default class {
     this.user.img = imageSelection(this.user, this.conty);
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
+    sceneIn(this.el);
     this.btnListener();
     this.renderChats();
   }
