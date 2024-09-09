@@ -2,6 +2,7 @@ const fs = require('fs');
 const db = require("../db");
 const { validate } = require('../middlewares');
 const hprofile = require('./hprofile');
+const helper = require('../helper');
 
 module.exports = {
   create(uid, s) {
@@ -10,15 +11,14 @@ module.exports = {
     s.name = s.name.replace(transname, '').trim();
 
     const ogdb = db.ref.g;
-    const oldGroups = Object.keys(ogdb).filter(k => {
-      return ogdb[k].o = uid;
-    });
+    const oldGroups = Object.keys(ogdb).filter(k => ogdb[k].o = uid);
 
     if(oldGroups.length >= 2) return {code:400,msg:'GRPS_OWN_MAX'};
 
     const gid = 'G' + Date.now().toString(32);
 
     const data = { o: uid, u: [uid], n: s.name, t: '1', c:{}};
+    data.l = `${helper.rString(2)}_${Date.now().toString(32)}_${helper.rString(2)}`;
     db.ref.g[gid] = data;
     db.save('g');
 
@@ -40,7 +40,7 @@ module.exports = {
     if(!fs.existsSync('./server/dbimg')) fs.mkdirSync('./server/dbimg');
     if(!fs.existsSync(`./server/dbimg/group`)) fs.mkdirSync(`./server/dbimg/group`);
 
-    if(gdb.img) if(fs.existsSync(`./server/dbimg/group/${gdb.img}`)) fs.unlinkSync(`./server/dbimg/group/${gdb.img}`);
+    if(gdb.i) if(fs.existsSync(`./server/dbimg/group/${gdb.i}`)) fs.unlinkSync(`./server/dbimg/group/${gdb.i}`);
 
     const imgExt = /\.([a-zA-Z0-9]+)$/;
     const imgName = `${s.id}.${s.name.match(imgExt)[1]}`;
@@ -64,9 +64,38 @@ module.exports = {
     if(wsonly.test(s.gname)) return {code:200,msg:'ok',data:{text:gdb.n}};
 
     db.ref.g[s.id].n = s.gname;
-    db.ref.g[s.id].lastgname = Date.now() + (1000*60*60*24*3);
+    db.ref.g[s.id].lastgname = Date.now() + (1000*60*60*6);
     db.save('g');
 
     return {code:200,msg:'ok',data:{text:s.gname}};
+  },
+  setType(uid, s) {
+    if(!validate(['id','t'], s)) return {code:400};
+    const gdb = db.ref.g[s.id];
+    if(gdb.o !== uid) return {code:400};
+    if(!['0','1'].includes(s.t)) return {code:400};
+    const glink = `${helper.rString(2)}_${Date.now().toString(32)}_${helper.rString(2)}`;
+    if(gdb.t === s.t) {
+      db.ref.g[s.id].l = glink;
+      db.save('g');
+      return {code:200,msg:'ok',data:{text:s.t,link:glink}};
+    }
+    db.ref.g[s.id].t = s.t;
+    db.ref.g[s.id].l = glink;
+    db.save('g');
+
+    return {code:200,msg:'ok',data:{text:s.t,link:glink}};
+  },
+  delGroup(uid, s) {
+    if(!validate(['id'], s)) return {code:400};
+    const gdb = db.ref.g[s.id];
+    if(!gdb) return {code:400};
+    if(gdb.o !== uid) return {code:400};
+    if(gdb.i) if(fs.existsSync(`./server/dbimg/group/${gdb.i}`)) fs.unlinkSync(`./server/dbimg/group/${gdb.i}`);
+
+    delete db.ref.g[s.id];
+    db.save('g');
+
+    return {code:200,msg:'ok'};
   }
 }

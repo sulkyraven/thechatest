@@ -3,6 +3,9 @@ module.exports = {
   genPeer() {
     return require('crypto').randomBytes(8).toString('hex') + Date.now().toString(32);
   },
+  rString(n = 8) {
+    return require('crypto').randomBytes(n).toString('hex');
+  },
   rNumber(n = 6) {
      let a = "";
      for(let i = 1; i < n; i++) { a += "0"; }

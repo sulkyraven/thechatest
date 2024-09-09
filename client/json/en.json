@@ -31,6 +31,7 @@
   "ACC_IMG_LIMIT": "LIMIT",
   "ACC_CHOOSE_LANG": "Choose Language",
   "ACC_CHOOSE_LANG_DONE": "Kirimin needs to be refreshed to apply changes",
+  "ACC_LOGOUT": "Are you sure want to log out now?",
   "FIND_RANDOM": "Find random user",
   "FIND_ID": "Find by Username/ID",
   "FIND_START": "Start Now",
@@ -54,5 +55,12 @@
   "GRPS_DNAME": "New Group Name",
   "GRPS_DNAME_LENGTH": "Maximum group name length is 35 characters",
   "GRPS_DNAME_COOLDOWN": "You have recently updated group name.<br/>You can make a change to your group name again after",
-  "GRPS_IMG": "Confirm your group image"
+  "GRPS_IMG": "Confirm your group image",
+  "GRPS_TYPE": "Generate new invite link and set its visibility",
+  "GRPS_TYPE_0": "[Public] Group members can view and copy this invitation link",
+  "GRPS_TYPE_1": "[Private] Group members cannot find the invitation link on this group's profile",
+  "GRPS_DELETE": "Delete Group",
+  "GRPS_LEAVE": "Leave Group",
+  "GRPS_DELETE_CONFIRM": "Are you sure want to delete this group?",
+  "GRPS_LEAVE_CONFIRM": "Leave group?"
 }

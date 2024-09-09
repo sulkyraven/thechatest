@@ -17,13 +17,17 @@ export default class {
       if(btn.id === 'chats') elnav.classList.add('selected');
       elnav.innerHTML = btn.text;
       this.el.append(elnav);
-      elnav.onclick = () => {
+      elnav.onclick = async() => {
+        if(this.isLocked) return;
+        this.isLocked = true;
         let midtop = [userState.pmmid?.id||'none',userState.pmbottom?.id||'none'];
         if(!midtop.includes(btn.id)) {
           this.el.querySelectorAll('.selected').forEach(elod=>elod.classList.remove('selected'));
           elnav.classList.add('selected');
-          btn.run();
+          await btn.run();
+          this.isLocked = false;
         }
+        this.isLocked = false;
       }
     });
   }

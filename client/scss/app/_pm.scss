@@ -12,7 +12,7 @@
 }
 .pmb.out {
   z-index: -69;
-  animation: slide_right_out 0.5s forwards;
+  animation: slide_left_out 0.5s forwards;
 }
 .pmm {
   animation: slide_right_in 0.5s;
@@ -22,7 +22,7 @@
 }
 .pmm.out {
   z-index: -69;
-  animation: slide_left_out 0.5s forwards;
+  animation: slide_right_out 0.5s forwards;
 }
 
 @import "./sects/nav";

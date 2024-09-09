@@ -31,6 +31,7 @@
   "ACC_IMG_LIMIT": "LIMIT",
   "ACC_CHOOSE_LANG": "Pilih Bahasa",
   "ACC_CHOOSE_LANG_DONE": "Halaman perlu direfresh untuk menerapkan perubahan",
+  "ACC_LOGOUT": "Yakin nih mau logout sekarang?",
   "FIND_RANDOM": "Temukan pengguna secara acak",
   "FIND_ID": "Cari berdasarkan Username/ID",
   "FIND_START": "Mulai",
@@ -54,5 +55,12 @@
   "GRPS_DNAME": "Nama Grup Baru",
   "GRPS_DNAME_LENGTH": "Nama grup maksimal berisi 35 karakter",
   "GRPS_DNAME_COOLDOWN": "Kamu baru-baru ini udah memperbarui nama grup.<br/>Baru bisa ganti lagi setelah",
-  "GRPS_IMG": "Konfirmasi upload gambar grup baru"
+  "GRPS_IMG": "Konfirmasi upload gambar grup baru",
+  "GRPS_TYPE": "Buat invite link baru dan atur visibilitasnya",
+  "GRPS_TYPE_0": "[Publik] Anggota grup bisa nyalin link undangan dari grup ini",
+  "GRPS_TYPE_1": "[Privat] Anggota grup ga bisa lihat link undangan di profil grup ini",
+  "GRPS_DELETE": "Bubarkan Grup",
+  "GRPS_LEAVE": "Keluar dari grup",
+  "GRPS_DELETE_CONFIRM": "Yakin nih grupnya mau dihapus?",
+  "GRPS_LEAVE_CONFIRM": "Keluar dari grup?"
 }

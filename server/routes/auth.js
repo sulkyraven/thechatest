@@ -15,6 +15,11 @@ router.post('/verify', (req, res) => {
   if(getVerify.code === 200) req.session.user = getVerify.data.user;
   return res.json(getVerify);
 });
+router.get('/logout', (req, res) => {
+  req.session?.destroy();
+
+  return res.redirect('/app');
+});
 
 router.get('/isUser', isUser, (req, res) => {
   return res.json({code:200,msg:'ok',data:hcloud.getAll(req.session.user.id)});

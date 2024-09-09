@@ -67,18 +67,33 @@ export default class {
         </div>
       </div>
       <div class="chp usersign">
-        <p><a href="/auth/logout"><i class="fa-light fa-triangle-exclamation"></i> LOG OUT</a></p>
+        <p><a class="logout" href="/auth/logout"><i class="fa-light fa-triangle-exclamation"></i> LOG OUT</a></p>
       </div>
     </div>`;
     this.ephoto = this.el.querySelector('.userphoto .outer-img');
     this.euname = this.el.querySelector('.username .outer .chp-f p');
     this.edname = this.el.querySelector('.userdisplayname .outer .chp-f p');
     this.ebio = this.el.querySelector('.userbio .outer .chp-f p');
+    this.elogout = this.el.querySelector('.usersign a.logout');
 
     this.edname.innerText = db.ref.account.displayName;
     this.ebio.innerText = db.ref.account.bio || 'No bio yet.';
   }
   btnListener() {
+    this.elogout.onclick = async(e) => {
+      e.preventDefault();
+
+      if(this.isLocked) return;
+      this.isLocked = true;
+      const getLogout = await modal.confirm(lang.ACC_LOGOUT);
+      if(!getLogout) {
+        this.isLocked = false;
+        return;
+      }
+      window.location.href = this.elogout.getAttribute('href');
+      this.isLocked = false;
+    }
+
     const btnUname = this.el.querySelector('.btn-username');
     btnUname.onclick = async() => {
       if(this.isLocked === true) return;

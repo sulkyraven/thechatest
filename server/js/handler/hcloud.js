@@ -57,7 +57,7 @@ module.exports = {
       return gdb[k].u.includes(uid);
     }).map(k => {
       const data = {
-        o: gdb[k].o, n: gdb[k].n, id: k, t: gdb[k].t,
+        o: gdb[k].o, n: gdb[k].n, id: k, t: gdb[k].t, l: gdb[k].l,
         users: gdb[k].u.filter(ck => ck !== uid).map(ck => hprofile.getUser(uid, {id:ck})),
         chats: Object.keys(gdb[k].c).map(ck => { return {...gdb[k].c[ck], id:ck}})
       }

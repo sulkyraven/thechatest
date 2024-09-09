@@ -4,6 +4,7 @@ import xhr from "../helper/xhr.js";
 import db from "../manager/db.js";
 import elgen from "../manager/elgen.js";
 import userState from "../manager/userState.js";
+import Empty from "./Empty.js";
 let lang = {};
 
 export default class {
@@ -44,17 +45,14 @@ export default class {
           <div class="chp-f"><p></p></div>
         </div>
       </div>
-      <div class="chp grouptype">
+      <div class="chp groupinvite">
         <div class="outer">
-          <div class="chp-t">Visibility</div>
-          <div class="chp-f"><p>Private</p></div>
-          <div class="chp-l">
-            <select name="sel-lang" id="sel-lang">
-              <option value="null">Change Visibility</option>
-              <option value="id">Private</option>
-              <option value="en">Public</option>
-            </select>
+          <div class="chp-t">Group Invite Link</div>
+          <div class="chp-f">
+            <p class="type">Private</p>
+            <p class="link"><a href="${window.location.origin}/group/invite/${this.group.l}" target="_blank">${window.location.origin}/group/invite/${this.group.l}</a></p>
           </div>
+          <div class="chp-e btn-type">Change Group Invite <i class="fa-solid fa-chevron-down"></i></div>
         </div>
       </div>
       <div class="chp groupmember">
@@ -63,13 +61,16 @@ export default class {
           <div class="chp-u"><ul></ul></div>
         </div>
       </div>
+      <div class="chp usersign">
+        <p><a class="btn-delete" href="#delete-group"><i class="fa-light fa-triangle-exclamation"></i> ${lang.GRPS_DELETE}</a></p>
+      </div>
     </div>`;
     this.gimg = this.el.querySelector('.userphoto .outer-img');
     this.gname = this.el.querySelector('.groupname .chp-f p');
     this.gid = this.el.querySelector('.groupid .chp-f p');
-    this.gtype = this.el.querySelector('.grouptype .chp-f p');
+    this.gtype = this.el.querySelector('.groupinvite .chp-f p.type');
+    this.glink = this.el.querySelector('.groupinvite .chp-f p.link');
     this.gmember = this.el.querySelector('.groupmember .chp-u ul');
-
   }
   renderDetail() {
     this.gname.innerText = this.group.n;
@@ -83,6 +84,28 @@ export default class {
     this.gmember.prepend(scard);
   }
   btnListener() {
+    const btnDelete = this.el.querySelector('a.btn-delete');
+    btnDelete.onclick = async e => {
+      e.preventDefault();
+      if(this.isLocked) return;
+      this.isLocked = true;
+      const cDelete = await modal.confirm(lang.GRPS_DELETE);
+      if(!cDelete) {
+        this.isLocked = false;
+        return;
+      }
+
+      const setDelete = await modal.loading(xhr.post('/group/uwu/del-group', {id:this.group.id}));
+      if(setDelete?.code !== 200) {
+        await modal.alert(lang[setDelete.msg] || lang.ERROR);
+        this.isLocked = false;
+        return;
+      }
+
+      new Empty().run();
+      this.isLocked = false;
+    }
+
     const btnGname = this.el.querySelector('.btn-groupname');
     btnGname.onclick = async() => {
       if(this.isLocked === true) return;
@@ -120,7 +143,6 @@ export default class {
       this.gname.innerText = setGname.data.text;
       this.isLocked = false;
     }
-
 
     const btnImg = this.el.querySelector('.btn-img');
     btnImg.onclick = () => {
@@ -165,7 +187,46 @@ export default class {
       }
       inp.click();
     }
+    const btnType = this.el.querySelector('.btn-type');
+    btnType.onclick = async() => {
+      if(this.isLocked) return;
+      this.isLocked = true;
 
+      const typelist = [
+        {id: 'type-0', val: '0', label: lang.GRPS_TYPE_0},
+        {id: 'type-1', val: '1', label: lang.GRPS_TYPE_1},
+      ]
+
+      const typeIndex = typelist.findIndex(ltype => ltype.val === this.group.t);
+      if(typeIndex >= 0) typelist[typeIndex].actived = true;
+
+      const getType = await modal.select({
+        msg: lang.GRPS_TYPE,
+        ic: 'house-lock',
+        opt: {
+          name: 'type',
+          items: typelist
+        }
+      });
+      if(!getType) {
+        this.isLocked = false;
+        return;
+      }
+
+      const setType = await modal.loading(xhr.post('/group/uwu/set-type', {id:this.group.id, t: getType.type}));
+
+      if(setType?.code !== 200) {
+        await modal.alert(lang[setType.msg] || lang.ERROR);
+        this.isLocked = false;
+        return;
+      }
+
+      this.group.t = setType.data.text;
+      this.group.l = setType.data.link;
+      this.gtype.innerText = setType.data.text === '1' ? 'Private' : 'Public';
+      this.glink.innerHTML = `<a href="${window.location.origin}/group/invite/${setType.data.link}" target="_blank">${window.location.origin}/group/invite/${setType.data.link}</a>`;
+      this.isLocked = false;
+    }
   }
   destroy() {
     return new Promise(async resolve => {
