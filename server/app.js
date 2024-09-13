@@ -5,11 +5,13 @@ const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const app = express();
 const authRouter = require('./routes/auth');
-const imgRouter = require('./routes/img');
+const fileRouter = require('./routes/file');
 const accountRouter = require('./routes/account');
 const profileRouter = require('./routes/profile');
 const findRouter = require('./routes/find');
 const groupRouter = require('./routes/group');
+const chatRouter = require('./routes/chat');
+const inviteRouter = require('./routes/invite');
 const { ExpressPeerServer } = require('peer');
 const { peerKey } = require('./js/helper');
 const db = require('./js/db');
@@ -37,11 +39,13 @@ app.use(express.static('client'));
 app.set('view engine', 'ejs')
 
 app.use('/auth', authRouter);
-app.use('/img', imgRouter);
+app.use('/file', fileRouter);
 app.use('/account/uwu', accountRouter);
 app.use('/find/uwu', findRouter);
 app.use('/profile/uwu', profileRouter);
 app.use('/group/uwu', groupRouter);
+app.use('/chat/uwu', chatRouter);
+app.use('/invite', inviteRouter);
 
 app.get('/app', (req, res) => {
   return res.render('app');

@@ -1,5 +1,6 @@
 import modal from "../helper/modal.js";
 import sceneIn from "../helper/sceneIn.js";
+import xhr from "../helper/xhr.js";
 import db from "../manager/db.js";
 import elgen from "../manager/elgen.js";
 import userState from "../manager/userState.js";
@@ -13,7 +14,8 @@ export default class {
     this.id = 'content';
     this.isLocked = false;
     this.list = [];
-    this.contents = {text:null,img:null,rep:null,file:null};
+    this.contents = {text:null,rep:null,file:{name:null,content:null}};
+    this.planesend = false;
   }
   createElement() {
     this.el = document.createElement('div');
@@ -72,6 +74,9 @@ export default class {
       </div>
     </div>`;
     this.chatlist = this.el.querySelector('.mid .chats');
+    this.bottomclass = this.el.querySelector('.bottom');
+    this.midclass = this.el.querySelector('.mid');
+    this.topclass = this.el.querySelector('.top');
   }
   renderChats() {
     const csu = chatSelection(this.user, this.conty);
@@ -90,6 +95,8 @@ export default class {
       this.list.push(ch);
       const card = elgen.contentCard(ch, chts, this.conty);
       this.chatlist.append(card);
+      const chTxt = card.querySelector('.chp.text p');
+      if(chTxt && chTxt.offsetWidth >= 470) card.classList.add('long');
     });
   }
   btnListener() {
@@ -97,12 +104,152 @@ export default class {
     eluser.onclick = () => this.user.prof.run();
   }
   formListener() {
-    const inpMsg = this.el.querySelector('#content-input');
+    this.inpMsg = this.el.querySelector('#content-input');
+    this.inpMsg.oninput = () => this.growInput();
+    this.btnImg = this.el.querySelector('.btn-image');
+    this.btnImg.onclick = () => this.findFile('image/*');
+    this.btnFile = this.el.querySelector('.btn-attach');
+    this.btnFile.onclick = () => this.findFile();
     this.btnSend = this.el.querySelector('.btn-voice');
-    this.btnSend.onclick = async() => {}
+    this.btnSend.onclick = async() => {
+      if(this.planesend) return this.sendMessage();
+      return this.sendVoice();
+    }
+  }
+  growInput() {
+    if(!this.planesend && (this.inpMsg.value.trim().length > 0 || this.contents.file?.content)) {
+      this.planesend = true;
+      this.btnSend.innerHTML = `<i class="fa-solid fa-chevron-right"></i>`;
+    } else if(this.planesend && (this.inpMsg.value.trim().length < 1 && !this.contents.file.content)) {
+      this.planesend = false;
+      this.btnSend.innerHTML = `<i class="fa-solid fa-microphone"></i>`;
+    }
+
+    this.inpMsg.style.height = '24px';
+    const inpMsgSHeight = this.inpMsg.scrollHeight > 80 ? 80 : this.inpMsg.scrollHeight;
+    const inpDocumentSHeight = this.bottomclass.querySelector('.attach')?.offsetHeight || 0;
+    const repSHeight = this.bottomclass.querySelector('.embed')?.offsetHeight || 0;
+    const mediaHeights = inpDocumentSHeight + repSHeight;
+
+    this.inpMsg.style.height = inpMsgSHeight + 'px';
+    const forBottom = inpMsgSHeight < 30 ? (inpMsgSHeight + mediaHeights + 31) : (inpMsgSHeight + mediaHeights + (12 * 2));
+    this.bottomclass.style.height = forBottom + 'px';
+    this.midclass.style.height = `calc(100% - (60px + ${forBottom}px))`;
+  }
+  findFile(fileAccept = null) {
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    if(fileAccept) inp.accept = fileAccept;
+    inp.onchange = async() => {
+      const file = inp.files[0];
+
+      const filesrc = await new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          return resolve(reader.result);
+        }
+        reader.readAsDataURL(file);
+      });
+      this.contents.file.name = file.name;
+      this.contents.file.content = filesrc;
+      
+      const attachbefore = this.bottomclass.querySelector('.attach');
+      if(attachbefore) attachbefore.remove();
+
+      const attach = document.createElement('div');
+      attach.classList.add('attach');
+      attach.innerHTML = `<div class="media"></div><div class="close"><div class="btn"><i class="fa-duotone fa-circle-x"></i></div></div>`;
+
+      const imgExt = /\.([a-zA-Z0-9]+)$/;
+      const fileExt = file.name.match(imgExt)[1];
+
+      if(['gif', 'jpg', 'jpeg', 'png', 'webp'].includes(fileExt.toLowerCase())) {
+        this.showImage(attach, file);
+      } else {
+        this.showDocument(attach, file);
+      }
+      this.bottomclass.prepend(attach);
+      const repembed = this.bottomclass.querySelector('.embed');
+      if(repembed) this.bottomclass.prepend(repembed);
+      this.growInput();
+      const closeFile = attach.querySelector('.close');
+      closeFile.onclick = () => {
+        this.contents.file.name = null;
+        this.contents.file.content = null;
+        attach.remove();
+        this.growInput();
+      }
+    }
+    inp.click();
+  }
+  showImage(eattach, file) {
+    const tempsrc = URL.createObjectURL(file);
+    eattach.querySelector('.media').innerHTML = `<div class="img"></div><div class="name"><p>fivem_wp.jpg</p></div>`;
+    const eimg = eattach.querySelector('.media .img');
+    const ename = eattach.querySelector('.media .name');
+    ename.innerText = file.name;
+    const img = new Image();
+    img.src = tempsrc;
+    eimg.append(img);
+    img.onload = () => this.growInput();
+    img.onerror = () => {
+      img.remove();
+      this.showDocument(eattach, file);
+    }
+  }
+  showDocument(eattach, file) {
+    eattach.querySelector('.media').innerHTML = `<div class="document"><p></p></div>`;
+    eattach.querySelector('.media p').innerText = file.name;
+  }
+  async sendMessage() {
+    const card = elgen.contentCard({
+      id: "temp" + Date.now(),
+      ts: Date.now(),
+      txt: 'SENDING..',
+      u: db.ref.account.id,
+      unread: true
+    }, this.user.db, this.conty);
+    card.querySelector('.chp.text p').innerHTML = '<i class="sending"></i>';
+    card.querySelector('.chp.time p').innerHTML += ' <i class="fa-regular fa-clock"></i>';
+    card.querySelector('.chp.text p i').innerText = this.inpMsg.value.trim();
+    this.chatlist.append(card);
+    const chTxtTemp = card.querySelector('.chp.text p');
+    if(chTxtTemp && chTxtTemp.offsetWidth >= 470) card.classList.add('long');
+
+    this.contents.text = this.inpMsg.value.trim().length < 1 ? null : this.inpMsg.value.trim();
+
+    const data = {conty:this.conty, id:this.user.id};
+    if(this.contents.text) data.txt = this.contents.text;
+    if(this.contents.file?.name && this.contents.file?.content) data.file = {...this.contents.file};
+    if(this.contents.rep) data.rep = this.contents.rep;
+
+    this.inpMsg.value = '';
+    this.contents.file.name = null;
+    this.contents.file.content = null;
+    this.contents.rep = null;
+
+    this.growInput();
+
+    const sendMsg = await xhr.post('/chat/uwu/sendMessage', data);
+    if(sendMsg?.code !== 200) {
+      card.querySelector('.chp.text p').innerHTML = `<i class="failed">Gagal Mengirim Pesan<i>`;
+      await modal.waittime(10000);
+      card.remove();
+      return;
+    }
+    card.remove();
+    this.list.push(sendMsg.data);
+    const sentcard = elgen.contentCard(sendMsg.data, this.user.db, this.conty);
+    this.chatlist.appendChild(sentcard);
+    const chTxt = sentcard.querySelector('.chp.text p');
+    if(chTxt && chTxt.offsetWidth >= 470) sentcard.classList.add('long');
+  }
+  sendVoice() {
+    alert('not yet available');
   }
   destroy() {
     return new Promise(async resolve => {
+      this.inpMsg.removeEventListener('input', this.growInput);
       this.el.classList.add('out');
       await modal.waittime();
       this.el.remove();
@@ -120,6 +267,7 @@ export default class {
     sceneIn(this.el);
     this.btnListener();
     this.renderChats();
+    this.formListener();
   }
 }
 
@@ -138,6 +286,6 @@ function chatSelection(obj, conty) {
   }
 }
 function imageSelection(obj, conty) {
-  if(conty === 1) return obj.img ? `/img/user/${obj.id}` : '/assets/user.jpg';
-  if(conty === 2) return obj.i ? `/img/group/${obj.id}` : '/assets/group.jpg';
+  if(conty === 1) return obj.img ? `/file/user/${obj.id}` : '/assets/user.jpg';
+  if(conty === 2) return obj.i ? `/file/group/${obj.id}` : '/assets/group.jpg';
 }

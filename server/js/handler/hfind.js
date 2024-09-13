@@ -1,4 +1,5 @@
 const db = require("../db");
+const hgroup = require("./hgroup");
 const hprofile = require("./hprofile");
 
 module.exports = {
@@ -13,5 +14,16 @@ module.exports = {
       return hprofile.getUser(uid,{id:key});
     });
     return {code:200,msg:'ok',data:{users}};
+  },
+  groupInvite(uid, p = null) {
+    if(!p) return {code:400};
+
+    const gdb = db.ref.g;
+    const gkey = Object.keys(gdb).find(key => gdb[key].l === p);
+    if(!gkey) return {code:400};
+
+    const group = hgroup.getGroup(uid, {id:gkey});
+    if(!group?.code || group?.code === 200) return {code:200,data:group};
+    return group;
   }
 }

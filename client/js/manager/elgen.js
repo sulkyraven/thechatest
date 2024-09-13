@@ -6,7 +6,7 @@ function chtsCard(ch) {
   card.innerHTML = `
   <div class="left">
     <div class="img">
-      <img src="${ch.img ? `/img/${ch.cy===0?'user':'group'}/${ch.id}` : `/assets/${ch.cy===0?'user':'group'}.jpg`}" alt="${ch.username}" alt="user" width="50"/>
+      <img src="${ch.img ? `/file/${ch.cy===0?'user':'group'}/${ch.id}` : `/assets/${ch.cy===0?'user':'group'}.jpg`}" alt="${ch.username}" alt="user" width="50"/>
     </div>
     <div class="detail">
       <div class="name"><p></p></div>
@@ -36,7 +36,7 @@ export default {
     card_b.innerHTML = `<div class="last"></div><div class="unread"></div>`;
 
     const content = db.ref.chats?.find(ct => ct.users.find(k => k.id === ch.id)).chats;
-    const unread = content.filter(ct => ct.unread === true).length;
+    const unread = content.filter(ct => ct.unread === true && ct.u !== db.ref.account.id).length;
     const lastObj = content[content.length - 1];
     if(!lastObj) return card;
     
@@ -54,19 +54,21 @@ export default {
     }
   
     const elLastText = card.querySelector('.detail .last');
-    if(lastObj.type === 'img') {
-      if(lastObj.txt && lastObj.txt.length > 1) {
+    if(lastObj.i) {
+      const imgExt = /\.([a-zA-Z0-9]+)$/;
+      const fileExt = lastObj.i.match(imgExt)[1];
+
+      if(['gif', 'jpg', 'jpeg', 'png', 'webp'].includes(fileExt.toLowerCase())) {
         elLastText.innerHTML = '<i class="fa-light fa-image"></i> ';
-        elLastText.innerText += txtSS(lastObj.txt.replace(/\s/g, ' '), 20);
-      }
-      elLastText.innerHTML = '<i class="fa-light fa-image"></i> Image';
-    } else if(lastObj.type === 'file') {
-      if(lastObj.txt && lastObj.txt.length > 1) {
+      } else {
         elLastText.innerHTML = '<i class="fa-light fa-file"></i> ';
-        elLastText.innerText += txtSS(lastObj.txt.replace(/\s/g, ' '), 20);
       }
-      elLastText.innerHTML = '<i class="fa-light fa-file"></i> Image';
-    } else if(lastObj.type === 'voice') {
+      if(lastObj.txt && lastObj.txt.length > 1) {
+        elLastText.append(txtSS(lastObj.txt.replace(/\s/g, ' '), 20));
+      } else {
+        elLastText.append('Media');
+      }
+    } else if(lastObj.v) {
       elLastText.innerHTML = '<i class="fa-light fa-microphone"></i> Voice Chat';
     } else {
       elLastText.innerText = txtSS(lastObj.txt.replace(/\s/g, ' '), 20);
@@ -86,25 +88,42 @@ export default {
     if(ch.u === db.ref.account.id) {
       card.classList.add('me');
       username = db.ref.account.username;
-    } else {
+    } else { 
       username = chts.users.find(k => k.id === ch.u).username;
     }
     card.innerHTML = `
     ${conty !== 1 ? `<div class="chp sender"><div class="name">${username}</div></div>` : ''}
-    <div class="chp text">
-      <p>lorem ipsum</p>
-    </div>
+    ${ch.i ? `<div class="chp attach"></div>` : ''}
+    ${ch.txt ? `<div class="chp text">
+      <p></p>
+    </div>` : ''}
     <div class="chp time">
-      <p>${new Date(ch.ts).toLocaleString()}</p>
+      <p>${new Date(ch.ts).toLocaleString()} ${!ch.unread && ch.u === db.ref.account.id ? '<i class="fa-regular fa-envelope-open"></i>' : ''}</p>
     </div>`;
 
-    const chTxt = card.querySelector('.chp.text p');
-    chTxt.innerText = ch.txt;
-    if(ch.txt.includes('\n')) {
-      const textlongest = ch.txt.split('\n').sort((a,b) => b.length - a.length)[0];
-      if(textlongest.length < 33) card.classList.add('short');
-    } else {
-      if(ch.txt.length < 33) card.classList.add('short');
+    if(ch.i) {
+      const imgExt = /\.([a-zA-Z0-9]+)$/;
+      const fileExt = ch.i.match(imgExt)[1];
+
+      if(['gif', 'jpg', 'jpeg', 'png', 'webp'].includes(fileExt.toLowerCase())) {
+        card.querySelector('.attach').innerHTML = `<div class="img"></div>`;
+        const newImg = new Image();
+        newImg.src = `/file/content/${chts.id}/${ch.i}`;
+        card.querySelector('.attach .img').append(newImg);
+        newImg.onload = () => card.classList.add('long');
+        newImg.onerror = () => {
+          card.querySelector('.attach').innerHTML = `<div class="document"><p></p></div>`;
+          card.querySelector('.attach .document p').innerText = ch.i;
+        }
+      } else {
+        card.querySelector('.attach').innerHTML = `<div class="document"><p></p></div>`;
+        card.querySelector('.attach .document p').innerText = ch.i;
+      }
+    }
+
+    if(ch.txt) {
+      const chTxt = card.querySelector('.chp.text p');
+      chTxt.innerText = ch.txt;
     }
 
     return card;
@@ -113,7 +132,7 @@ export default {
     const card = document.createElement('li');
     card.innerHTML = `
     <div class="left">
-      <img src="${usr.img?`/img/user/${usr.id}`:'/assets/user.jpg'}" alt="${usr.username}"/>
+      <img src="${usr.img?`/file/user/${usr.id}`:'/assets/user.jpg'}" alt="${usr.username}"/>
       <p class="uname">${usr.username} ${usr.id === oid ? '<i class="fa-light fa-user-crown"></i>' : ''}</p>
     </div>
     ${db.ref.account.id === oid && db.ref.account.id !== usr.id ? `<div class="right"><div class="btn btn-kick"><i class="fa-solid fa-circle-x"></i></div></div>` : ''}`;
@@ -124,40 +143,41 @@ export default {
     card_b.innerHTML = `<div class="last"></div><div class="unread"></div>`;
 
     const content = db.ref.groups?.find(ct => ct.id === ch.id).chats;
-    const unread = content.filter(ct => ct.unread === true).length;
+    const unread = content.filter(ct => ct.unread === true && ct.u !== db.ref.account.id).length;
     const lastObj = content[content.length - 1];
     if(!lastObj) return card;
-
     if(unread >= 1) card.querySelector('.right .unread').innerHTML = `<div class="circle">${unread}</div>`;
   
     const tNow = new Date(Date.now());
     const tOld = new Date(lastObj.ts);
   
     const sameDay = tNow.getFullYear() === tOld.getFullYear() && tNow.getMonth() === tOld.getMonth() && tNow.getDate() === tOld.getDate();
-  
+
     if(sameDay) {
       card.querySelector('.right .last').innerText = `${tOld.getHours()}:${tOld.getMinutes()}`;
     } else {
       card.querySelector('.right .last').innerText = `${tOld.getDate()}/${tOld.getMonth()}/${tOld.getFullYear()}`;
     }
-  
+
     const elLastText = card.querySelector('.detail .last');
     const user = lastObj.u === db.ref.account.id ? db.ref.account.username : ch.users.find(k => {
       return k.id === lastObj.u;
     }).username;
-    if(lastObj.type === 'img') {
-      if(lastObj.txt && lastObj.txt.length > 1) {
+    if(lastObj.i) {
+      const imgExt = /\.([a-zA-Z0-9]+)$/;
+      const fileExt = lastObj.i.match(imgExt)[1];
+
+      if(['gif', 'jpg', 'jpeg', 'png', 'webp'].includes(fileExt.toLowerCase())) {
         elLastText.innerHTML = '<i class="fa-light fa-image"></i> ';
-        elLastText.innerText += txtSS((`${user}: ${lastObj.txt}`).replace(/\s/g, ' '), 20);
-      }
-      elLastText.innerHTML = '<i class="fa-light fa-image"></i> Image';
-    } else if(lastObj.type === 'file') {
-      if(lastObj.txt && lastObj.txt.length > 1) {
+      } else {
         elLastText.innerHTML = '<i class="fa-light fa-file"></i> ';
-        elLastText.innerText += txtSS((`${user}: ${lastObj.txt}`).replace(/\s/g, ' '), 20);
       }
-      elLastText.innerHTML = '<i class="fa-light fa-file"></i> Image';
-    } else if(lastObj.type === 'voice') {
+      if(lastObj.txt && lastObj.txt.length > 1) {
+        elLastText.append(txtSS((`${user}: ${lastObj.txt}`).replace(/\s/g, ' '), 20));
+      } else {
+        elLastText.append(txtSS((`${user}: Media`).replace(/\s/g, ' '), 20));
+      }
+    } else if(lastObj.v) {
       elLastText.innerHTML = '<i class="fa-light fa-microphone"></i> Voice Chat';
     } else {
       elLastText.innerText = txtSS((`${user}: ${lastObj.txt}`).replace(/\s/g, ' '), 20);

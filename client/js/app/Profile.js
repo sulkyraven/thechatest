@@ -22,7 +22,7 @@ export default class {
     <div class="wall">
       <div class="chp displayname"><p></p></div>
       <div class="chp img">
-        <img src="${this.user.img?`/img/user/${this.user.id}`:'/assets/user.jpg'}" alt="${this.user.username}"/>
+        <img src="${this.user.img?`/file/user/${this.user.id}`:'/assets/user.jpg'}" alt="${this.user.username}"/>
       </div>
       <div class="chp username"><p>@${this.user.username}</p></div>
       <div class="chp bio">

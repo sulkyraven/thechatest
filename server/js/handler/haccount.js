@@ -62,15 +62,15 @@ module.exports = {
     const buffer = Buffer.from(dataurl.split(',')[1], 'base64');
     if(buffer.length > 2000000) return {code:400,msg:'ACC_IMG_LIMIT'}
 
-    if(!fs.existsSync('./server/dbimg')) fs.mkdirSync('./server/dbimg');
-    if(!fs.existsSync(`./server/dbimg/user`)) fs.mkdirSync(`./server/dbimg/user`);
+    if(!fs.existsSync('./server/dbfile')) fs.mkdirSync('./server/dbfile');
+    if(!fs.existsSync(`./server/dbfile/user`)) fs.mkdirSync(`./server/dbfile/user`);
 
     const udb = db.ref.u[uid];
-    if(udb.img) if(fs.existsSync(`./server/dbimg/user/${udb.img}`)) fs.unlinkSync(`./server/dbimg/user/${udb.img}`);
+    if(udb.img) if(fs.existsSync(`./server/dbfile/user/${udb.img}`)) fs.unlinkSync(`./server/dbfile/user/${udb.img}`);
 
     const imgExt = /\.([a-zA-Z0-9]+)$/;
     const imgName = `${uid}.${s.name.match(imgExt)[1]}`;
-    fs.writeFileSync(`./server/dbimg/user/${imgName}`, buffer);
+    fs.writeFileSync(`./server/dbfile/user/${imgName}`, buffer);
 
     db.ref.u[uid].img = imgName;
     db.save('u');

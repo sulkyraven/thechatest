@@ -5,7 +5,7 @@ module.exports = {
   getUser(uid, s) {
     if(!validate(['id'], s)) return {code:400}
     const udb = db.ref.u[s.id];
-    if(!uid) return {code:400,msg:'FIND_NOTFOUND'};
+    if(!udb) return {code:400,msg:'FIND_NOTFOUND'};
 
     let data = {
       id: s.id, username: udb.uname,

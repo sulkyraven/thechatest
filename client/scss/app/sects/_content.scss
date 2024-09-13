@@ -209,8 +209,8 @@
       .card {
         margin-left: 0;
         margin-right: auto;
-        width: calc(100% - 40px);
-        max-width: 500px;
+        width: fit-content;
+        max-width: calc(100% - 40px);
         padding: 10px;
         border-radius: 10px;
         background-color: v.$sgray;
@@ -326,6 +326,12 @@
             word-break: break-all;
             word-break: break-word;
             hyphens: auto;
+            .failed {
+              color: v.$sred;
+            }
+            .sending {
+              color: v.$softwhite;
+            }
           }
         }
         .time {
@@ -334,8 +340,9 @@
           color: v.$softwhite;
         }
       }
-      .card.short {
-        width: fit-content;
+      .card.long {
+        width: calc(100% - 40px);
+        max-width: 450px;
       }
       .card.me {
         margin-right: 0;

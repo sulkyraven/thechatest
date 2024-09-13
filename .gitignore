@@ -7,7 +7,7 @@ client/css
 client/**.html
 !client/index.html
 server/db/**.json
-server/dbimg
+server/dbfile
 server/config/firebase-adminsdk.json
 server/sessions/
 !server/sessions/df.txt

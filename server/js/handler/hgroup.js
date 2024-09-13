@@ -5,6 +5,18 @@ const hprofile = require('./hprofile');
 const helper = require('../helper');
 
 module.exports = {
+  getGroup(uid, s) {
+    if(!validate(['id'], s)) return {code:400};
+    const gdb = db.ref.g[s.id];
+    const data = {
+      o: gdb.o, n:gdb.n, id:s.id, t:gdb.t,
+      users: gdb.u.filter(k => k !== uid && !hprofile.getUser(uid, {id:k})?.code).map(k => hprofile.getUser(uid, {id:k})),
+      chats: Object.keys(gdb.c).map(k => { return {...gdb.c[k], id:k} })
+    }
+    if(gdb.i) data.i = gdb.i;
+    if(gdb.o === uid || gdb.t === '0') data.l = gdb.l;
+    return data;
+  },
   create(uid, s) {
     if(!validate(['name'], s)) return {code:400};
     const transname = /(\s)(?=\s)/g;
@@ -37,14 +49,14 @@ module.exports = {
     const buffer = Buffer.from(dataurl.split(',')[1], 'base64');
     if(buffer.length > 2000000) return {code:400, msg: 'ACC_IMG_LIMIT'};
 
-    if(!fs.existsSync('./server/dbimg')) fs.mkdirSync('./server/dbimg');
-    if(!fs.existsSync(`./server/dbimg/group`)) fs.mkdirSync(`./server/dbimg/group`);
+    if(!fs.existsSync('./server/dbfile')) fs.mkdirSync('./server/dbfile');
+    if(!fs.existsSync(`./server/dbfile/group`)) fs.mkdirSync(`./server/dbfile/group`);
 
-    if(gdb.i) if(fs.existsSync(`./server/dbimg/group/${gdb.i}`)) fs.unlinkSync(`./server/dbimg/group/${gdb.i}`);
+    if(gdb.i) if(fs.existsSync(`./server/dbfile/group/${gdb.i}`)) fs.unlinkSync(`./server/dbfile/group/${gdb.i}`);
 
     const imgExt = /\.([a-zA-Z0-9]+)$/;
     const imgName = `${s.id}.${s.name.match(imgExt)[1]}`;
-    fs.writeFileSync(`./server/dbimg/group/${imgName}`, buffer);
+    fs.writeFileSync(`./server/dbfile/group/${imgName}`, buffer);
 
     db.ref.g[s.id].i = imgName;
     db.save('g');
@@ -91,7 +103,7 @@ module.exports = {
     const gdb = db.ref.g[s.id];
     if(!gdb) return {code:400};
     if(gdb.o !== uid) return {code:400};
-    if(gdb.i) if(fs.existsSync(`./server/dbimg/group/${gdb.i}`)) fs.unlinkSync(`./server/dbimg/group/${gdb.i}`);
+    if(gdb.i) if(fs.existsSync(`./server/dbfile/group/${gdb.i}`)) fs.unlinkSync(`./server/dbfile/group/${gdb.i}`);
 
     delete db.ref.g[s.id];
     db.save('g');

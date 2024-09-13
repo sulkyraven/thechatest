@@ -21,7 +21,7 @@ export default class {
     <div class="wall">
       <div class="chp userphoto">
         <div class="outer-img">
-          <img src="${db.ref.account.img ? `/img/user/${db.ref.account.id}` : '/assets/user.jpg'}" alt="${db.ref.account.username}"/>
+          <img src="${db.ref.account.img ? `/file/user/${db.ref.account.id}` : '/assets/user.jpg'}" alt="${db.ref.account.username}"/>
           <div class="btn btn-img"><i class="fa-solid fa-pen-to-square"></i></div>
         </div>
       </div>

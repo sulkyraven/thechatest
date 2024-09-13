@@ -28,7 +28,7 @@ export default class {
     <div class="wall">
       <div class="chp userphoto">
         <div class="outer-img">
-          <img src="${this.group.i ? `/img/group/${this.group.id}` : '/assets/group.jpg'}" alt="${this.group.id}"/>
+          <img src="${this.group.i ? `/file/group/${this.group.id}` : '/assets/group.jpg'}" alt="${this.group.id}"/>
           <div class="btn btn-img"><i class="fa-solid fa-pen-to-square"></i></div>
         </div>
       </div>
@@ -50,7 +50,7 @@ export default class {
           <div class="chp-t">Group Invite Link</div>
           <div class="chp-f">
             <p class="type">Private</p>
-            <p class="link"><a href="${window.location.origin}/group/invite/${this.group.l}" target="_blank">${window.location.origin}/group/invite/${this.group.l}</a></p>
+            <p class="link"><a href="${window.location.origin}/invite/g/${this.group.l}" target="_blank">${window.location.origin}/invite/g/${this.group.l}</a></p>
           </div>
           <div class="chp-e btn-type">Change Group Invite <i class="fa-solid fa-chevron-down"></i></div>
         </div>
@@ -224,7 +224,7 @@ export default class {
       this.group.t = setType.data.text;
       this.group.l = setType.data.link;
       this.gtype.innerText = setType.data.text === '1' ? 'Private' : 'Public';
-      this.glink.innerHTML = `<a href="${window.location.origin}/group/invite/${setType.data.link}" target="_blank">${window.location.origin}/group/invite/${setType.data.link}</a>`;
+      this.glink.innerHTML = `<a href="${window.location.origin}/invite/g/${setType.data.link}" target="_blank">${window.location.origin}/invite/g/${setType.data.link}</a>`;
       this.isLocked = false;
     }
   }
