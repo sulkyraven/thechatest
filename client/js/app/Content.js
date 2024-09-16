@@ -101,7 +101,14 @@ export default class {
   }
   btnListener() {
     const eluser = document.querySelector('.top .left .user');
-    eluser.onclick = () => this.user.prof.run();
+    eluser.onclick = async() => {
+      if(userState.locked.bottom) return;
+      userState.locked.bottom = true;
+      await userState.pmbottom?.destroy?.();
+      if(this.user.img.includes('/assets/')) delete this.user.img;
+      this.user.prof.run();
+      userState.locked.bottom = false;
+    }
   }
   formListener() {
     this.inpMsg = this.el.querySelector('#content-input');
@@ -156,31 +163,32 @@ export default class {
       const attachbefore = this.bottomclass.querySelector('.attach');
       if(attachbefore) attachbefore.remove();
 
-      const attach = document.createElement('div');
-      attach.classList.add('attach');
-      attach.innerHTML = `<div class="media"></div><div class="close"><div class="btn"><i class="fa-duotone fa-circle-x"></i></div></div>`;
+      this.attach = document.createElement('div');
+      this.attach.classList.add('attach');
+      this.attach.innerHTML = `<div class="media"></div><div class="close"><div class="btn"><i class="fa-duotone fa-circle-x"></i></div></div>`;
 
       const imgExt = /\.([a-zA-Z0-9]+)$/;
       const fileExt = file.name.match(imgExt)[1];
 
       if(['gif', 'jpg', 'jpeg', 'png', 'webp'].includes(fileExt.toLowerCase())) {
-        this.showImage(attach, file);
+        this.showImage(this.attach, file);
       } else {
-        this.showDocument(attach, file);
+        this.showDocument(this.attach, file);
       }
-      this.bottomclass.prepend(attach);
+      this.bottomclass.prepend(this.attach);
       const repembed = this.bottomclass.querySelector('.embed');
       if(repembed) this.bottomclass.prepend(repembed);
       this.growInput();
-      const closeFile = attach.querySelector('.close');
-      closeFile.onclick = () => {
-        this.contents.file.name = null;
-        this.contents.file.content = null;
-        attach.remove();
-        this.growInput();
-      }
+      const closeFile = this.attach.querySelector('.close');
+      closeFile.onclick = () => this.closeAttach();
     }
     inp.click();
+  }
+  closeAttach() {
+    this.contents.file.name = null;
+    this.contents.file.content = null;
+    this.attach?.remove();
+    this.growInput();
   }
   showImage(eattach, file) {
     const tempsrc = URL.createObjectURL(file);
@@ -228,6 +236,7 @@ export default class {
     this.contents.file.content = null;
     this.contents.rep = null;
 
+    this.closeAttach();
     this.growInput();
 
     const sendMsg = await xhr.post('/chat/uwu/sendMessage', data);
@@ -238,7 +247,25 @@ export default class {
       return;
     }
     card.remove();
-    this.list.push(sendMsg.data);
+    if(!this.user.db) {
+      const newData =  {
+        id: sendMsg.data.ckey,
+        users: [{}],
+        chats: []
+      };
+      Object.keys(this.user).forEach(k => {
+        if(k === 'img' && !this.user.img.includes('/assets/')) {
+          newData.users[0][k] = this.user[k];
+        }
+        if(['id', 'username', 'displayName', 'bio', 'peer', 'myreq', 'theirreq', 'isfriend'].includes(k)) {
+          newData.users[0][k] = this.user[k];
+        }
+      });
+      newData.chats.push(sendMsg.data);
+      db.ref.chats.push(newData);
+      return this.renderChats();
+    }
+    this.user.db.chats.push(sendMsg.data);
     const sentcard = elgen.contentCard(sendMsg.data, this.user.db, this.conty);
     this.chatlist.appendChild(sentcard);
     const chTxt = sentcard.querySelector('.chp.text p');
@@ -249,6 +276,9 @@ export default class {
   }
   destroy() {
     return new Promise(async resolve => {
+      this.list = [];
+      this.contents = {text:null,rep:null,file:{name:null,content:null}};
+      this.planesend = false;
       this.inpMsg.removeEventListener('input', this.growInput);
       this.el.classList.add('out');
       await modal.waittime();
@@ -259,7 +289,6 @@ export default class {
     });
   }
   async run() {
-    await userState.pmbottom?.destroy?.();
     userState.pmbottom = this;
     this.user.img = imageSelection(this.user, this.conty);
     this.createElement();

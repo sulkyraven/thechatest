@@ -5,6 +5,7 @@ class userState {
     this.pmtop = null;
     this.pmmid = null;
     this.pmbottom = null;
+    this.locked = { bottom: false, mid: false }
   }
   save() {
     window.localStorage.setItem('kirimin_cache_01', JSON.stringify({

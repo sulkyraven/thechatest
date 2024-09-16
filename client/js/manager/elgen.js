@@ -1,3 +1,4 @@
+import sdate from "../helper/sdate.js";
 import db from "./db.js";
 
 function chtsCard(ch) {
@@ -41,16 +42,13 @@ export default {
     if(!lastObj) return card;
     
     if(unread >= 1) card.querySelector('.right .unread').innerHTML = `<div class="circle">${unread}</div>`;
-  
-    const tNow = new Date(Date.now());
-    const tOld = new Date(lastObj.ts);
-  
-    const sameDay = tNow.getFullYear() === tOld.getFullYear() && tNow.getMonth() === tOld.getMonth() && tNow.getDate() === tOld.getDate();
-  
+
+    const sameDay = sdate.sameday(new Date(Date.now()), new Date(lastObj.ts));
+    const eTimeStamp = card.querySelector('.right .last');
     if(sameDay) {
-      card.querySelector('.right .last').innerText = `${tOld.getHours()}:${tOld.getMinutes()}`;
+      eTimeStamp.innerText = sdate.time(lastObj.ts);
     } else {
-      card.querySelector('.right .last').innerText = `${tOld.getDate()}/${tOld.getMonth()}/${tOld.getFullYear()}`;
+      eTimeStamp.innerText = sdate.date(lastObj.ts);
     }
   
     const elLastText = card.querySelector('.detail .last');
@@ -98,8 +96,24 @@ export default {
       <p></p>
     </div>` : ''}
     <div class="chp time">
-      <p>${new Date(ch.ts).toLocaleString()} ${!ch.unread && ch.u === db.ref.account.id ? '<i class="fa-regular fa-envelope-open"></i>' : ''}</p>
+      <p></p>
     </div>`;
+
+    const sameDay = sdate.sameday(new Date(Date.now()), new Date(ch.ts));
+    const eTimeStamp = card.querySelector('.time p');
+    if(sameDay) {
+      eTimeStamp.innerText = sdate.time(ch.ts);
+    } else {
+      eTimeStamp.innerText = `${sdate.date(ch.ts)} ${sdate.time(ch.ts)}`;
+    }
+
+    if(ch.u === db.ref.account.id) {
+      if(ch.unread) {
+        eTimeStamp.innerHTML += ' <i class="fa-regular fa-check"></i>';
+      } else {
+        eTimeStamp.innerHTML += ' <i class="fa-regular fa-check-double cy"></i>';
+      }
+    }
 
     if(ch.i) {
       const imgExt = /\.([a-zA-Z0-9]+)$/;
@@ -148,15 +162,12 @@ export default {
     if(!lastObj) return card;
     if(unread >= 1) card.querySelector('.right .unread').innerHTML = `<div class="circle">${unread}</div>`;
   
-    const tNow = new Date(Date.now());
-    const tOld = new Date(lastObj.ts);
-  
-    const sameDay = tNow.getFullYear() === tOld.getFullYear() && tNow.getMonth() === tOld.getMonth() && tNow.getDate() === tOld.getDate();
-
+    const sameDay = sdate.sameday(new Date(Date.now()), new Date(lastObj.ts));
+    const eTimeStamp = card.querySelector('.right .last');
     if(sameDay) {
-      card.querySelector('.right .last').innerText = `${tOld.getHours()}:${tOld.getMinutes()}`;
+      eTimeStamp.innerText = sdate.time(lastObj.ts);
     } else {
-      card.querySelector('.right .last').innerText = `${tOld.getDate()}/${tOld.getMonth()}/${tOld.getFullYear()}`;
+      eTimeStamp.innerText = sdate.date(lastObj.ts);
     }
 
     const elLastText = card.querySelector('.detail .last');

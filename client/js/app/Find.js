@@ -62,7 +62,13 @@ export default class {
         const card = elgen.findCard(usr);
         cardlist.append(card);
         this.isLocked = false;
-        card.onclick = async() => new Profile({user:usr}).run();
+        card.onclick = async() => {
+          if(userState.locked.bottom) return;
+          userState.locked.bottom = true;
+          await userState.pmbottom?.destroy?.();
+          new Profile({user:usr}).run();
+          userState.locked.bottom = false;
+        }
       });
     }
   }
@@ -77,9 +83,8 @@ export default class {
     });
   }
   async run() {
-    await userState.pmmid?.destroy?.();
-    lang = userState.langs[userState.lang];
     userState.pmmid = this;
+    lang = userState.langs[userState.lang];
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
     sceneIn(this.el);

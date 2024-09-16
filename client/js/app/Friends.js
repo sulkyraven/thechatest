@@ -28,7 +28,13 @@ export default class {
       this.list.push(ch);
       const card = elgen.friendCard(ch);
       this.cardlist.append(card);
-      card.onclick = () => new Profile({user:ch}).run();
+      card.onclick = async() => {
+        if(userState.locked.bottom) return;
+        userState.locked.bottom = true;
+        await userState.pmbottom?.destroy?.();
+        new Profile({user:ch}).run();
+        userState.locked.bottom = false;
+      }
     });
     if(this.list.length < 1) {
       this.cardlist.innerHTML = `<p class="center"><i>${lang.CHTS_NOCHAT}</i></p>`;
@@ -45,9 +51,8 @@ export default class {
     })
   }
   async run() {
-    await userState.pmmid?.destroy?.();
-    lang = userState.langs[userState.lang];
     userState.pmmid = this;
+    lang = userState.langs[userState.lang];
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
     sceneIn(this.el);

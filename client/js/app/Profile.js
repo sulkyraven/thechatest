@@ -126,7 +126,13 @@ export default class {
   }
   btnListener() {
     const btnChat = this.el.querySelector('.actions .btn-chat');
-    btnChat.onclick = () => new Content({user:this.user,conty:1}).run();
+    btnChat.onclick = async() => {
+      if(userState.locked.bottom) return;
+      userState.locked.bottom = true;
+      await userState.pmbottom?.destroy?.();
+      new Content({user:this.user,conty:1}).run();
+      userState.locked.bottom = false;
+    }
     const btnCall = this.el.querySelector('.actions .btn-call');
     const btnVideo = this.el.querySelector('.actions .btn-video');
   }
@@ -141,9 +147,8 @@ export default class {
     });
   }
   async run() {
-    lang = userState.langs[userState.lang];
-    await userState.pmbottom?.destroy?.();
     userState.pmbottom = this;
+    lang = userState.langs[userState.lang];
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
     sceneIn(this.el);

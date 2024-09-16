@@ -23,7 +23,11 @@ export default class {
   btnListener() {
     const btnSettings = this.el.querySelector('.btn-settings');
     btnSettings.onclick = async() => {
+      if(userState.locked.bottom) return;
+      userState.locked.bottom = true;
+      await userState.pmbottom?.destroy?.();
       new Account().run();
+      userState.locked.bottom = false;
     }
   }
   run() {

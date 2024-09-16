@@ -102,7 +102,11 @@ export default class {
         return;
       }
 
+      if(userState.locked.bottom) return;
+      userState.locked.bottom = true;
+      await userState.pmbottom?.destroy?.();
       new Empty().run();
+      userState.locked.bottom = false;
       this.isLocked = false;
     }
 
@@ -239,7 +243,6 @@ export default class {
     });
   }
   async run() {
-    await userState.pmbottom?.destroy?.();
     userState.pmbottom = this;
     lang = userState.langs[userState.lang];
     this.createElement();

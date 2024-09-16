@@ -338,6 +338,9 @@
           text-align: right;
           font-size: 0.8rem;
           color: v.$softwhite;
+          .cy {
+            color: v.$yellow;
+          }
         }
       }
       .card.long {

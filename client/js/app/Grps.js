@@ -44,7 +44,11 @@ export default class {
       }
 
       this.isLocked = false;
+      if(userState.locked.bottom) return;
+      userState.locked.bottom = true;
+      await userState.pmbottom?.destroy?.();
       new GroupSetting({group:cgroup.data.group}).run();
+      userState.locked.bottom = false;
     }
   }
   getGroupList() {
@@ -58,7 +62,13 @@ export default class {
       this.list.push(ch);
       const card = elgen.groupCard(ch);
       this.cardlist.append(card);
-      card.onclick = () => new Content({user:ch, conty:2}).run();
+      card.onclick = async() => {
+        if(userState.locked.bottom) return;
+        userState.locked.bottom = true;
+        await userState.pmbottom?.destroy?.();
+        new Content({user:ch, conty:2}).run();
+        userState.locked.bottom = false;
+      }
     });
     if(this.list.length < 1) {
       this.cardlist.innerHTML = `<p class="center"><i>${lang.CHTS_NOCHAT}</i></p>`;
@@ -76,7 +86,6 @@ export default class {
     });
   }
   async run() {
-    await userState.pmmid?.destroy?.();
     userState.pmmid = this;
     lang = userState.langs[userState.lang];
     this.createElement();

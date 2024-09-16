@@ -289,7 +289,6 @@ export default class {
     });
   }
   async run() {
-    await userState.pmbottom?.destroy?.();
     userState.pmbottom = this;
     lang = userState.langs[userState.lang];
     this.createElement();
