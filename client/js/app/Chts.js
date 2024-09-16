@@ -19,9 +19,13 @@ export default class {
   }
   getChatList() {
     this.cardlist = this.el.querySelector('.card-list');
-    
-    const ndb = db.ref?.chats || [];
+    const ndb = (db.ref?.chats || []).sort((a, b) => {
+      if(a.chats[a.chats.length - 1].ts < b.chats[b.chats.length - 1].ts) return 1;
+      if(a.chats[a.chats.length - 1].ts > b.chats[b.chats.length - 1].ts) return -1;
+      return 0;
+    });
     const odb = this.list || [];
+    ndb.forEach(k => console.log(k.users));
 
     const fdb = ndb.filter(ch => !odb.map(och => och.id).includes(ch.id));
     fdb.forEach(ch => {

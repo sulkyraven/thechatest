@@ -10,6 +10,7 @@ let lang = {};
 
 export default class {
   constructor() {
+    this.id = 'groups';
     this.isLocked = false;
     this.list = [];
   }

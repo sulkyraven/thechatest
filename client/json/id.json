@@ -2,6 +2,7 @@
   "TYPE_HERE": "Tulis Sesuatu",
   "ERROR": "Terjadi kesalahan",
   "UNAUTHORIZED": "Kesalahan<br/>Silakan login ulang dengan refresh halaman ini",
+  "DELETED_USER": "Pengguna Terhapus",
   "IMG_ERR": "Gambarnya ga bisa ditampilin",
   "SIGN_01A": "MASUK AKUN",
   "SIGN_01B": "MASUK",
@@ -62,5 +63,6 @@
   "GRPS_DELETE": "Bubarkan Grup",
   "GRPS_LEAVE": "Keluar dari grup",
   "GRPS_DELETE_CONFIRM": "Yakin nih grupnya mau dihapus?",
-  "GRPS_LEAVE_CONFIRM": "Keluar dari grup?"
+  "GRPS_LEAVE_CONFIRM": "Keluar dari grup?",
+  "GRPS_KICK_CONFIRM": "Keluarkan @<b>{uname}</b> dari grup?"
 }

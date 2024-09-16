@@ -16,7 +16,7 @@ module.exports = {
 
     let data = {email: udb.email, username: udb.uname, displayName: udb.dname, bio: udb.bio, id:uid}
     if(udb.img) data.img = udb.img;
-    if(udb.req) data.req = udb.req;
+    if(udb.req) data.req = udb.req.map(k => hprofile.getUser(uid, {id:k}));
     return {name:'account', data};
   },
   getPeers(uid) {
@@ -38,7 +38,7 @@ module.exports = {
       return {
         id: key,
         users: cdb[key].u.filter(k => k !== uid).map(k => hprofile.getUser(uid, {id:k})),
-        chats: Object.keys(cdb[key].c).map(k => { return {...cdb[key].c[k], id:k}})
+        chats: Object.keys(cdb[key].c).map(k => { return {...cdb[key].c[k], id:k, u:cdb[key].c[k].u === uid ? {id:uid} : {...hprofile.getUser(uid, {id:cdb[key].c[k].u})}}})
       }
     });
     return {name:'chats',data:myChats}

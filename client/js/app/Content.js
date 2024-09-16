@@ -80,7 +80,7 @@ export default class {
   }
   renderChats() {
     const csu = chatSelection(this.user, this.conty);
-    Object.keys(csu).forEach(k => this.user[k] = csu[k]);
+    this.user = {...this.user, ...csu};
     const eluname = this.el.querySelector('.top .left .user .name');
     eluname.innerText = this.user.username;
     if(!this.user.db) return;
@@ -105,7 +105,6 @@ export default class {
       if(userState.locked.bottom) return;
       userState.locked.bottom = true;
       await userState.pmbottom?.destroy?.();
-      if(this.user.img.includes('/assets/')) delete this.user.img;
       this.user.prof.run();
       userState.locked.bottom = false;
     }
@@ -214,7 +213,7 @@ export default class {
       id: "temp" + Date.now(),
       ts: Date.now(),
       txt: 'SENDING..',
-      u: db.ref.account.id,
+      u: {id:db.ref.account.id},
       unread: true
     }, this.user.db, this.conty);
     card.querySelector('.chp.text p').innerHTML = '<i class="sending"></i>';
@@ -290,7 +289,8 @@ export default class {
   }
   async run() {
     userState.pmbottom = this;
-    this.user.img = imageSelection(this.user, this.conty);
+    this.user = {...this.user, img: imageSelection(this.user, this.conty)}
+    // this.user.img = imageSelection(this.user, this.conty);
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
     sceneIn(this.el);
@@ -305,7 +305,7 @@ function chatSelection(obj, conty) {
     id: obj.id,
     username: obj.username,
     db: db.ref.chats?.find(ch => ch.users.find(k => k.id === obj.id)),
-    prof: new Profile({user:obj}),
+    prof: new Profile({user:{...obj, img:obj.img.includes('/assets/')?null:obj.img}}),
   }
   if(conty === 2) return {
     id: obj.id,

@@ -11,6 +11,7 @@ export default class {
     this.id = 'friends';
     this.isLocked = false;
     this.list = [];
+    this.reqlist = [];
   }
   createElement() {
     this.el = document.createElement('div');
@@ -40,6 +41,40 @@ export default class {
       this.cardlist.innerHTML = `<p class="center"><i>${lang.CHTS_NOCHAT}</i></p>`;
     }
   }
+  getReqList() {
+    const ndb = db.ref.account?.req || [];
+    const odb = this.reqlist || [];
+
+    this.cardlist = this.el.querySelector('.card-list');
+
+    const rdb = ndb.filter(ch => !odb.map(och => och.id).includes(ch.id));
+    if(rdb.length > 0) {
+      let ereq = document.querySelector('.freq');
+      if(!ereq) {
+        ereq = document.createElement('div');
+        ereq.classList.add('freq');
+        ereq.innerHTML = `<div class="note"><p>Friend Requests</p></div>`;
+        this.cardlist.prepend(ereq);
+      }
+      rdb.forEach(ch => {
+        this.reqlist.push(ch);
+        const card = elgen.friendCard(ch);
+        ereq.prepend(card);
+        card.onclick = async() => {
+          if(userState.locked.bottom) return;
+          userState.locked.bottom = true;
+          await userState.pmbottom?.destroy?.();
+          new Profile({user:ch}).run();
+          userState.locked.bottom = false;
+        }
+      });
+      ereq.prepend(ereq.querySelector('.note'));
+    }
+  }
+  fupdate() {
+    this.getFriendlist();
+    this.getReqList();
+  }
   destroy() {
     return new Promise(async resolve => {
       this.el.classList.add('out');
@@ -57,5 +92,6 @@ export default class {
     document.querySelector('.app .pm').append(this.el);
     sceneIn(this.el);
     this.getFriendlist();
+    this.getReqList();
   }
 }

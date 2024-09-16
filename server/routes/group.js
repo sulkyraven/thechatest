@@ -20,4 +20,7 @@ router.post('/set-type', (req, res) => {
 router.post('/del-group', (req, res) => {
   return res.json(hgroup.delGroup(req.session.user.id, req.body));
 });
+router.post('/kick-member', (req, res) => {
+  return res.json(hgroup.kickMember(req.session.user.id, req.body));
+});
 module.exports = router;

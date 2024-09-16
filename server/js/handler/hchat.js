@@ -74,6 +74,6 @@ module.exports = {
     db.ref[conty][ckey].c[newKey] = data;
     db.save(conty);
 
-    return {code:200,data: {...data,id:newKey,ckey}};
+    return {code:200,data: {...data,id:newKey,ckey,u:{id:uid}}};
   },
 }

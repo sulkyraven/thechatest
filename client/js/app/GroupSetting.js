@@ -5,6 +5,7 @@ import db from "../manager/db.js";
 import elgen from "../manager/elgen.js";
 import userState from "../manager/userState.js";
 import Empty from "./Empty.js";
+import Profile from "./Profile.js";
 let lang = {};
 
 export default class {
@@ -78,6 +79,25 @@ export default class {
     this.gtype.innerHTML = this.group.t === '1' ? 'Private' : 'Public';
     this.group.users.forEach(usr => {
       const card = elgen.groupMemberCard(usr, this.group.o);
+      card.querySelector('.left').onclick = async() => {
+        if(userState.locked.bottom) return;
+        userState.locked.bottom = true;
+        await userState.pmbottom?.destroy?.();
+        new Profile({user:{...usr}}).run();
+        userState.locked.bottom = false;
+      }
+      card.querySelector('.right .btn-kick').onclick = async() => {
+        if(this.isLocked) return;
+        this.isLocked = true;
+        const kickConfirm = await modal.confirm(lang.GRPS_KICK_CONFIRM.replace('{uname}', usr.username));
+        if(!kickConfirm) {
+          this.isLocked = false;
+          return;
+        }
+        const setKick = await modal.loading(xhr.post('/group', {gid:this.group.id, id:usr.id}));
+        card.remove();
+        this.isLocked = false;
+      }
       this.gmember.append(card);
     });
     const scard = elgen.groupMemberCard(db.ref.account, this.group.o);

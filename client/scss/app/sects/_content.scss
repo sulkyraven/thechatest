@@ -229,6 +229,10 @@
             content: "~";
             margin-right: 3px;
           }
+          .name:has(.sw) {
+            color: v.$softwhite;
+            font-weight: normal;
+          }
         }
         .embed {
           padding: 5px;

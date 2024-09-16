@@ -11,7 +11,9 @@ module.exports = {
     const data = {
       o: gdb.o, n:gdb.n, id:s.id, t:gdb.t,
       users: gdb.u.filter(k => k !== uid && !hprofile.getUser(uid, {id:k})?.code).map(k => hprofile.getUser(uid, {id:k})),
-      chats: Object.keys(gdb.c).map(k => { return {...gdb.c[k], id:k} })
+      chats: Object.keys(gdb.c).map(k => {
+        return {...gdb.c[k], id:k, u:gdb.c[k].u === uid ? {id:uid} : {...hprofile.getUser(uid, {id:gdb.c[k].u})}}
+      })
     }
     if(gdb.i) data.i = gdb.i;
     if(gdb.o === uid || gdb.t === '0') data.l = gdb.l;
@@ -109,5 +111,11 @@ module.exports = {
     db.save('g');
 
     return {code:200,msg:'ok'};
+  },
+  kickMember(uid, s) {
+    if(!validate(['id', 'gid'], s)) return {code:400};
+    const gdb = db.ref.g[s.gid];
+    if(!gdb) return {code:400};
+    if(gdb.o !== uid) return {code:400};
   }
 }

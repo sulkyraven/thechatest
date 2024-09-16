@@ -1,5 +1,6 @@
 import sdate from "../helper/sdate.js";
 import db from "./db.js";
+import userState from "./userState.js";
 
 function chtsCard(ch) {
   const card = document.createElement('div');
@@ -37,7 +38,7 @@ export default {
     card_b.innerHTML = `<div class="last"></div><div class="unread"></div>`;
 
     const content = db.ref.chats?.find(ct => ct.users.find(k => k.id === ch.id)).chats;
-    const unread = content.filter(ct => ct.unread === true && ct.u !== db.ref.account.id).length;
+    const unread = content.filter(ct => ct.unread === true && ct.u.id !== db.ref.account.id).length;
     const lastObj = content[content.length - 1];
     if(!lastObj) return card;
     
@@ -83,11 +84,13 @@ export default {
     const card = document.createElement('div');
     card.classList.add('card');
     let username = null;
-    if(ch.u === db.ref.account.id) {
+    if(ch.u.code) {
+      username = `<i class="sw">${userState.langs[userState.lang].DELETED_USER}</i>`;
+    } else if(ch.u.id === db.ref.account.id) {
       card.classList.add('me');
       username = db.ref.account.username;
     } else { 
-      username = chts.users.find(k => k.id === ch.u).username;
+      username = ch.u.username;
     }
     card.innerHTML = `
     ${conty !== 1 ? `<div class="chp sender"><div class="name">${username}</div></div>` : ''}
@@ -107,7 +110,7 @@ export default {
       eTimeStamp.innerText = `${sdate.date(ch.ts)} ${sdate.time(ch.ts)}`;
     }
 
-    if(ch.u === db.ref.account.id) {
+    if(ch.u.id === db.ref.account.id) {
       if(ch.unread) {
         eTimeStamp.innerHTML += ' <i class="fa-regular fa-check"></i>';
       } else {
@@ -157,7 +160,7 @@ export default {
     card_b.innerHTML = `<div class="last"></div><div class="unread"></div>`;
 
     const content = db.ref.groups?.find(ct => ct.id === ch.id).chats;
-    const unread = content.filter(ct => ct.unread === true && ct.u !== db.ref.account.id).length;
+    const unread = content.filter(ct => ct.unread === true && ct.u.id !== db.ref.account.id).length;
     const lastObj = content[content.length - 1];
     if(!lastObj) return card;
     if(unread >= 1) card.querySelector('.right .unread').innerHTML = `<div class="circle">${unread}</div>`;
@@ -171,9 +174,7 @@ export default {
     }
 
     const elLastText = card.querySelector('.detail .last');
-    const user = lastObj.u === db.ref.account.id ? db.ref.account.username : ch.users.find(k => {
-      return k.id === lastObj.u;
-    }).username;
+    const user = lastObj.u.id === db.ref.account.id ? db.ref.account.username : lastObj.u.username;
     if(lastObj.i) {
       const imgExt = /\.([a-zA-Z0-9]+)$/;
       const fileExt = lastObj.i.match(imgExt)[1];
