@@ -3,21 +3,28 @@ import db from "./db.js";
 import userState from "./userState.js";
 
 function chtsCard(ch) {
-  const card = document.createElement('div');
-  card.classList.add('card');
-  card.innerHTML = `
-  <div class="left">
-    <div class="img">
-      <img src="${ch.img ? `/file/${ch.cy===0?'user':'group'}/${ch.id}` : `/assets/${ch.cy===0?'user':'group'}.jpg`}" alt="${ch.username}" alt="user" width="50"/>
+  let card = document.getElementById(`kirimin-${ch.id}`);
+  let oldUsername = card?.querySelector('.detail .name p').innerText || null;
+  if(!card) {
+    card = document.createElement('div');
+    card.id = `kirimin-${ch.id}`;
+    card.classList.add('card');
+    card.innerHTML = `
+    <div class="left">
+      <div class="img">
+        <img src="${ch.img ? `/file/${ch.cy===0?'user':'group'}/${ch.id}` : `/assets/${ch.cy===0?'user':'group'}.jpg`}" alt="${ch.username}" alt="user" width="50"/>
+      </div>
+      <div class="detail">
+        <div class="name"><p></p></div>
+        <div class="last"></div>
+      </div>
     </div>
-    <div class="detail">
-      <div class="name"><p></p></div>
-      <div class="last"></div>
-    </div>
-  </div>
-  <div class="right"></div>`;
-  const euname = card.querySelector('.detail .name p');
-  euname.innerText = ch.username;
+    <div class="right"></div>`;
+  }
+  if(ch.username !== oldUsername) {
+    const euname = card.querySelector('.detail .name p');
+    euname.innerText = ch.username;
+  }
   const card_a = card.querySelector('.detail .last');
   const card_b = card.querySelector('.right');
   return {card, card_a, card_b};
@@ -72,6 +79,18 @@ export default {
     } else {
       elLastText.innerText = txtSS(lastObj.txt.replace(/\s/g, ' '), 20);
     }
+
+    if(lastObj.u.id === db.ref.account.id) {
+      const readStatus = document.createElement('i');
+      readStatus.classList.add('fa-regular');
+      if(lastObj.unread) {
+        readStatus.classList.add('fa-check');
+      } else {
+        readStatus.classList.add('fa-check-double');
+      }
+      elLastText.prepend(readStatus, ' ');
+    }
+
     return card;
   },
   friendCard(ch) {
@@ -196,4 +215,10 @@ export default {
     }
     return card;
   },
+  delCard() {
+    for(const arg of arguments) {
+      const card = document.getElementById(`kirimin-${arg}`);
+      if(card) card.remove();
+    }
+  }
 }

@@ -79,6 +79,7 @@ export default class {
     this.gtype.innerHTML = this.group.t === '1' ? 'Private' : 'Public';
     this.group.users.forEach(usr => {
       const card = elgen.groupMemberCard(usr, this.group.o);
+      this.gmember.append(card);
       card.querySelector('.left').onclick = async() => {
         if(userState.locked.bottom) return;
         userState.locked.bottom = true;
@@ -86,7 +87,8 @@ export default class {
         new Profile({user:{...usr}}).run();
         userState.locked.bottom = false;
       }
-      card.querySelector('.right .btn-kick').onclick = async() => {
+      const btnKick = card.querySelector('.right .btn-kick');
+      if(btnKick) btnKick.onclick = async() => {
         if(this.isLocked) return;
         this.isLocked = true;
         const kickConfirm = await modal.confirm(lang.GRPS_KICK_CONFIRM.replace('{uname}', usr.username));
@@ -98,7 +100,6 @@ export default class {
         card.remove();
         this.isLocked = false;
       }
-      this.gmember.append(card);
     });
     const scard = elgen.groupMemberCard(db.ref.account, this.group.o);
     this.gmember.prepend(scard);
@@ -125,9 +126,12 @@ export default class {
       if(userState.locked.bottom) return;
       userState.locked.bottom = true;
       await userState.pmbottom?.destroy?.();
+      db.ref.groups = db.ref.groups.filter(grp => grp.id !== this.group.id);
+      elgen.delCard(this.group.id);
       new Empty().run();
       userState.locked.bottom = false;
       this.isLocked = false;
+      userState.pmmid?.forceUpdate?.();
     }
 
     const btnGname = this.el.querySelector('.btn-groupname');

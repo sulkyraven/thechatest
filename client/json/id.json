@@ -52,6 +52,7 @@
   "GRPS_CREATE": "BUAT",
   "GRPS_JOIN": "GABUNG",
   "GRPS_ALR_NAME": "Nama Grup",
+  "GRPS_ALR_ID": "ID Grup",
   "GRPS_OWN_MAX": "Kamu cuma bisa bikin maksimal 2 grup",
   "GRPS_DNAME": "Nama Grup Baru",
   "GRPS_DNAME_LENGTH": "Nama grup maksimal berisi 35 karakter",

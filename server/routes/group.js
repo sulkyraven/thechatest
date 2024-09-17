@@ -23,4 +23,7 @@ router.post('/del-group', (req, res) => {
 router.post('/kick-member', (req, res) => {
   return res.json(hgroup.kickMember(req.session.user.id, req.body));
 });
+router.post('/join-group', (req, res) => {
+  return res.json(hgroup.joinGroup(req.session.user.id, req.body));
+});
 module.exports = router;

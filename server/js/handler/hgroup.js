@@ -36,10 +36,8 @@ module.exports = {
     db.ref.g[gid] = data;
     db.save('g');
 
-    let retdata = {...data, id:gid};
-    retdata.users = data.u.filter(k => k !== uid).map(k => hprofile.getUser(uid, {id:k}));
-
-    return {code:200,msg:'ok',data:{group:retdata}};
+    const retdata = {...this.getGroup(uid, {id:gid})};
+    return {code:200,msg:'ok',data:retdata};
   },
   setImage(uid, s) {
     if(!validate(['id', 'img', 'name'], s)) return {code:400};
@@ -117,5 +115,14 @@ module.exports = {
     const gdb = db.ref.g[s.gid];
     if(!gdb) return {code:400};
     if(gdb.o !== uid) return {code:400};
+  },
+  joinGroup(uid, s) {
+    if(!validate(['id'], s)) return {code:400};
+    const gdb = db.ref.g[s.id];
+    if(!gdb) return {code:400};
+    if(gdb.u.includes(uid)) return {code:200, data:this.getGroup(uid, {id:s.id})};
+    db.ref.g[s.id].u.push(uid);
+    db.save('g');
+    return {code:200,data:this.getGroup(uid, {id:s.id})};
   }
 }

@@ -52,6 +52,7 @@
   "GRPS_CREATE": "CREATE",
   "GRPS_JOIN": "JOIN",
   "GRPS_ALR_NAME": "Group Name",
+  "GRPS_ALR_ID": "Group ID",
   "GRPS_OWN_MAX": "You can only create up to 2 groups",
   "GRPS_DNAME": "New Group Name",
   "GRPS_DNAME_LENGTH": "Maximum group name length is 35 characters",

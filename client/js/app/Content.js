@@ -262,13 +262,16 @@ export default class {
       });
       newData.chats.push(sendMsg.data);
       db.ref.chats.push(newData);
-      return this.renderChats();
+      this.renderChats();
+      userState.pmmid?.forceUpdate?.();
+      return;
     }
     this.user.db.chats.push(sendMsg.data);
     const sentcard = elgen.contentCard(sendMsg.data, this.user.db, this.conty);
     this.chatlist.appendChild(sentcard);
     const chTxt = sentcard.querySelector('.chp.text p');
     if(chTxt && chTxt.offsetWidth >= 470) sentcard.classList.add('long');
+    userState.pmmid?.forceUpdate?.();
   }
   sendVoice() {
     alert('not yet available');
