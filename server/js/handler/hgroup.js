@@ -29,7 +29,7 @@ module.exports = {
 
     if(oldGroups.length >= 2) return {code:400,msg:'GRPS_OWN_MAX'};
 
-    const gid = 'G' + Date.now().toString(32);
+    const gid = 'g' + Date.now().toString(32);
 
     const data = { o: uid, u: [uid], n: s.name, t: '1', c:{}};
     data.l = `${helper.rString(2)}_${Date.now().toString(32)}_${helper.rString(2)}`;

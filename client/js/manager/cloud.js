@@ -1,6 +1,7 @@
 import { Peer } from "https://esm.sh/peerjs@1.5.4?bundle-deps";
 import db from "./db.js";
 import xhr from "../helper/xhr.js";
+import userState from "./userState.js";
 
 async function waittime(ms = 200) {return new Promise(resolve => setTimeout(resolve, ms))}
 // this.peer.socket._socket.send(JSON.stringify({selfadded: {data:"aaw"}}));
@@ -11,6 +12,8 @@ class cloud {
   processData(data) {
   }
   clientData(obj) {
+    if(obj.code && obj.code !== 200) return;
+    
     if(!['peers'].includes(obj.name)) {
       db.ref[obj.name] = obj.data;
     }
@@ -31,6 +34,9 @@ class cloud {
         if(!this.pair.get(obj.data.peer)) this.connectTo([obj.data.peer]);
       }
     }
+
+    userState.pmbottom?.forceUpdate?.();
+    userState.pmmid?.forceUpdate?.();
   }
   listenTo() {
     this.peer.on('connection', (conn) => {
@@ -44,7 +50,7 @@ class cloud {
 
     this.peer.once('open', () => {
       this.peer.socket._socket.addEventListener("message", (msg) => {
-        if(msg.data) this.clientData(JSON.parse(msg.data));
+        if(msg.data) JSON.parse(msg.data)?.data?.forEach(obj => this.clientData(obj));
       });
     });
   }

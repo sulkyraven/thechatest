@@ -29,14 +29,16 @@ export default class {
     if(cdb.length > 0) this.cardlist.querySelector('.nomore')?.remove();
     cdb.forEach(ch => {
       const user = ch.users.find(k => k.id !== db.ref.account.id);
-      const card = elgen.chatCard(user);
-      this.cardlist.append(card);
-      card.onclick = async() => {
-        if(userState.locked.bottom) return;
-        userState.locked.bottom = true;
-        await userState.pmbottom?.destroy?.();
-        new Content({user, conty:1}).run();
-        userState.locked.bottom = false;
+      const {card, uc} = elgen.chatCard(user);
+      if(!uc) {
+        this.cardlist.append(card);
+        card.onclick = async() => {
+          if(userState.locked.bottom) return;
+          userState.locked.bottom = true;
+          await userState.pmbottom?.destroy?.();
+          new Content({user, conty:1}).run();
+          userState.locked.bottom = false;
+        }
       }
     })
     /*

@@ -88,14 +88,16 @@ export default class {
     if(cdb.length < 1) this.cardlist.innerHTML = `<p class="center nomore"><i>${lang.CHTS_NOCHAT}</i></p>`;
     if(cdb.length > 0) this.cardlist.querySelector('.nomore')?.remove();
     cdb.forEach(ch => {
-      const card = elgen.groupCard(ch);
-      this.cardlist.append(card);
-      card.onclick = async() => {
-        if(userState.locked.bottom) return;
-        userState.locked.bottom = true;
-        await userState.pmbottom?.destroy?.();
-        new Content({user:ch, conty:2}).run();
-        userState.locked.bottom = false;
+      const {card, uc} = elgen.groupCard(ch);
+      if(!uc) {
+        this.cardlist.append(card);
+        card.onclick = async() => {
+          if(userState.locked.bottom) return;
+          userState.locked.bottom = true;
+          await userState.pmbottom?.destroy?.();
+          new Content({user:ch, conty:2}).run();
+          userState.locked.bottom = false;
+        }
       }
     });
 

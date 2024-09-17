@@ -1,6 +1,8 @@
 import modal from "../helper/modal.js";
 import sceneIn from "../helper/sceneIn.js";
+import sdate from "../helper/sdate.js";
 import xhr from "../helper/xhr.js";
+import cloud from "../manager/cloud.js";
 import db from "../manager/db.js";
 import elgen from "../manager/elgen.js";
 import userState from "../manager/userState.js";
@@ -81,6 +83,11 @@ export default class {
   renderChats() {
     const csu = chatSelection(this.user, this.conty);
     this.user = {...this.user, ...csu};
+
+    if(this.user?.db?.id) {
+      cloud.peer.socket._socket.send(JSON.stringify({d761: {id:"readMsg", data:{id:this.user.db.id}}}));
+    }
+
     const eluname = this.el.querySelector('.top .left .user .name');
     eluname.innerText = this.user.username;
     if(!this.user.db) return;
@@ -217,7 +224,7 @@ export default class {
       unread: true
     }, this.user.db, this.conty);
     card.querySelector('.chp.text p').innerHTML = '<i class="sending"></i>';
-    card.querySelector('.chp.time p').innerHTML += ' <i class="fa-regular fa-clock"></i>';
+    card.querySelector('.chp.time p').innerHTML = sdate.time(Date.now()) + ' <i class="fa-regular fa-clock"></i>';
     card.querySelector('.chp.text p i').innerText = this.inpMsg.value.trim();
     this.chatlist.append(card);
     const chTxtTemp = card.querySelector('.chp.text p');
@@ -266,7 +273,10 @@ export default class {
       userState.pmmid?.forceUpdate?.();
       return;
     }
-    this.user.db.chats.push(sendMsg.data);
+    // this.user.db.chats.push(sendMsg.data);
+    const ckey = this.conty === 1 ? 'chats' : 'groups';
+    db.ref[ckey]?.find(ck => ck.id === this.user.db.id)?.chats?.push(sendMsg.data);
+
     const sentcard = elgen.contentCard(sendMsg.data, this.user.db, this.conty);
     this.chatlist.appendChild(sentcard);
     const chTxt = sentcard.querySelector('.chp.text p');

@@ -170,6 +170,7 @@ export default class {
       }
       this.gname.innerText = setGname.data.text;
       this.isLocked = false;
+      userState.pmmid?.forceUpdate?.();
     }
 
     const btnImg = this.el.querySelector('.btn-img');

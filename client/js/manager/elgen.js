@@ -47,9 +47,12 @@ export default {
     const content = db.ref.chats?.find(ct => ct.users.find(k => k.id === ch.id)).chats;
     const unread = content.filter(ct => ct.unread === true && ct.u.id !== db.ref.account.id).length;
     const lastObj = content[content.length - 1];
-    if(!lastObj) return card;
-    
+    if(!lastObj) {
+      if(document.getElementById(`kirimin-${ch.id}`)) return {card,uc:true};
+      return {card};
+    }
     if(unread >= 1) card.querySelector('.right .unread').innerHTML = `<div class="circle">${unread}</div>`;
+    if(unread < 1) card.querySelector('.right .unread .circle')?.remove();
 
     const sameDay = sdate.sameday(new Date(Date.now()), new Date(lastObj.ts));
     const eTimeStamp = card.querySelector('.right .last');
@@ -81,6 +84,9 @@ export default {
     }
 
     if(lastObj.u.id === db.ref.account.id) {
+      if(elLastText.getAttribute('id') === `text-$${lastObj.id}`) {
+        if(elLastText.querySelector('.fa-check') && lastObj.unread) return {card,uc:true};
+      }
       const readStatus = document.createElement('i');
       readStatus.classList.add('fa-regular');
       if(lastObj.unread) {
@@ -91,7 +97,9 @@ export default {
       elLastText.prepend(readStatus, ' ');
     }
 
-    return card;
+    elLastText.id = `text-$${lastObj.id}`;
+
+    return {card};
   },
   friendCard(ch) {
     const {card, card_a, card_b} = chtsCard({...ch, cy:0});
@@ -114,9 +122,9 @@ export default {
     card.innerHTML = `
     ${conty !== 1 ? `<div class="chp sender"><div class="name">${username}</div></div>` : ''}
     ${ch.i ? `<div class="chp attach"></div>` : ''}
-    ${ch.txt ? `<div class="chp text">
+    <div class="chp text">
       <p></p>
-    </div>` : ''}
+    </div>
     <div class="chp time">
       <p></p>
     </div>`;
@@ -181,8 +189,12 @@ export default {
     const content = db.ref.groups?.find(ct => ct.id === ch.id).chats;
     const unread = content.filter(ct => ct.unread === true && ct.u.id !== db.ref.account.id).length;
     const lastObj = content[content.length - 1];
-    if(!lastObj) return card;
+    if(!lastObj) {
+      if(document.getElementById(`kirimin-${ch.id}`)) return {card,uc:true};
+      return {card};
+    }
     if(unread >= 1) card.querySelector('.right .unread').innerHTML = `<div class="circle">${unread}</div>`;
+    if(unread < 1) card.querySelector('.right .unread .circle')?.remove();
   
     const sameDay = sdate.sameday(new Date(Date.now()), new Date(lastObj.ts));
     const eTimeStamp = card.querySelector('.right .last');
@@ -194,6 +206,8 @@ export default {
 
     const elLastText = card.querySelector('.detail .last');
     const user = lastObj.u.id === db.ref.account.id ? db.ref.account.username : lastObj.u.username;
+    if(elLastText.getAttribute('id') === `text-$${lastObj.id}`) return {card,uc:true};
+    elLastText.id = `text-$${lastObj.id}`;
     if(lastObj.i) {
       const imgExt = /\.([a-zA-Z0-9]+)$/;
       const fileExt = lastObj.i.match(imgExt)[1];
@@ -213,7 +227,7 @@ export default {
     } else {
       elLastText.innerText = txtSS((`${user}: ${lastObj.txt}`).replace(/\s/g, ' '), 20);
     }
-    return card;
+    return {card};
   },
   delCard() {
     for(const arg of arguments) {

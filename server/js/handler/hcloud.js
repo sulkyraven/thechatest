@@ -6,10 +6,6 @@ const hprofile = require("./hprofile");
 const clientData = ['getAccount','getPeers','getChats','getFriends','getGroups'];
 
 module.exports = {
-  socket(uid, s) {
-    console.log('run:', uid, s);
-    return {code:200,msg:'ok',data:'socket'}
-  },
   getAccount(uid) {
     const udb = db.ref.u[uid];
     if(!udb) return {};
