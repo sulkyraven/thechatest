@@ -59,7 +59,7 @@ module.exports = {
     delete db.ref.t[dbkey];
     db.save('t');
 
-    data.cloud = hcloud.getAll(ukey);
+    data.cloud = hcloud.initPeers(ukey);
     return {code:200,msg:'ok',data};
   }
 }

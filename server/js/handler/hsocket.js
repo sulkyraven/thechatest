@@ -13,12 +13,13 @@ module.exports = {
     });
     db.save(child);
 
-    const data = [hcloud.getChats(uid), hcloud.getGroups(uid)];
-
-    return {data};
+    return {data:[hcloud.getChats(uid), hcloud.getGroups(uid)]};
   },
   receivedMsg(uid, s) {
-    return {data: [hcloud.getChats(uid)]};
+    return {data: [hcloud.getChats(uid), hcloud.getGroups(uid)]}
+  },
+  getTalks(uid, s) {
+    return {data: [hcloud.getChats(uid), hcloud.getFriends(uid), hcloud.getGroups(uid)]}
   },
   run(uid, s) {
     if(this[s.id]) return this[s.id](uid, s.data);

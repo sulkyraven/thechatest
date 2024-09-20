@@ -74,6 +74,10 @@ module.exports = {
     db.ref[conty][ckey].c[newKey] = data;
     db.save(conty);
 
-    return {code:200,data: {...data,id:newKey,ckey,u:{id:uid}}};
+    const peers = db.ref[conty][ckey].u.filter(k => k !== uid && db.ref.u[k]?.peer)?.map(k => {
+      return db.ref.u[k].peer;
+    }) || [];
+
+    return {code:200,data: {...data,id:newKey,ckey,u:{id:uid}}, peers};
   },
 }

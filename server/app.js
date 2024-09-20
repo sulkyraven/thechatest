@@ -70,9 +70,8 @@ server.on('message', (c, m) => {
   const udb = db.ref.u;
   const uid = Object.keys(udb).find(key => udb[key].peer === c.getId());
   if(!uid) return;
-
   if(m.d761) return c.send(hsocket.run(uid, m.d761));
-  // if(uid) return c.send(hcloud.getAll(uid));
+  if(m.type === 'HEARTBEAT') return c.send({data:hcloud.getAll(uid)});
 });
 server.on('connection', (c) => {
   console.log('connected', c.getId());

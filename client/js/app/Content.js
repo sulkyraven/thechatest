@@ -15,7 +15,7 @@ export default class {
     this.user = user;
     this.id = 'content';
     this.isLocked = false;
-    this.list = [];
+    this.chatcount = 0;
     this.contents = {text:null,rep:null,file:{name:null,content:null}};
     this.planesend = false;
   }
@@ -80,31 +80,42 @@ export default class {
     this.midclass = this.el.querySelector('.mid');
     this.topclass = this.el.querySelector('.top');
   }
-  renderChats() {
+  setReadChat() {
     const csu = chatSelection(this.user, this.conty);
     this.user = {...this.user, ...csu};
 
+    const ckey = this.conty === 1 ? 'chats' : 'groups';
+    const cdb = db.ref[ckey]?.find(ck => ck.id === this.user.db.id);
+
     if(this.user?.db?.id) {
       cloud.peer.socket._socket.send(JSON.stringify({d761: {id:"readMsg", data:{id:this.user.db.id}}}));
+      let peers = cdb?.users.filter(usr => usr.peer)?.map(usr => usr.peer) || [];
+      cloud.send({ "id": "read-msg", "to": peers })
     }
+  }
+  renderChats() {
+    const ckey = this.conty === 1 ? 'chats' : 'groups';
+    const cdb = db.ref[ckey]?.find(ck => ck.id === this.user.db.id);
 
     const eluname = this.el.querySelector('.top .left .user .name');
     eluname.innerText = this.user.username;
-    if(!this.user.db) return;
-    const chts = this.user.db;
 
-    if(!chts) return;
-    const ndb = chts.chats || [];
-    const odb = this.list;
+    const fdb = (cdb?.chats || []).sort((a, b) => {
+      if(a.ts < b.ts) return -1;
+      if(a.ts > b.ts) return 1;
+      return 0;
+    });
 
-    const fdb = ndb.filter(ch => !odb.map(och => och.id).includes(ch.id));
     fdb.forEach(ch => {
-      this.list.push(ch);
-      const card = elgen.contentCard(ch, chts, this.conty);
-      this.chatlist.append(card);
+      const {card, uc} = elgen.contentCard(ch, cdb, this.conty);
+      if(!uc) {
+        this.chatlist.appendChild(card);
+      }
       const chTxt = card.querySelector('.chp.text p');
       if(chTxt && chTxt.offsetWidth >= 470) card.classList.add('long');
     });
+    if(fdb.length > this.chatcount) this.setReadChat();
+    this.chatcount = fdb.length;
   }
   btnListener() {
     const eluser = document.querySelector('.top .left .user');
@@ -216,7 +227,7 @@ export default class {
     eattach.querySelector('.media p').innerText = file.name;
   }
   async sendMessage() {
-    const card = elgen.contentCard({
+    const {card} = elgen.contentCard({
       id: "temp" + Date.now(),
       ts: Date.now(),
       txt: 'SENDING..',
@@ -252,7 +263,10 @@ export default class {
       card.remove();
       return;
     }
-    cloud.send({id:'send-msg', to:this.conty === 1 ? this.user.id : this.user.users});
+    const ckey = this.conty === 1 ? 'chats' : 'groups';
+    const cdb = db.ref[ckey]?.find(ck => ck.id === this.user.db.id);
+    cloud.send({ "id": "send-msg", "to": sendMsg.peers, "data": { "text": sendMsg.data.txt } })
+
     card.remove();
     if(!this.user.db) {
       const newData =  {
@@ -270,26 +284,31 @@ export default class {
       });
       newData.chats.push(sendMsg.data);
       db.ref.chats.push(newData);
+      this.setReadChat();
       this.renderChats();
+      userState.pmbottom?.forceUpdate?.();
       userState.pmmid?.forceUpdate?.();
       return;
     }
     // this.user.db.chats.push(sendMsg.data);
-    const ckey = this.conty === 1 ? 'chats' : 'groups';
-    db.ref[ckey]?.find(ck => ck.id === this.user.db.id)?.chats?.push(sendMsg.data);
+    cdb?.chats?.push(sendMsg.data);
 
-    const sentcard = elgen.contentCard(sendMsg.data, this.user.db, this.conty);
+    const sentcard = elgen.contentCard(sendMsg.data, this.user.db, this.conty).card;
     this.chatlist.appendChild(sentcard);
     const chTxt = sentcard.querySelector('.chp.text p');
     if(chTxt && chTxt.offsetWidth >= 470) sentcard.classList.add('long');
+    userState.pmbottom?.forceUpdate?.();
     userState.pmmid?.forceUpdate?.();
   }
   sendVoice() {
     alert('not yet available');
   }
+  forceUpdate() {
+    this.renderChats();
+  }
   destroy() {
     return new Promise(async resolve => {
-      this.list = [];
+      this.chatcount = 0;
       this.contents = {text:null,rep:null,file:{name:null,content:null}};
       this.planesend = false;
       this.inpMsg.removeEventListener('input', this.growInput);
@@ -309,6 +328,7 @@ export default class {
     document.querySelector('.app .pm').append(this.el);
     sceneIn(this.el);
     this.btnListener();
+    this.setReadChat();
     this.renderChats();
     this.formListener();
   }

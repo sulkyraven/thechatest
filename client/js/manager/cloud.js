@@ -10,8 +10,9 @@ class cloud {
     this.pair = new Map();
   }
   processData(s) {
-    if(!s.to.includes(db.ref.account.id)) return;
     if(s.id === 'send-msg') {
+      this.peer.socket._socket.send(JSON.stringify({d761: {id:'receivedMsg'}}));
+    } else if(s.id === 'read-msg') {
       this.peer.socket._socket.send(JSON.stringify({d761: {id:'receivedMsg'}}));
     }
   }
@@ -47,6 +48,7 @@ class cloud {
       conn.on('open', () => {
         console.info('connected_a', conn.peer);
         this.pair.set(conn.peer, conn);
+        this.peer.socket._socket.send(JSON.stringify({d761:{id:"getTalks"}}));
       });
       conn.on('close', () => {
         console.info('disconnected_a', conn.peer);
@@ -66,7 +68,29 @@ class cloud {
       });
     });
   }
-  async connectTo({ key = null, peers = null } = {}) {
+  connectTo(id) {
+    return new Promise(async resolve => {
+      const conn = this.peer.connect(id);
+
+      conn.on('open', () => {
+        console.info('connected_b', conn.peer);
+        this.pair.set(conn.peer, conn);
+        resolve();
+      });
+      conn.on('close', () => {
+        console.info('disconnected_b', conn.peer);
+        this.pair.delete(conn.peer);
+      });
+      conn.on('error', () => {
+        console.error('error_b', conn.peer);
+      });
+
+      conn.on('data', (data) => this.processData(data));
+
+      window.addEventListener('unload', () => conn.close());
+    });
+  }
+  async oldconnectTo({ key = null, peers = null } = {}) {
     if(!peers) peers = await this.allPeers(key);
     for (const peer of peers) {
       const conn = this.peer.connect(peer);
@@ -98,10 +122,15 @@ class cloud {
     return list.filter((id) => id !== this.peerid);
   }
   async send({id,to,data=null}) {
-    if(typeof to === 'string') to = [to];
-    this.pair.forEach((conn, _) => {
-      conn.send({id,to,from:db.ref.account.id,data});
-    });
+    // if(typeof to === 'string') to = [to];
+    // this.pair.forEach((conn, _) => {
+    //   conn.send({id,to,from:db.ref.account.id,data});
+    // });
+    if(typeof to === "string") to = [to];
+    for(const peer of to) {
+      if(!this.pair.has(peer)) await this.connectTo(peer);
+      this.pair.get(peer).send({id, from:db.ref.account.id, data});
+    }
   }
   async run({ peerKey, peerid }) {
     this.peerid = peerid;
@@ -112,7 +141,17 @@ class cloud {
       path: 'cloud',
     });
     this.listenTo();
-    this.connectTo({ key: peerKey });
+    const url = `${window.location.origin}/cloud/${peerKey}/peers`;
+
+    const response = await fetch(url);
+    const peersArray = await response.json();
+    const list = peersArray ?? [];
+    const peers = list.filter((id) => id !== peerid);
+
+    for(const id of peers) {
+      this.connectTo(id);
+      await waittime(200);
+    }
   }
 }
 

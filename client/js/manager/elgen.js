@@ -108,69 +108,87 @@ export default {
     return card;
   },
   contentCard(ch, chts, conty) {
-    const card = document.createElement('div');
-    card.classList.add('card');
-    let username = null;
-    if(ch.u.code) {
-      username = `<i class="sw">${userState.langs[userState.lang].DELETED_USER}</i>`;
-    } else if(ch.u.id === db.ref.account.id) {
-      card.classList.add('me');
-      username = db.ref.account.username;
-    } else { 
-      username = ch.u.username;
+    let card = document.getElementById(`krmn-${ch.id}`);
+    let oldUsername = card?.querySelector('.sender .name')?.innerText || null;
+    if(ch.u.id !== db.ref.account.id && ch.u.username !== oldUsername) {
+      const euname = card?.querySelector('.sender .name');
+      if(euname) euname.innerText = ch.u.username;
     }
-    card.innerHTML = `
-    ${conty !== 1 ? `<div class="chp sender"><div class="name">${username}</div></div>` : ''}
-    ${ch.i ? `<div class="chp attach"></div>` : ''}
-    <div class="chp text">
-      <p></p>
-    </div>
-    <div class="chp time">
-      <p></p>
-    </div>`;
+    if(!card) {
+      card = document.createElement('div');
+      card.id = `krmn-${ch.id}`;
+      card.classList.add('card');
 
-    const sameDay = sdate.sameday(new Date(Date.now()), new Date(ch.ts));
-    const eTimeStamp = card.querySelector('.time p');
-    if(sameDay) {
-      eTimeStamp.innerText = sdate.time(ch.ts);
-    } else {
-      eTimeStamp.innerText = `${sdate.date(ch.ts)} ${sdate.time(ch.ts)}`;
-    }
-
-    if(ch.u.id === db.ref.account.id) {
-      if(ch.unread) {
-        eTimeStamp.innerHTML += ' <i class="fa-regular fa-check"></i>';
-      } else {
-        eTimeStamp.innerHTML += ' <i class="fa-regular fa-check-double cy"></i>';
+      let username = null;
+      if(ch.u.code) {
+        username = `<i class="sw">${userState.langs[userState.lang].DELETED_USER}</i>`;
+      } else if(ch.u.id === db.ref.account.id) {
+        card.classList.add('me');
+        username = db.ref.account.username;
+      } else { 
+        username = ch.u.username;
       }
-    }
+      card.innerHTML = `
+      ${conty !== 1 ? `<div class="chp sender"><div class="name">${username}</div></div>` : ''}
+      ${ch.i ? `<div class="chp attach"></div>` : ''}
+      <div class="chp text">
+        <p></p>
+      </div>
+      <div class="chp time">
+        <p></p>
+      </div>`;
 
-    if(ch.i) {
-      const imgExt = /\.([a-zA-Z0-9]+)$/;
-      const fileExt = ch.i.match(imgExt)[1];
+      const sameDay = sdate.sameday(new Date(Date.now()), new Date(ch.ts));
+      const eTimeStamp = card.querySelector('.time p');
+      if(sameDay) {
+        eTimeStamp.innerText = sdate.time(ch.ts);
+      } else {
+        eTimeStamp.innerText = `${sdate.date(ch.ts)} ${sdate.time(ch.ts)}`;
+      }
 
-      if(['gif', 'jpg', 'jpeg', 'png', 'webp'].includes(fileExt.toLowerCase())) {
-        card.querySelector('.attach').innerHTML = `<div class="img"></div>`;
-        const newImg = new Image();
-        newImg.src = `/file/content/${chts.id}/${ch.i}`;
-        card.querySelector('.attach .img').append(newImg);
-        newImg.onload = () => card.classList.add('long');
-        newImg.onerror = () => {
+      if(ch.i) {
+        const imgExt = /\.([a-zA-Z0-9]+)$/;
+        const fileExt = ch.i.match(imgExt)[1];
+  
+        if(['gif', 'jpg', 'jpeg', 'png', 'webp'].includes(fileExt.toLowerCase())) {
+          card.querySelector('.attach').innerHTML = `<div class="img"></div>`;
+          const newImg = new Image();
+          newImg.src = `/file/content/${chts.id}/${ch.i}`;
+          card.querySelector('.attach .img').append(newImg);
+          newImg.onload = () => card.classList.add('long');
+          newImg.onerror = () => {
+            card.querySelector('.attach').innerHTML = `<div class="document"><p></p></div>`;
+            card.querySelector('.attach .document p').innerText = ch.i;
+          }
+        } else {
           card.querySelector('.attach').innerHTML = `<div class="document"><p></p></div>`;
           card.querySelector('.attach .document p').innerText = ch.i;
         }
-      } else {
-        card.querySelector('.attach').innerHTML = `<div class="document"><p></p></div>`;
-        card.querySelector('.attach .document p').innerText = ch.i;
+      }
+
+      if(ch.u.id === db.ref.account.id) {
+        if(ch.unread) {
+          eTimeStamp.innerHTML += ' <i class="fa-regular fa-check"></i>';
+        } else {
+          eTimeStamp.innerHTML += ' <i class="fa-regular fa-check-double cy"></i>';
+        }
+      }
+
+      if(ch.txt) {
+        const chTxt = card.querySelector('.chp.text p');
+        chTxt.innerText = ch.txt;
+      }
+      return {card};
+    }
+
+    if(ch.u.id === db.ref.account.id) {
+      const estatus = card?.querySelector('.time p i');
+      if(!ch.unread && estatus.classList.contains('fa-check')) {
+        estatus.classList.remove('fa-check');
+        estatus.classList.add('fa-check-double', 'cy')
       }
     }
-
-    if(ch.txt) {
-      const chTxt = card.querySelector('.chp.text p');
-      chTxt.innerText = ch.txt;
-    }
-
-    return card;
+    return {card,uc:true};
   },
   groupMemberCard(usr, oid) {
     const card = document.createElement('li');
