@@ -103,7 +103,7 @@ export default class Sign {
         this.path = '/login';
         this.islocked = false;
         await this.destroy();
-        cloud.run(loginreq.data.cloud.find(ls => ls.name === 'peers').data);
+        cloud.run(loginreq.data.cloud.find(ls => ls.name === 'peersinit').data);
         loginreq.data.cloud.forEach(obj => cloud.clientData(obj));
         if(loginreq.data.first) return new pm().run(true);
         return new pm().run();

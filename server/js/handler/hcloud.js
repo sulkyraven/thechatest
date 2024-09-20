@@ -3,7 +3,7 @@ const { genPeer, peerKey } = require("../helper");
 const hgroup = require("./hgroup");
 const hprofile = require("./hprofile");
 
-const clientData = ['getAccount','getPeers','getChats','getFriends','getGroups'];
+const clientData = ['getAccount','getChats','getFriends','getGroups'];
 
 module.exports = {
   getAccount(uid) {
@@ -15,7 +15,7 @@ module.exports = {
     if(udb.req) data.req = udb.req.map(k => hprofile.getUser(uid, {id:k}));
     return {name:'account', data};
   },
-  getPeers(uid) {
+  initPeers(uid) {
     let peerid = null;
     if(db.ref.u[uid].peer) {
       peerid = db.ref.u[uid].peer;
@@ -24,7 +24,7 @@ module.exports = {
       db.ref.u[uid].peer = peerid;
     }
 
-    return {name:'peers', data: { peerKey, peerid, otherpeers: db.ref.x }};
+    return [...this.getAll(uid), {name:'peersinit', data: { peerKey, peerid }}];
   },
   getChats(uid) {
     const cdb = db.ref.c;

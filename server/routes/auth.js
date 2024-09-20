@@ -22,7 +22,7 @@ router.get('/logout', (req, res) => {
 });
 
 router.get('/isUser', isUser, (req, res) => {
-  return res.json({code:200,msg:'ok',data:hcloud.getAll(req.session.user.id)});
+  return res.json({code:200,msg:'ok',data:hcloud.initPeers(req.session.user.id)});
 });
 
 module.exports = router;

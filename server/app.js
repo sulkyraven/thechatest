@@ -58,6 +58,7 @@ app.get('/', (req, res) => {
 
 const appservice = app.listen(Number(process.env.APP_PORT), () => {
   console.log(`ONLINE NOW >> http://${process.env.APP_HOST}:${process.env.APP_PORT}/app`);
+  console.log(`PEERS >> http://${process.env.APP_HOST}:${process.env.APP_PORT}/cloud/${peerKey}/peers`);
 });
 
 const server = ExpressPeerServer(appservice, {
@@ -74,12 +75,12 @@ server.on('message', (c, m) => {
   // if(uid) return c.send(hcloud.getAll(uid));
 });
 server.on('connection', (c) => {
-  db.ref.x.push(c.getId());
+  console.log('connected', c.getId());
 });
 server.on('disconnect', (c) => {
+  console.log('disconnected', c.getId());
   const offuser = Object.keys(db.ref.u).find(k => db.ref.u[k]?.peer === c.getId());
   if(offuser) delete db.ref.u[offuser].peer;
-  db.ref.x = db.ref.x.filter(peerid => peerid !== c.getId());
   db.save('u');
 });
 server.on('error', console.error);

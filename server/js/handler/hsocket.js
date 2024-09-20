@@ -17,6 +17,9 @@ module.exports = {
 
     return {data};
   },
+  receivedMsg(uid, s) {
+    return {data: [hcloud.getChats(uid)]};
+  },
   run(uid, s) {
     if(this[s.id]) return this[s.id](uid, s.data);
     return {code:400};

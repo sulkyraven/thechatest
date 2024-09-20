@@ -252,6 +252,7 @@ export default class {
       card.remove();
       return;
     }
+    cloud.send({id:'send-msg', to:this.conty === 1 ? this.user.id : this.user.users});
     card.remove();
     if(!this.user.db) {
       const newData =  {
