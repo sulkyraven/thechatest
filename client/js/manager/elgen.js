@@ -104,7 +104,7 @@ export default {
   friendCard(ch) {
     const {card, card_a, card_b} = chtsCard({...ch, cy:0});
     card_a.innerText = ch.bio.length > 20 ? ch.bio.substring(0, 17) + '...' : ch.bio;
-    card_b.remove();
+    if(card_b) card_b.remove();
     return card;
   },
   contentCard(ch, chts, conty) {
