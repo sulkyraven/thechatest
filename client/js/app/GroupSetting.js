@@ -63,7 +63,7 @@ export default class {
         </div>
       </div>
       <div class="chp usersign">
-        <p><a class="btn-delete" href="#delete-group"><i class="fa-light fa-triangle-exclamation"></i> ${lang.GRPS_DELETE}</a></p>
+        <p><a class="btn-delete" href="#delete-group"><i class="fa-light fa-triangle-exclamation"></i> ${this.group.o === db.ref.account.id ? lang.GRPS_DELETE : lang.GRPS_LEAVE}</a></p>
       </div>
     </div>`;
     this.gimg = this.el.querySelector('.userphoto .outer-img');
@@ -110,7 +110,7 @@ export default class {
       e.preventDefault();
       if(this.isLocked) return;
       this.isLocked = true;
-      const cDelete = await modal.confirm(lang.GRPS_DELETE);
+      const cDelete = await modal.confirm(this.group.o === db.ref.account.id ? lang.GRPS_DELETE : lang.GRPS_LEAVE);
       if(!cDelete) {
         this.isLocked = false;
         return;

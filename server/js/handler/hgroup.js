@@ -98,11 +98,23 @@ module.exports = {
 
     return {code:200,msg:'ok',data:{text:s.t,link:glink}};
   },
-  delGroup(uid, s) {
+  leaveGroup(uid, s) {
     if(!validate(['id'], s)) return {code:400};
+    s.id = s.id.toLowerCase();
     const gdb = db.ref.g[s.id];
     if(!gdb) return {code:400};
-    if(gdb.o !== uid) return {code:400};
+    if(!gdb.u.includes(uid)) return {code:400};
+    db.ref.g[s.id].u = gdb.u.filter(k => k !== uid);
+    db.save('g');
+
+    return {code:200};
+  },
+  delGroup(uid, s) {
+    if(!validate(['id'], s)) return {code:400};
+    s.id = s.id.toLowerCase();
+    const gdb = db.ref.g[s.id];
+    if(!gdb) return {code:400};
+    if(gdb.o !== uid) return this.leaveGroup(uid, s);
     if(gdb.i) if(fs.existsSync(`./server/dbfile/group/${gdb.i}`)) fs.unlinkSync(`./server/dbfile/group/${gdb.i}`);
 
     delete db.ref.g[s.id];
@@ -118,10 +130,11 @@ module.exports = {
   },
   joinGroup(uid, s) {
     if(!validate(['id'], s)) return {code:400};
+    s.id = s.id.toLowerCase();
     const gdb = db.ref.g[s.id];
     if(!gdb) return {code:400};
     if(gdb.u.includes(uid)) return {code:200, data:this.getGroup(uid, {id:s.id})};
-    if(gdb.t !== '1') return {code:402,msg:"GRPS_TYPE_PRIVATE"}
+    if(gdb.t === '1') return {code:402,msg:"GRPS_TYPE_PRIVATE"}
     db.ref.g[s.id].u.push(uid);
     db.save('g');
     return {code:200,data:this.getGroup(uid, {id:s.id})};

@@ -8,8 +8,9 @@ module.exports = {
     if(!child) return {code:400};
     
     const cdb = db.ref[child][s.id].c;
-    Object.keys(cdb).filter(k => cdb[k].u !== uid && cdb[k].unread).forEach(k => {
-      delete db.ref[child][s.id].c[k].unread;
+    Object.keys(cdb).filter(k => cdb[k].u !== uid && (!cdb[k].w || !cdb[k].w.includes(uid))).forEach(k => {
+      if(!db.ref[child][s.id].c[k].w) db.ref[child][s.id].c[k].w = [];
+      db.ref[child][s.id].c[k].w.push(uid);
     });
     db.save(child);
 

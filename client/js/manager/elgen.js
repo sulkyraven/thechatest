@@ -45,7 +45,7 @@ export default {
     card_b.innerHTML = `<div class="last"></div><div class="unread"></div>`;
 
     const content = db.ref.chats?.find(ct => ct.users.find(k => k.id === ch.id)).chats;
-    const unread = content.filter(ct => ct.unread === true && ct.u.id !== db.ref.account.id).length;
+    const unread = content.filter(ct => ct.u.id !== db.ref.account.id && !ct.w?.includes(db.ref.account.id)).length;
     const lastObj = content[content.length - 1];
     if(!lastObj) {
       if(document.getElementById(`kirimin-${ch.id}`)) return {card,uc:true};
@@ -85,11 +85,11 @@ export default {
 
     if(lastObj.u.id === db.ref.account.id) {
       if(elLastText.getAttribute('id') === `text-$${lastObj.id}`) {
-        if(elLastText.querySelector('.fa-check') && lastObj.unread) return {card,uc:true};
+        if(elLastText.querySelector('.fa-check') && lastObj.w?.filter(k => k !== db.ref.account.id).length < 1) return {card,uc:true};
       }
       const readStatus = document.createElement('i');
       readStatus.classList.add('fa-regular');
-      if(lastObj.unread) {
+      if(!lastObj.w || lastObj.w.filter(k => k !== db.ref.account.id).length < 1) {
         readStatus.classList.add('fa-check');
       } else {
         readStatus.classList.add('fa-check-double');
@@ -166,8 +166,8 @@ export default {
         }
       }
 
-      if(ch.u.id === db.ref.account.id) {
-        if(ch.unread) {
+      if(ch.u.id === db.ref.account.id && conty === 1) {
+        if(!ch.w || ch.w.filter(k => k !== db.ref.account.id).length < 1) {
           eTimeStamp.innerHTML += ' <i class="fa-regular fa-check"></i>';
         } else {
           eTimeStamp.innerHTML += ' <i class="fa-regular fa-check-double cy"></i>';
@@ -181,9 +181,9 @@ export default {
       return {card};
     }
 
-    if(ch.u.id === db.ref.account.id) {
+    if(ch.u.id === db.ref.account.id && conty === 1) {
       const estatus = card?.querySelector('.time p i');
-      if(!ch.unread && estatus.classList.contains('fa-check')) {
+      if(ch.w?.filter(k => k !== db.ref.account.id).length >= 1 && estatus.classList.contains('fa-check')) {
         estatus.classList.remove('fa-check');
         estatus.classList.add('fa-check-double', 'cy')
       }
@@ -205,7 +205,7 @@ export default {
     card_b.innerHTML = `<div class="last"></div><div class="unread"></div>`;
 
     const content = db.ref.groups?.find(ct => ct.id === ch.id).chats;
-    const unread = content.filter(ct => ct.unread === true && ct.u.id !== db.ref.account.id).length;
+    const unread = content.filter(ct => ct.u.id !== db.ref.account.id && !ct.w?.includes(db.ref.account.id)).length;
     const lastObj = content[content.length - 1];
     if(!lastObj) {
       if(document.getElementById(`kirimin-${ch.id}`)) return {card,uc:true};

@@ -357,8 +357,7 @@ export default class {
       id: "temp" + Date.now(),
       ts: Date.now(),
       txt: 'SENDING..',
-      u: {id:db.ref.account.id},
-      unread: true
+      u: {id:db.ref.account.id}
     }, this.user.db, this.conty);
     card.querySelector('.chp.text p').innerHTML = '<i class="sending"></i>';
     card.querySelector('.chp.time p').innerHTML = sdate.time(Date.now()) + ' <i class="fa-regular fa-clock"></i>';

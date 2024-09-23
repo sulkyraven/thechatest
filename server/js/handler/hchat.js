@@ -66,7 +66,6 @@ module.exports = {
     }
 
     data.ts = Date.now();
-    data.unread = true;
 
     if(!db.ref[conty][ckey].c) db.ref[conty][ckey].c = {};
     const newKey = 'c' + Date.now().toString(32);
