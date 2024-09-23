@@ -73,11 +73,11 @@ server.on('message', (c, m) => {
   if(m.d761) return c.send(hsocket.run(uid, m.d761));
   if(m.type === 'HEARTBEAT') return c.send({data:hcloud.getAll(uid)});
 });
-server.on('connection', (c) => {
-  console.log('connected', c.getId());
-});
+// server.on('connection', (c) => {
+//   console.log('connected', c.getId());
+// });
 server.on('disconnect', (c) => {
-  console.log('disconnected', c.getId());
+  // console.log('disconnected', c.getId());
   const offuser = Object.keys(db.ref.u).find(k => db.ref.u[k]?.peer === c.getId());
   if(offuser) delete db.ref.u[offuser].peer;
   db.save('u');

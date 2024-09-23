@@ -1,6 +1,7 @@
 import modal from "../helper/modal.js";
 import sceneIn from "../helper/sceneIn.js";
 import sdate from "../helper/sdate.js";
+import validatext from "../helper/validatext.js";
 import xhr from "../helper/xhr.js";
 import cloud from "../manager/cloud.js";
 import db from "../manager/db.js";
@@ -111,12 +112,24 @@ export default class {
       const {card, uc} = elgen.contentCard(ch, cdb, this.conty);
       card.onclick = async e => {
         const elsender = card.querySelector('.sender');
+        const elrep = card.querySelector('.embed');
         if(elsender?.contains(e.target) && ch.u.id !== db.ref.account.id) {
           if(userState.locked.bottom) return;
           userState.locked.bottom = true;
           await userState.pmbottom?.destroy?.();
           userState.locked.bottom = false;
           return new Profile({user:{...ch.u}}).run();
+        } else if(elrep?.contains(e.target)) {
+          if(this.isLocked) return;
+          this.isLocked = true;
+          const endID = elrep.getAttribute('data-rep');
+          const eldestination = this.chatlist.querySelector(`#krmn-${endID}`);
+          eldestination.classList.add('highlight');
+          setTimeout(() => {
+            eldestination.classList.remove('highlight');
+            this.isLocked = false;
+          }, 1495);
+          return eldestination.scrollIntoView();
         }
         if(this.isLocked) return;
         this.isLocked = true;
@@ -186,9 +199,9 @@ export default class {
     if(oldreply) oldreply.remove();
     this.contents.rep = null;
 
-    const card = document.createElement('div');
-    card.classList.add('embed');
-    card.innerHTML = `
+    this.ereply = document.createElement('div');
+    this.ereply.classList.add('embed');
+    this.ereply.innerHTML = `
     <div class="box">
       <div class="left">
         <p>${ch.u.id === db.ref.account.id ? db.ref.account.username : ch.u.username}</p>
@@ -198,31 +211,23 @@ export default class {
         <div class="btn btn-cancel-rep"><i class="fa-duotone fa-circle-x"></i></div>
       </div>
     </div>`;
-    const chtxt = card.querySelector('.left .msg');
+    const chtxt = this.ereply.querySelector('.left .msg');
     chtxt.innerText = ch.txt.length > 50 ? ch.txt.substring(0,47).trim().replace(/\s/g, ' ') + ' ...' : ch.txt.trim().replace(/\s/g, ' ');
 
-    const cancelReply = card.querySelector('.right .btn-cancel-rep');
+    const cancelReply = this.ereply.querySelector('.right .btn-cancel-rep');
     cancelReply.onclick = () => {
       this.contents.rep = null;
-      card.remove();
+      this.ereply.remove();
       this.growInput();
     }
     this.contents.rep = ch.id;
-    this.bottomclass.prepend(card);
+    this.bottomclass.prepend(this.ereply);
     this.growInput();
-    /*
-    <div class="embed">
-      <div class="box">
-        <div class="left">
-          <p>Devanka</p>
-          <p>Lorem ipsum dol ...</p>
-        </div>
-        <div class="right">
-          <div class="btn"><i class="fa-duotone fa-circle-x"></i></div>
-        </div>
-      </div>
-    </div>
-    */
+  }
+  closeReply() {
+    this.contents.rep = null;
+    this.ereply?.remove();
+    this.growInput();
   }
   btnListener() {
     const eluser = document.querySelector('.top .left .user');
@@ -313,8 +318,10 @@ export default class {
       const imgExt = /\.([a-zA-Z0-9]+)$/;
       const fileExt = file.name.match(imgExt)[1];
 
-      if(['gif', 'jpg', 'jpeg', 'png', 'webp'].includes(fileExt.toLowerCase())) {
+      if(validatext.image.includes(fileExt.toLowerCase())) {
         this.showImage(this.attach, file);
+      } else if(validatext.video.includes(fileExt.toLowerCase())) {
+        this.showVideo(this.attach, file);
       } else {
         this.showDocument(this.attach, file);
       }
@@ -341,18 +348,36 @@ export default class {
     ename.innerText = file.name;
     const img = new Image();
     img.src = tempsrc;
-    eimg.append(img);
     img.onload = () => this.growInput();
     img.onerror = () => {
       img.remove();
       this.showDocument(eattach, file);
     }
+    eimg.append(img);
+  }
+  showVideo(eattach, file) {
+    const tempsrc = URL.createObjectURL(file);
+    eattach.querySelector('.media').innerHTML = `<div class="img"></div><div class="name"><p>fivem_wp.jpg</p></div>`;
+    const evid = eattach.querySelector('.media .img');
+    const ename = eattach.querySelector('.media .name');
+    ename.innerText = file.name;
+    const vid = document.createElement('video');
+    vid.src = tempsrc;
+    vid.volume = 0;
+    vid.controls = false;
+    vid.onload = () => this.growInput();
+    vid.onerror = () => {
+      vid.remove();
+      this.showDocument(eattach, file);
+    }
+    evid.append(vid);
   }
   showDocument(eattach, file) {
     eattach.querySelector('.media').innerHTML = `<div class="document"><p></p></div>`;
     eattach.querySelector('.media p').innerText = file.name;
   }
   async sendMessage() {
+    if(this.isLocked) return;
     const {card} = elgen.contentCard({
       id: "temp" + Date.now(),
       ts: Date.now(),
@@ -379,6 +404,7 @@ export default class {
     this.contents.rep = null;
     
     this.closeAttach();
+    this.closeReply();
     this.growInput();
 
     const sendMsg = await xhr.post('/chat/uwu/sendMessage', data);

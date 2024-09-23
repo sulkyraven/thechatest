@@ -1,4 +1,5 @@
 import sdate from "../helper/sdate.js";
+import validatext from "../helper/validatext.js";
 import db from "./db.js";
 import userState from "./userState.js";
 
@@ -130,6 +131,7 @@ export default {
       }
       card.innerHTML = `
       ${conty !== 1 ? `<div class="chp sender"><div class="name">${username}</div></div>` : ''}
+      ${ch.r ? `<div class="chp embed"><div class="name">Bukan Devanka</div><div class="msg"><p><i class="fa-solid fa-image"></i> Ini pesan yang dibalas</p></div></div>` : ''}
       ${ch.i ? `<div class="chp attach"></div>` : ''}
       <div class="chp text">
         <p></p>
@@ -137,6 +139,38 @@ export default {
       <div class="chp time">
         <p></p>
       </div>`;
+
+      if(ch.r) {
+        const edb = (conty === 1 ? db.ref.chats.find(k => k.id === chts.id) || [] : db.ref.groups.find(k => k.id === chts.id) || []).chats.find(k => k.id === ch.r);
+        card.querySelector('.embed').setAttribute('data-rep', edb.id);
+        const embedName = card.querySelector('.embed .name');
+        embedName.innerText = edb.u.id === db.ref.account.id ? db.ref.account.username : edb.u.username;
+        const embedTxt = card.querySelector('.embed .msg');
+
+        if(edb.i) {
+          const splitExt = /\.([a-zA-Z0-9]+)$/;
+          const fileExt = edb.i.match(splitExt)[1];
+  
+          if(validatext.image.includes(fileExt.toLowerCase())) {
+            embedTxt.innerHTML = '<i class="fa-light fa-image"></i> ';
+          } else if(validatext.video.includes(fileExt.toLowerCase())) {
+            embedTxt.innerHTML = '<i class="fa-light fa-video"></i> ';
+          } else if(validatext.audio.includes(fileExt.toLowerCase())) {
+            embedTxt.innerHTML = '<i class="fa-light fa-music"></i> ';
+          } else {
+            embedTxt.innerHTML = '<i class="fa-light fa-file"></i> ';
+          }
+          if(edb.txt && edb.txt.length > 1) {
+            embedTxt.append(txtSS(edb.txt.replace(/\s/g, ' '), 20));
+          } else {
+            embedTxt.append('Media');
+          }
+        } else if(edb.v) {
+          embedTxt.innerHTML = '<i class="fa-light fa-microphone"></i> Voice Chat';
+        } else {
+          embedTxt.innerText = txtSS(edb.txt.replace(/\s/g, ' '), 30);
+        }
+      }
 
       const sameDay = sdate.sameday(new Date(Date.now()), new Date(ch.ts));
       const eTimeStamp = card.querySelector('.time p');

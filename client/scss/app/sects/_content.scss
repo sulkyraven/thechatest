@@ -110,7 +110,7 @@ $btmheight: 55px;
         .img {
           width: 50px;
           height: 38px;
-          img {
+          img, video {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -209,6 +209,7 @@ $btmheight: 55px;
       overflow-y: auto;
       overflow-x: hidden;
       padding: 10px;
+      scroll-behavior: smooth;
       .card {
         margin-left: 0;
         margin-right: auto;
@@ -359,6 +360,12 @@ $btmheight: 55px;
         margin-right: 0;
         margin-left: auto;
         background-color: v.$bar_active;
+      }
+      .card.highlight {
+        animation: bgTrans 1.5s;
+      }
+      .card.me.highlight {
+        animation: bgTrans2 1.5s;
       }
       .card:last-child {
         margin-bottom: 0;
