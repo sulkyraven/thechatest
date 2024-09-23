@@ -121,6 +121,7 @@ module.exports = {
     const gdb = db.ref.g[s.id];
     if(!gdb) return {code:400};
     if(gdb.u.includes(uid)) return {code:200, data:this.getGroup(uid, {id:s.id})};
+    if(gdb.t !== '1') return {code:402,msg:"GRPS_TYPE_PRIVATE"}
     db.ref.g[s.id].u.push(uid);
     db.save('g');
     return {code:200,data:this.getGroup(uid, {id:s.id})};

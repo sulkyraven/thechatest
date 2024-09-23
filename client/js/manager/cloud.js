@@ -39,9 +39,6 @@ class cloud {
     //     if(!this.pair.get(obj.data.peer)) this.connectTo([obj.data.peer]);
     //   }
     // }
-
-    userState.pmbottom?.forceUpdate?.();
-    userState.pmmid?.forceUpdate?.();
   }
   listenTo() {
     this.peer.on('connection', (conn) => {
@@ -64,7 +61,11 @@ class cloud {
 
     this.peer.once('open', () => {
       this.peer.socket._socket.addEventListener("message", (msg) => {
-        if(msg.data) JSON.parse(msg.data)?.data?.forEach(obj => this.clientData(obj));
+        if(msg.data) {
+          JSON.parse(msg.data)?.data?.forEach(obj => this.clientData(obj));
+          userState.pmbottom?.forceUpdate?.();
+          userState.pmmid?.forceUpdate?.();
+        }
       });
     });
   }

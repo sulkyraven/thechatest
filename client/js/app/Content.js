@@ -18,6 +18,7 @@ export default class {
     this.chatcount = 0;
     this.contents = {text:null,rep:null,file:{name:null,content:null}};
     this.planesend = false;
+    this.downed = new Set();
   }
   createElement() {
     this.el = document.createElement('div');
@@ -108,6 +109,19 @@ export default class {
 
     fdb.forEach(ch => {
       const {card, uc} = elgen.contentCard(ch, cdb, this.conty);
+      card.onclick = async e => {
+        const elsender = card.querySelector('.sender');
+        if(elsender?.contains(e.target) && ch.u.id !== db.ref.account.id) {
+          if(userState.locked.bottom) return;
+          userState.locked.bottom = true;
+          await userState.pmbottom?.destroy?.();
+          userState.locked.bottom = false;
+          return new Profile({user:{...ch.u}}).run();
+        }
+        if(this.isLocked) return;
+        this.isLocked = true;
+        return this.chatOptions(card, ch);
+      }
       if(!uc) {
         this.chatlist.appendChild(card);
       }
@@ -116,6 +130,99 @@ export default class {
     });
     if(fdb.length > this.chatcount) this.setReadChat();
     this.chatcount = fdb.length;
+  }
+  chatOptions(oldcard, ch) {
+    const oldchatpop = this.el.querySelector('.chatpop');
+    if(oldchatpop) oldchatpop.remove();
+    const chatpop = document.createElement('div');
+    chatpop.classList.add('chatpop');
+    chatpop.innerHTML = `
+    <div class="box"><div class="chats"></div><div class="actions"></div></div>`;
+    const card = oldcard.cloneNode(true);
+    card.removeAttribute('id');
+    chatpop.querySelector('.chats').append(card);
+
+    const btnReply = document.createElement('div');
+    btnReply.classList.add('btn', 'btn-reply');
+    btnReply.innerHTML = `<i class="fa-solid fa-reply"></i> REPLY`;
+    chatpop.querySelector('.actions').append(btnReply);
+    btnReply.onclick = async() => {
+      chatpop.classList.add('out');
+      await modal.waittime();
+      card.remove();
+      chatpop.remove();
+      this.isLocked = false;
+      this.showReply(ch);
+    }
+
+    if(ch.u.id === db.ref.account.id) {
+      const btnEdit = document.createElement('div');
+      btnEdit.classList.add('btn', 'btn-edit');
+      btnEdit.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> EDIT`;
+
+      const btnDelete = document.createElement('div');
+      btnDelete.classList.add('btn', 'btn-delete');
+      btnDelete.innerHTML = `<i class="fa-solid fa-trash-can"></i> DELETE`;
+
+      chatpop.querySelector('.actions').append(btnEdit, btnDelete);
+    }
+
+    const btnCancel = document.createElement('div');
+    btnCancel.classList.add('btn', 'btn-cancel');
+    btnCancel.innerHTML = `<i class="fa-solid fa-circle-x"></i> CANCEL`;
+    chatpop.querySelector('.actions').append(btnCancel);
+    btnCancel.onclick = async() => {
+      chatpop.classList.add('out');
+      await modal.waittime();
+      card.remove();
+      chatpop.remove();
+      this.isLocked = false;
+    }
+
+    this.el.append(chatpop);
+  }
+  showReply(ch) {
+    const oldreply = this.el.querySelector('.bottom .embed');
+    if(oldreply) oldreply.remove();
+    this.contents.rep = null;
+
+    const card = document.createElement('div');
+    card.classList.add('embed');
+    card.innerHTML = `
+    <div class="box">
+      <div class="left">
+        <p>${ch.u.id === db.ref.account.id ? db.ref.account.username : ch.u.username}</p>
+        <p class="msg">Lorem ipsum dol ...</p>
+      </div>
+      <div class="right">
+        <div class="btn btn-cancel-rep"><i class="fa-duotone fa-circle-x"></i></div>
+      </div>
+    </div>`;
+    const chtxt = card.querySelector('.left .msg');
+    chtxt.innerText = ch.txt.length > 50 ? ch.txt.substring(0,47).trim().replace(/\s/g, ' ') + ' ...' : ch.txt.trim().replace(/\s/g, ' ');
+
+    const cancelReply = card.querySelector('.right .btn-cancel-rep');
+    cancelReply.onclick = () => {
+      this.contents.rep = null;
+      card.remove();
+      this.growInput();
+    }
+    this.contents.rep = ch.id;
+    this.bottomclass.prepend(card);
+    this.growInput();
+    /*
+    <div class="embed">
+      <div class="box">
+        <div class="left">
+          <p>Devanka</p>
+          <p>Lorem ipsum dol ...</p>
+        </div>
+        <div class="right">
+          <div class="btn"><i class="fa-duotone fa-circle-x"></i></div>
+        </div>
+      </div>
+    </div>
+    */
   }
   btnListener() {
     const eluser = document.querySelector('.top .left .user');
@@ -127,13 +234,32 @@ export default class {
       userState.locked.bottom = false;
     }
   }
+  keyDown(e) {
+    const key = e.key.toLowerCase();
+    if(key === 'shift') this.downed.add(key);
+    if(key === 'enter' && this.downed.has('shift')) {
+      e.preventDefault();
+      if(this.planesend) return this.sendMessage();
+    }
+  }
+  keyUp(e) {
+    const key = e.key.toLowerCase();
+    if(key === 'shift') {
+      if(this.downed.has(key)) this.downed.delete(key);
+    }
+  }
   formListener() {
     this.inpMsg = this.el.querySelector('#content-input');
     this.inpMsg.oninput = () => this.growInput();
+    this.inpMsg.onkeydown = e => this.keyDown(e);
+    this.inpMsg.onkeyup = e => this.keyUp(e);
+
     this.btnImg = this.el.querySelector('.btn-image');
     this.btnImg.onclick = () => this.findFile('image/*');
+
     this.btnFile = this.el.querySelector('.btn-attach');
     this.btnFile.onclick = () => this.findFile();
+    
     this.btnSend = this.el.querySelector('.btn-voice');
     this.btnSend.onclick = async() => {
       if(this.planesend) return this.sendMessage();
@@ -252,7 +378,7 @@ export default class {
     this.contents.file.name = null;
     this.contents.file.content = null;
     this.contents.rep = null;
-
+    
     this.closeAttach();
     this.growInput();
 
@@ -312,6 +438,7 @@ export default class {
       this.contents = {text:null,rep:null,file:{name:null,content:null}};
       this.planesend = false;
       this.inpMsg.removeEventListener('input', this.growInput);
+      this.downed.clear();
       this.el.classList.add('out');
       await modal.waittime();
       this.el.remove();
