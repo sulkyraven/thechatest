@@ -569,4 +569,74 @@ $btmheight: 55px;
       animation: popup_out 0.5s forwards;
     }
   }
+  .vrecorder {
+    position: absolute;
+    top: 0;left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #00000080;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .box {
+      animation: popup_in 0.5s;
+      .timestamp {
+        font-size: 2.5rem;
+        font-family: monospace, monospace;
+      }
+      .record {
+        margin: 40px 0;
+      }
+      .actions {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        .btn {
+          width: 75px;
+          height: 75px;
+          border-radius: 50%;
+          background-color: v.$sgreen;
+          font-size: 2rem;
+          text-align: center;
+          align-content: center;
+        }
+        .cr {background-color: v.$cred;}
+        .cy {background-color: v.$syellow;}
+        .recording {
+          position: relative;
+          width: 75px;
+          height: 75px;
+          .btn-spinning {
+            position: absolute;
+            top: 0;left: 0;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            outline: dashed 5px v.$sgreen;
+            outline-offset: 10px;
+            animation: spinning 5s linear infinite;
+          }
+          .btn-stop {
+            position: absolute;
+            top: 0;left: 0;
+            width: 75px;
+            height: 75px;
+            font-size: 2rem;
+            text-align: center;
+            align-content: center;
+            border-radius: 50%;
+            background-color: v.$sgreen;
+            cursor: pointer;
+          }
+        }
+        .off {
+          background-color: v.$sgray;
+          outline-color: v.$sgray;
+        }
+      }
+    }
+  }
 }

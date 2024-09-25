@@ -66,5 +66,6 @@
   "GRPS_DELETE_CONFIRM": "Are you sure want to delete this group?",
   "GRPS_LEAVE_CONFIRM": "Leave group?",
   "GRPS_KICK_CONFIRM": "Kick @<b>{uname}</b> from group?",
-  "GRPS_TYPE_PRIVATE": "The group you are trying to join is a private group. You must have the invite link to join."
+  "GRPS_TYPE_PRIVATE": "The group you are trying to join is a private group. You must have the invite link to join.",
+  "CONTENT_NO_MEDIA_DEVICES": "No media device premission"
 }

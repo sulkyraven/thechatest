@@ -322,6 +322,22 @@
       </div>
     </div>
   </div>
+  <div class="vrecorder">
+    <div class="box">
+      <div class="timestamp">hh:mm:dd</div>
+      <div class="actions record">
+        <!-- <div class="recording">
+          <div class="btn-spinning"></div>
+          <div class="btn-stop"><i class="fa-solid fa-paper-plane-top"></i></div>
+        </div> -->
+        <div class="btn btn-start"><i class="fa-solid fa-microphone-lines"></i></div>
+      </div>
+      <div class="actions">
+        <div class="btn btn-cancel cr"><i class="fa-solid fa-x"></i></div>
+        <div class="btn btn-restart cy"><i class="fa-solid fa-rotate-left"></i></div>
+      </div>
+    </div>
+  </div>
 </div>
 ```
 

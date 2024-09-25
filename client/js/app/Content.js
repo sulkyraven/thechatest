@@ -9,6 +9,12 @@ import elgen from "../manager/elgen.js";
 import userState from "../manager/userState.js";
 import GroupSetting from "./GroupSetting.js";
 import Profile from "./Profile.js";
+let lang = null;
+
+let recorder = null;
+let recorderChunks = [];
+let recorderresult = null;
+const daudio = new Audio();
 
 export default class {
   constructor({ user, conty }) {
@@ -451,8 +457,97 @@ export default class {
     userState.pmbottom?.forceUpdate?.();
     userState.pmmid?.forceUpdate?.();
   }
-  sendVoice() {
-    alert('not yet available');
+  async sendVoice() {
+    if(this.isLocked) return;
+    this.isLocked = true;
+
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      return modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
+    }
+    if(!recorder) {
+      recorder = await SetupAudioRecorder();
+      if(!recorder) {
+        this.isLocked = false;
+        return modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
+      }
+    }
+
+    let isrecording = false;
+
+    const vrebefore = this.el.querySelector('.vrecorder');
+    if(vrebefore) vrebefore.remove();
+
+    const vrec = document.createElement('div');
+    vrec.classList.add('vrecorder');
+    vrec.innerHTML = `
+    <div class="box">
+      <div class="timestamp">hh:mm:dd</div>
+      <div class="actions record">
+        <div class="recording"></div>
+      </div>
+      <div class="actions">
+        <div class="btn btn-cancel cr"><i class="fa-solid fa-x"></i></div>
+        <div class="btn btn-restart cy"><i class="fa-solid fa-rotate-left"></i></div>
+      </div>
+    </div>`;
+    const ts = vrec.querySelector('.timestamp');
+    const btncancel = vrec.querySelector('.btn-cancel');
+    const btnrestart = vrec.querySelector('.btn-restart');
+    const btnrec = vrec.querySelector('.recording');
+
+    elvoice(btnrec, true);
+
+    // start to trying to get media device
+    btnrec.onclick = async() => {
+      if(!recorder) {
+        recorder = await SetupAudioRecorder();
+        if(!recorder) {
+          vrec.remove();
+          await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
+          this.isLocked = false;
+          return;
+        }
+      }
+      if(isrecording) {
+        try {
+          recorder.stop();
+          isrecording = elvoice(btnrec, isrecording);
+        } catch {
+          vrec.remove();
+          await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
+          this.isLocked = false;
+          return;
+        }
+      } else {
+        try {
+          recorder.start();
+          isrecording = elvoice(btnrec, isrecording);
+        } catch {
+          recorder = null;
+          recorderChunks = [];
+          recorder = await SetupAudioRecorder();
+          if(!recorder) {
+            vrec.remove();
+            await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
+            this.isLocked = false;
+            return;
+          }
+        }
+      }
+    }
+
+    // end of trying to get media device
+
+    // btnrec.onclick = () => {
+    //   if(isrecording) {
+    //     // stop
+    //     isrecording = elvoice(btnrec, isrecording);
+    //   } else {
+    //     // start
+    //     isrecording = elvoice(btnrec, isrecording);
+    //   }
+    // }
+    this.el.append(vrec);
   }
   forceUpdate() {
     this.renderChats();
@@ -474,6 +569,7 @@ export default class {
   }
   async run() {
     userState.pmbottom = this;
+    lang = userState.langs[userState.lang];
     this.user = {...this.user, img: imageSelection(this.user, this.conty)}
     // this.user.img = imageSelection(this.user, this.conty);
     this.createElement();
@@ -503,4 +599,66 @@ function chatSelection(obj, conty) {
 function imageSelection(obj, conty) {
   if(conty === 1) return obj.img ? `/file/user/${obj.id}` : '/assets/user.jpg';
   if(conty === 2) return obj.i ? `/file/group/${obj.id}` : '/assets/group.jpg';
+}
+function SetupAudioRecorder() {
+  return new Promise(resolve => {
+    navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
+      const newRecorder = new MediaRecorder(stream);
+      newRecorder.onerror = err => {
+        console.log(err);
+        this.isLocked = false;
+        return modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
+      }
+      newRecorder.ondataavailable = e => {
+        console.log('recording');
+        recorderChunks.push(e.data);
+      }
+      newRecorder.onstop = () => {
+        console.log('stopped');
+        const blob = new Blob(recorderChunks, {type:"audio/ogg; codecs=opus"});
+        recorderChunks = [];
+        recorderresult = URL.createObjectURL(blob);
+        daudio.src = recorderresult;
+        setTimeout(() => {
+          console.log('playing audio');
+          daudio.play();
+        }, 250);
+      }
+      resolve(newRecorder);
+    }).catch(err => {
+      console.log(err);
+      resolve(null);
+    });
+  });
+  // const device = navigator.mediaDevices.getUserMedia({ audio: true });
+  // device.then(stream => {
+  //   recorder = new MediaRecorder(stream);
+  //   recorder.ondataavailable = e => {
+  //     console.log('recording');
+  //     recorderChunks.push(e.data);
+  //   }
+  //   recorder.onstop = () => {
+  //     console.log('stopped');
+  //     const blob = new Blob(recorderChunks, {type:"audio/ogg; codecs=opus"});
+  //     recorderChunks = [];
+  //     const audiosrc = URL.createObjectURL(blob);
+  //     daudio.src = audiosrc;
+  //     setTimeout(() => {
+  //       console.log('playing audio');
+  //       daudio.play();
+  //     }, 1000);
+  //   }
+  // }).catch(err => {
+  //   console.log(err);
+  // });
+}
+
+function elvoice(el, ty = false) {
+  if(ty) {
+    el.innerHTML = `<div class="btn btn-start"><i class="fa-solid fa-microphone-lines"></i></div>`;
+    return false;
+  } else {
+    el.innerHTML = `<div class="btn-spinning"></div><div class="btn-stop"><i class="fa-solid fa-paper-plane-top"></i></div>`;
+    return true;
+  }
 }
