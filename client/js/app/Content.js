@@ -13,8 +13,9 @@ let lang = null;
 
 let recorder = null;
 let recorderChunks = [];
-let recorderresult = null;
-const daudio = new Audio();
+let isrecording = false;
+let stoprecord = false;
+let recordinterval = null;
 
 export default class {
   constructor({ user, conty }) {
@@ -23,7 +24,12 @@ export default class {
     this.id = 'content';
     this.isLocked = false;
     this.chatcount = 0;
-    this.contents = {text:null,rep:null,file:{name:null,content:null}};
+    this.contents = {
+      text:null,
+      rep:null,
+      voice:{ src:null, blob:null },
+      file:{ name:null, src:null, blob:null }
+    };
     this.planesend = false;
     this.downed = new Set();
   }
@@ -211,14 +217,27 @@ export default class {
     <div class="box">
       <div class="left">
         <p>${ch.u.id === db.ref.account.id ? db.ref.account.username : ch.u.username}</p>
-        <p class="msg">Lorem ipsum dol ...</p>
+        <p class="msg"></p>
       </div>
       <div class="right">
         <div class="btn btn-cancel-rep"><i class="fa-duotone fa-circle-x"></i></div>
       </div>
     </div>`;
     const chtxt = this.ereply.querySelector('.left .msg');
-    chtxt.innerText = ch.txt.length > 50 ? ch.txt.substring(0,47).trim().replace(/\s/g, ' ') + ' ...' : ch.txt.trim().replace(/\s/g, ' ');
+    if(ch.i) {
+      const imgExt = /\.([a-zA-Z0-9]+)$/;
+      const fileExt = ch.i.match(imgExt)?.[1];
+
+      if(validatext.image.includes(fileExt.toLowerCase())) {
+        chtxt.innerHTML = '<i class="fa-light fa-image"></i> ';
+      } else {
+        chtxt.innerHTML = '<i class="fa-light fa-file"></i> ';
+      }
+      if(!ch.txt) chtxt.append('Media');
+    }
+    if(ch.txt) {
+      chtxt.append(ch.txt.length > 50 ? ch.txt.substring(0,47).trim().replace(/\s/g, ' ') + ' ...' : ch.txt.trim().replace(/\s/g, ' '))
+    }
 
     const cancelReply = this.ereply.querySelector('.right .btn-cancel-rep');
     cancelReply.onclick = () => {
@@ -274,14 +293,14 @@ export default class {
     this.btnSend = this.el.querySelector('.btn-voice');
     this.btnSend.onclick = async() => {
       if(this.planesend) return this.sendMessage();
-      return this.sendVoice();
+      return this.getVoiceRecord();
     }
   }
   growInput() {
-    if(!this.planesend && (this.inpMsg.value.trim().length > 0 || this.contents.file?.content)) {
+    if(!this.planesend && (this.inpMsg.value.trim().length > 0 || this.contents.file?.src)) {
       this.planesend = true;
       this.btnSend.innerHTML = `<i class="fa-solid fa-chevron-right"></i>`;
-    } else if(this.planesend && (this.inpMsg.value.trim().length < 1 && !this.contents.file.content)) {
+    } else if(this.planesend && (this.inpMsg.value.trim().length < 1 && !this.contents.file.src)) {
       this.planesend = false;
       this.btnSend.innerHTML = `<i class="fa-solid fa-microphone"></i>`;
     }
@@ -312,8 +331,9 @@ export default class {
         reader.readAsDataURL(file);
       });
       this.contents.file.name = file.name;
-      this.contents.file.content = filesrc;
-      
+      this.contents.file.src = filesrc;
+      this.contents.file.blob = URL.createObjectURL(file);
+
       const attachbefore = this.bottomclass.querySelector('.attach');
       if(attachbefore) attachbefore.remove();
 
@@ -325,11 +345,11 @@ export default class {
       const fileExt = file.name.match(imgExt)[1];
 
       if(validatext.image.includes(fileExt.toLowerCase())) {
-        this.showImage(this.attach, file);
+        this.showImage(this.attach, file.name, filesrc);
       } else if(validatext.video.includes(fileExt.toLowerCase())) {
-        this.showVideo(this.attach, file);
+        this.showVideo(this.attach, file.name, filesrc);
       } else {
-        this.showDocument(this.attach, file);
+        this.showDocument(this.attach, file.name, filesrc);
       }
       this.bottomclass.prepend(this.attach);
       const repembed = this.bottomclass.querySelector('.embed');
@@ -342,54 +362,60 @@ export default class {
   }
   closeAttach() {
     this.contents.file.name = null;
-    this.contents.file.content = null;
+    this.contents.file.src = null;
     this.attach?.remove();
     this.growInput();
   }
-  showImage(eattach, file) {
-    const tempsrc = URL.createObjectURL(file);
+  showImage(eattach, filename) {
     eattach.querySelector('.media').innerHTML = `<div class="img"></div><div class="name"><p>fivem_wp.jpg</p></div>`;
     const eimg = eattach.querySelector('.media .img');
     const ename = eattach.querySelector('.media .name');
-    ename.innerText = file.name;
+    ename.innerText = filename;
     const img = new Image();
-    img.src = tempsrc;
+    img.src = this.contents.file.blob;
     img.onload = () => this.growInput();
     img.onerror = () => {
       img.remove();
-      this.showDocument(eattach, file);
+      this.showDocument(eattach, filename);
     }
     eimg.append(img);
   }
-  showVideo(eattach, file) {
-    const tempsrc = URL.createObjectURL(file);
+  showVideo(eattach, filename) {
     eattach.querySelector('.media').innerHTML = `<div class="img"></div><div class="name"><p>fivem_wp.jpg</p></div>`;
     const evid = eattach.querySelector('.media .img');
     const ename = eattach.querySelector('.media .name');
-    ename.innerText = file.name;
+    ename.innerText = filename;
     const vid = document.createElement('video');
-    vid.src = tempsrc;
+    vid.src = this.contents.file.blob;
     vid.volume = 0;
     vid.controls = false;
     vid.onload = () => this.growInput();
     vid.onerror = () => {
       vid.remove();
-      this.showDocument(eattach, file);
+      this.showDocument(eattach, filename);
     }
     evid.append(vid);
   }
-  showDocument(eattach, file) {
+  showDocument(eattach, filename) {
     eattach.querySelector('.media').innerHTML = `<div class="document"><p></p></div>`;
-    eattach.querySelector('.media p').innerText = file.name;
+    eattach.querySelector('.media p').innerText = filename;
   }
   async sendMessage() {
     if(this.isLocked) return;
-    const {card} = elgen.contentCard({
-      id: "temp" + Date.now(),
-      ts: Date.now(),
-      txt: 'SENDING..',
-      u: {id:db.ref.account.id}
-    }, this.user.db, this.conty);
+
+    const tempdata = {};
+    tempdata.id = "temp" + Date.now();
+    tempdata.ts = Date.now();
+    tempdata.txt = this.inpMsg.value.trim();
+    tempdata.u = {id:db.ref.account.id};
+    if(this.contents.file.src) {
+      const tempExt = /\.([a-zA-Z0-9]+)$/;
+      const tempfileExt = this.contents.file.name.match(tempExt)?.[1];
+      tempdata.i = `${this.contents.file.blob}.${tempfileExt}`;
+    }
+    if(this.contents.voice) tempdata.v = this.contents.voice.blob;
+
+    const {card} = elgen.contentCard(tempdata, this.user.db, this.conty, 1);
     card.querySelector('.chp.text p').innerHTML = '<i class="sending"></i>';
     card.querySelector('.chp.time p').innerHTML = sdate.time(Date.now()) + ' <i class="fa-regular fa-clock"></i>';
     card.querySelector('.chp.text p i').innerText = this.inpMsg.value.trim();
@@ -401,14 +427,19 @@ export default class {
 
     const data = {conty:this.conty, id:this.user.id};
     if(this.contents.text) data.txt = this.contents.text;
-    if(this.contents.file?.name && this.contents.file?.content) data.file = {...this.contents.file};
+    if(this.contents.file?.name && this.contents.file?.src) data.file = {...this.contents.file};
     if(this.contents.rep) data.rep = this.contents.rep;
 
     this.inpMsg.value = '';
     this.contents.file.name = null;
-    this.contents.file.content = null;
+    this.contents.file.src = null;
+    if(this.contents.file.blob) URL.revokeObjectURL(this.contents.file.blob);
+    this.contents.file.blob = null;
     this.contents.rep = null;
-    
+    if(this.contents.voice.blob) URL.revokeObjectURL(this.contents.voice.blob);
+    this.contents.voice.blob = null;
+    this.contents.voice.src = null;
+
     this.closeAttach();
     this.closeReply();
     this.growInput();
@@ -422,9 +453,9 @@ export default class {
     }
     const ckey = this.conty === 1 ? 'chats' : 'groups';
     const cdb = db.ref[ckey]?.find(ck => ck.id === this.user.db.id);
-    cloud.send({ "id": "send-msg", "to": sendMsg.peers, "data": { "text": sendMsg.data.txt } })
-
     card.remove();
+    cloud.send({ "id": "send-msg", "to": sendMsg.peers, "data": { "text": sendMsg.data.txt } });
+
     if(!this.user.db) {
       const newData =  {
         id: sendMsg.data.ckey,
@@ -457,31 +488,22 @@ export default class {
     userState.pmbottom?.forceUpdate?.();
     userState.pmmid?.forceUpdate?.();
   }
-  async sendVoice() {
+  async getVoiceRecord() {
     if(this.isLocked) return;
     this.isLocked = true;
 
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       return modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
     }
-    if(!recorder) {
-      recorder = await SetupAudioRecorder();
-      if(!recorder) {
-        this.isLocked = false;
-        return modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
-      }
-    }
-
-    let isrecording = false;
 
     const vrebefore = this.el.querySelector('.vrecorder');
     if(vrebefore) vrebefore.remove();
 
-    const vrec = document.createElement('div');
-    vrec.classList.add('vrecorder');
-    vrec.innerHTML = `
+    this.vrec = document.createElement('div');
+    this.vrec.classList.add('vrecorder');
+    this.vrec.innerHTML = `
     <div class="box">
-      <div class="timestamp">hh:mm:dd</div>
+      <div class="rec-timestamp">--:--:--</div>
       <div class="actions record">
         <div class="recording"></div>
       </div>
@@ -490,30 +512,45 @@ export default class {
         <div class="btn btn-restart cy"><i class="fa-solid fa-rotate-left"></i></div>
       </div>
     </div>`;
-    const ts = vrec.querySelector('.timestamp');
-    const btncancel = vrec.querySelector('.btn-cancel');
-    const btnrestart = vrec.querySelector('.btn-restart');
-    const btnrec = vrec.querySelector('.recording');
+    const ts = this.vrec.querySelector('.rec-timestamp');
+    const btncancel = this.vrec.querySelector('.btn-cancel');
+    const btnrestart = this.vrec.querySelector('.btn-restart');
+    const btnrec = this.vrec.querySelector('.recording');
 
-    elvoice(btnrec, true);
+    elvoice(btnrec, !isrecording);
 
-    // start to trying to get media device
-    btnrec.onclick = async() => {
+    if(!recorder) {
+      recorder = await SetupAudioRecorder(this);
       if(!recorder) {
-        recorder = await SetupAudioRecorder();
-        if(!recorder) {
-          vrec.remove();
-          await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
-          this.isLocked = false;
-          return;
-        }
+        isrecording = false;
+        await this.vrecDestroy();
+        await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
+        this.isLocked = false;
+        return;
+      }
+    }
+
+    btnrec.onclick = async() => {
+      // console.log('recording', isrecording);
+      if(!recorder) {
+        isrecording = false;
+        await this.vrecDestroy();
+        await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
+        this.isLocked = false;
+        return;
       }
       if(isrecording) {
         try {
+          stoprecord = true;
           recorder.stop();
           isrecording = elvoice(btnrec, isrecording);
+          this.voiceTimeStamp(ts, false);
         } catch {
-          vrec.remove();
+          stoprecord = false;
+          isrecording = elvoice(btnrec, isrecording);
+          isrecording = false;
+          this.voiceTimeStamp(ts, false);
+          await this.vrecDestroy();
           await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
           this.isLocked = false;
           return;
@@ -521,33 +558,95 @@ export default class {
       } else {
         try {
           recorder.start();
-          isrecording = elvoice(btnrec, isrecording);
         } catch {
           recorder = null;
           recorderChunks = [];
-          recorder = await SetupAudioRecorder();
-          if(!recorder) {
-            vrec.remove();
-            await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
-            this.isLocked = false;
-            return;
-          }
+          isrecording = false;
+          this.voiceTimeStamp(ts, false);
+          await this.vrecDestroy();
+          await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
+          this.isLocked = false;
+          return;
+        }
+        isrecording = elvoice(btnrec, isrecording);
+        this.voiceTimeStamp(ts, true);
+      }
+    }
+    btnrestart.onclick = async() => {
+      if(isrecording) {
+        try {
+          stoprecord = false;
+          recorder.stop();
+          isrecording = elvoice(btnrec, isrecording);
+          this.voiceTimeStamp(ts, false);
+        } catch {
+          stoprecord = false;
+          isrecording = elvoice(btnrec, isrecording);
+          isrecording = false;
+          this.voiceTimeStamp(ts, false);
+          await this.vrecDestroy();
+          await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
+          this.isLocked = false;
         }
       }
     }
+    btncancel.onclick = async() => {
+      if(isrecording) {
+        try {
+          recorder.stop();
+        } catch {
+          stoprecord = false;
+        }
+      }
+      stoprecord = false;
+      isrecording = false;
+      this.voiceTimeStamp(ts, false);
+      await this.vrecDestroy();
+      this.isLocked = false;
+    }
 
-    // end of trying to get media device
+    this.el.append(this.vrec);
+  }
+  voiceTimeStamp(ts, setrun) {
+    if(!ts) return;
+    if(setrun) {
+      ts.innerHTML = '00:00:00';
+      let dd = 0, mm = 0, jj = 0;
+      recordinterval = setInterval(() => {
+        dd++;
+        if(dd >= 60) { dd = 0; mm++ }
+        if(mm >= 60) { mm = 0; jj++ }
 
-    // btnrec.onclick = () => {
-    //   if(isrecording) {
-    //     // stop
-    //     isrecording = elvoice(btnrec, isrecording);
-    //   } else {
-    //     // start
-    //     isrecording = elvoice(btnrec, isrecording);
-    //   }
-    // }
-    this.el.append(vrec);
+        ts.innerHTML = `${jj<10?'0'+jj:jj}:${mm<10?'0'+mm:mm}:${dd<10?'0'+dd:dd}`;
+      }, 995);
+    } else {
+      clearInterval(recordinterval);
+      recordinterval = null;
+      ts.innerHTML = '--:--:--';
+    }
+  }
+  async sendVoice(audiosrc, tempsrc) {
+    this.contents.voice.src = audiosrc;
+    this.contents.voice.blob = tempsrc;
+    this.contents.file.name = null;
+    this.contents.file.src = null;
+    this.contents.file.blob = null;
+    if(this.vrec) await this.vrecDestroy();
+    this.vrec = null;
+    this.isLocked = false;
+    this.sendMessage();
+  }
+  vrecDestroy() {
+    return new Promise(async resolve => {
+      if(this.vrec) {
+        this.vrec.classList.add('out');
+        await modal.waittime();
+        this.vrec.remove();
+        resolve();
+      } else {
+        resolve();
+      }
+    });
   }
   forceUpdate() {
     this.renderChats();
@@ -555,7 +654,7 @@ export default class {
   destroy() {
     return new Promise(async resolve => {
       this.chatcount = 0;
-      this.contents = {text:null,rep:null,file:{name:null,content:null}};
+      this.contents = {text:null,rep:null,voice:{src:null,blob:null},file:{name:null,src:null,blob:null}};
       this.planesend = false;
       this.inpMsg.removeEventListener('input', this.growInput);
       this.downed.clear();
@@ -600,7 +699,7 @@ function imageSelection(obj, conty) {
   if(conty === 1) return obj.img ? `/file/user/${obj.id}` : '/assets/user.jpg';
   if(conty === 2) return obj.i ? `/file/group/${obj.id}` : '/assets/group.jpg';
 }
-function SetupAudioRecorder() {
+function SetupAudioRecorder(content) {
   return new Promise(resolve => {
     navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
       const newRecorder = new MediaRecorder(stream);
@@ -610,47 +709,29 @@ function SetupAudioRecorder() {
         return modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
       }
       newRecorder.ondataavailable = e => {
-        console.log('recording');
         recorderChunks.push(e.data);
       }
       newRecorder.onstop = () => {
-        console.log('stopped');
         const blob = new Blob(recorderChunks, {type:"audio/ogg; codecs=opus"});
         recorderChunks = [];
-        recorderresult = URL.createObjectURL(blob);
-        daudio.src = recorderresult;
-        setTimeout(() => {
-          console.log('playing audio');
-          daudio.play();
-        }, 250);
+        content.voiceTimeStamp(document.querySelector('.rec-timestamp'), false);
+        const el = document.querySelector('.recording');
+        if(el) el.innerHTML = `<div class="btn btn-start"><i class="fa-solid fa-microphone-lines"></i></div>`;
+        isrecording = false;
+        if(stoprecord) {
+          const reader = new FileReader();
+          reader.onload = () => content.sendVoice(reader.result, URL.createObjectURL(blob));
+          reader.readAsDataURL(blob);
+        }
+        stoprecord = false;
       }
       resolve(newRecorder);
-    }).catch(err => {
-      console.log(err);
+    }).catch(() => {
+      isrecording = false;
+      stoprecord = false;
       resolve(null);
     });
   });
-  // const device = navigator.mediaDevices.getUserMedia({ audio: true });
-  // device.then(stream => {
-  //   recorder = new MediaRecorder(stream);
-  //   recorder.ondataavailable = e => {
-  //     console.log('recording');
-  //     recorderChunks.push(e.data);
-  //   }
-  //   recorder.onstop = () => {
-  //     console.log('stopped');
-  //     const blob = new Blob(recorderChunks, {type:"audio/ogg; codecs=opus"});
-  //     recorderChunks = [];
-  //     const audiosrc = URL.createObjectURL(blob);
-  //     daudio.src = audiosrc;
-  //     setTimeout(() => {
-  //       console.log('playing audio');
-  //       daudio.play();
-  //     }, 1000);
-  //   }
-  // }).catch(err => {
-  //   console.log(err);
-  // });
 }
 
 function elvoice(el, ty = false) {

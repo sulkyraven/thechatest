@@ -66,9 +66,9 @@ export default {
     const elLastText = card.querySelector('.detail .last');
     if(lastObj.i) {
       const imgExt = /\.([a-zA-Z0-9]+)$/;
-      const fileExt = lastObj.i.match(imgExt)[1];
+      const fileExt = lastObj.i.match(imgExt)?.[1];
 
-      if(['gif', 'jpg', 'jpeg', 'png', 'webp'].includes(fileExt.toLowerCase())) {
+      if(validatext.image.includes(fileExt.toLowerCase())) {
         elLastText.innerHTML = '<i class="fa-light fa-image"></i> ';
       } else {
         elLastText.innerHTML = '<i class="fa-light fa-file"></i> ';
@@ -108,7 +108,7 @@ export default {
     if(card_b) card_b.remove();
     return card;
   },
-  contentCard(ch, chts, conty) {
+  contentCard(ch, chts, conty, temp = false) {
     let card = document.getElementById(`krmn-${ch.id}`);
     let oldUsername = card?.querySelector('.sender .name')?.innerText || null;
     if(ch.u.id !== db.ref.account.id && ch.u.username !== oldUsername) {
@@ -131,7 +131,7 @@ export default {
       }
       card.innerHTML = `
       ${conty !== 1 ? `<div class="chp sender"><div class="name">${username}</div></div>` : ''}
-      ${ch.r ? `<div class="chp embed"><div class="name">Bukan Devanka</div><div class="msg"><p><i class="fa-solid fa-image"></i> Ini pesan yang dibalas</p></div></div>` : ''}
+      ${ch.r ? `<div class="chp embed"><div class="name"></div><div class="msg"><p></p></div></div>` : ''}
       ${ch.i ? `<div class="chp attach"></div>` : ''}
       <div class="chp text">
         <p></p>
@@ -149,7 +149,7 @@ export default {
 
         if(edb.i) {
           const splitExt = /\.([a-zA-Z0-9]+)$/;
-          const fileExt = edb.i.match(splitExt)[1];
+          const fileExt = edb.i.match(splitExt)?.[1];
   
           if(validatext.image.includes(fileExt.toLowerCase())) {
             embedTxt.innerHTML = '<i class="fa-light fa-image"></i> ';
@@ -180,23 +180,25 @@ export default {
         eTimeStamp.innerText = `${sdate.date(ch.ts)} ${sdate.time(ch.ts)}`;
       }
 
-      if(ch.i) {
+      if(ch.v) {
+        
+      } else if(ch.i) {
         const imgExt = /\.([a-zA-Z0-9]+)$/;
-        const fileExt = ch.i.match(imgExt)[1];
-  
-        if(['gif', 'jpg', 'jpeg', 'png', 'webp'].includes(fileExt.toLowerCase())) {
+        const fileExt = ch.i.match(imgExt)?.[1];
+
+        if(validatext.image.includes(fileExt.toLowerCase())) {
           card.querySelector('.attach').innerHTML = `<div class="img"></div>`;
           const newImg = new Image();
-          newImg.src = `/file/content/${chts.id}/${ch.i}`;
+          newImg.src = temp ? ch.i.replace(fileExt, '').replace('.', '') : `/file/content/${chts.id}/${ch.i}`;
           card.querySelector('.attach .img').append(newImg);
           newImg.onload = () => card.classList.add('long');
           newImg.onerror = () => {
             card.querySelector('.attach').innerHTML = `<div class="document"><p></p></div>`;
-            card.querySelector('.attach .document p').innerText = ch.i;
+            card.querySelector('.attach .document p').innerText = temp ? ch.i.replace(fileExt, '').replace('.', '') : ch.i;
           }
         } else {
           card.querySelector('.attach').innerHTML = `<div class="document"><p></p></div>`;
-          card.querySelector('.attach .document p').innerText = ch.i;
+          card.querySelector('.attach .document p').innerText = temp ? ch.i.replace(fileExt, '').replace('.', '') : ch.i;
         }
       }
 
@@ -262,9 +264,9 @@ export default {
     elLastText.id = `text-$${lastObj.id}`;
     if(lastObj.i) {
       const imgExt = /\.([a-zA-Z0-9]+)$/;
-      const fileExt = lastObj.i.match(imgExt)[1];
+      const fileExt = lastObj.i.match(imgExt)?.[1];
 
-      if(['gif', 'jpg', 'jpeg', 'png', 'webp'].includes(fileExt.toLowerCase())) {
+      if(validatext.image.includes(fileExt.toLowerCase())) {
         elLastText.innerHTML = '<i class="fa-light fa-image"></i> ';
       } else {
         elLastText.innerHTML = '<i class="fa-light fa-file"></i> ';

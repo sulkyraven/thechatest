@@ -582,7 +582,7 @@ $btmheight: 55px;
     justify-content: center;
     .box {
       animation: popup_in 0.5s;
-      .timestamp {
+      .rec-timestamp {
         font-size: 2.5rem;
         font-family: monospace, monospace;
       }
@@ -637,6 +637,11 @@ $btmheight: 55px;
           outline-color: v.$sgray;
         }
       }
+    }
+  }
+  .vrecorder.out {
+    .box {
+      animation: popup_out 0.5s forwards;
     }
   }
 }

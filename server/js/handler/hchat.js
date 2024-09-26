@@ -51,9 +51,9 @@ module.exports = {
       data.txt = s.txt;
     }
     if(s.file) {
-      if(!validate(['name', 'content'], s.file)) return {code:400};
+      if(!validate(['name', 'src'], s.file)) return {code:400};
       if(s.file.name.length > 100) return {code:400,msg:'FILENAME_LENGTH'};
-      const dataurl = decodeURIComponent(s.file.content);
+      const dataurl = decodeURIComponent(s.file.src);
       const buffer = Buffer.from(dataurl.split(',')[1], 'base64');
       if(buffer.length > 2000000) return {code:402,msg:'ACC_IMG_LIMIT'}
 
