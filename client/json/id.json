@@ -29,7 +29,7 @@
   "ACC_FAIL_BIO_COOLDOWN": "Batas memperbarui bio adalah setiap 1 jam.<br/>Kamu bisa memperbarui lagi setelah",
   "ACC_FAIL_DNAME_LENGTH": "Panjang maksimal display name adalah 35 karakter",
   "ACC_FAIL_DNAME_COOLDOWN": "Kamu baru-baru ini udah memperbarui display name.<br/>Baru bisa ganti lagi setelah",
-  "ACC_IMG_LIMIT": "LIMIT",
+  "ACC_FILE_LIMIT": "LIMIT",
   "ACC_CHOOSE_LANG": "Pilih Bahasa",
   "ACC_CHOOSE_LANG_DONE": "Halaman perlu direfresh untuk menerapkan perubahan",
   "ACC_LOGOUT": "Yakin nih mau logout sekarang?",

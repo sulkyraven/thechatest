@@ -247,7 +247,7 @@ export default {
     const audioControl = card.querySelector('.control .btn');
     const audioDur = card.querySelector('.duration p');
     const audioRange = card.querySelector(`.range #range_${ch.id}_${currtime}`);
-    let rangeUpdating = false, audioLoaded = false, audioError = false;
+    let rangeUpdating = false, audioLoaded = false, audioError = false, audioRevoked = false;
 
     audio.onerror = () => {
       audioError = true;
@@ -267,14 +267,12 @@ export default {
     audio.ontimeupdate = () => {
       if(audioError) return;
       const elExists = document.querySelector(`#range_${ch.id}_${currtime}`);
-
       if(!elExists) {
         audio.pause();
         audio.currentTime = 0;
         audioControl.classList.remove('playing');
         audio.remove();
       }
-
       const mm = Math.floor(audio.currentTime / 60);
       const dd = Math.floor(audio.currentTime - (mm * 60));
 
@@ -297,15 +295,25 @@ export default {
         isPlaying = true;
         audio.play();
         audioControl.classList.add('playing');
+        if(temp && !audioRevoked) {
+          audioRevoked = true;
+          URL.revokeObjectURL(ch.v);
+        }
       }
     }
     audio.oncanplay = () => {
       if(audioError) return;
       if(audioLoaded) return;
-      audioLoaded = true;
-      const mm = Math.floor(audio.duration / 60);
-      const dd = Math.floor(audio.duration - (mm * 60));
-      audioDur.innerHTML = dd < 10 ? `${mm}:0${dd}` : `${mm}:${dd}`;
+      if(audio.duration === Infinity || isNaN(Number(audio.duration))) {
+        audio.currentTime = 60 * 60 * 6;
+        audio.currentTime = 0;
+      }
+      if(audio.duration !== Infinity && !isNaN(Number(audio.duration))) {
+        audioLoaded = true;
+        const mm = Math.floor(audio.duration / 60);
+        const dd = Math.floor(audio.duration - (mm * 60));
+        audioDur.innerHTML = dd < 10 ? `${mm}:0${dd}` : `${mm}:${dd}`;
+      }
     }
     return card;
   },
@@ -357,10 +365,11 @@ export default {
       if(lastObj.txt && lastObj.txt.length > 1) {
         elLastText.append(txtSS((`${user}: ${lastObj.txt}`).replace(/\s/g, ' '), 20));
       } else {
-        elLastText.append(txtSS((`${user}: Media`).replace(/\s/g, ' '), 20));
+        elLastText.append(txtSS(`${user}: Media`, 20));
       }
     } else if(lastObj.v) {
-      elLastText.innerHTML = '<i class="fa-light fa-microphone"></i> Voice Chat';
+      elLastText.innerHTML = '<i class="fa-light fa-microphone"></i> ';
+      elLastText.append(txtSS(`${user}: Voice Chat`, 20));
     } else {
       elLastText.innerText = txtSS((`${user}: ${lastObj.txt}`).replace(/\s/g, ' '), 20);
     }

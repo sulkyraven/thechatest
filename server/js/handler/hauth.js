@@ -49,7 +49,7 @@ module.exports = {
     let ukey = Object.keys(udb).find(key => udb[key].email == email);
     if(!ukey) {
       ukey = '7' + helper.rNumber(5).toString() + (Object.keys(udb).length + 1).toString();
-      db.ref.u[ukey] = {email,bio:'No bio yet.',uname:`user${ukey}`,dname:`User D${ukey}`};
+      db.ref.u[ukey] = {email,bio:'No bio yet.',uname:`user${ukey}`,dname:`User D${ukey}`,j:Date.now()};
       data.first = true;
       db.save('u');
     }

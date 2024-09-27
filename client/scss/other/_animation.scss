@@ -2,31 +2,31 @@
 
 @keyframes bgTrans {
   0% {
-    transform: translateX(0) translateY(0);
+    transform: translateX(0) translateY(0) scale(1);
   } 40% {
     box-shadow: 0 0 10px v.$black, inset 0 0 5px 3px v.$yellow;
   } 50% {
-    transform: translateX(30px) translateY(30px);
+    transform: translateX(3rem) translateY(1rem) scale(1.2);
     box-shadow: 0 0 10px v.$black;
   } 60% {
     box-shadow: 0 0 10px v.$black, inset 0 0 5px 3px v.$yellow;
   } 100% {
-    transform: translateX(0) translateY(0);
+    transform: translateX(0) translateY(0) scale(1);
     box-shadow: none;
   }
 }
 @keyframes bgTrans2 {
   0% {
-    transform: translateY(0) translateX(0);
+    transform: translateY(0) translateX(0) scale(1);
   } 40% {
     box-shadow: 0 0 10px v.$black, inset 0 0 5px 3px v.$yellow;
   } 50% {
-    transform: translateX(-30px) translateY(30px);
+    transform: translateX(-3rem) translateY(1rem) scale(1.2);
     box-shadow: 0 0 10px v.$black;
   } 60% {
     box-shadow: 0 0 10px v.$black, inset 0 0 5px 3px v.$yellow;
   } 100% {
-    transform: translateX(0) translateY(0);
+    transform: translateX(0) translateY(0) scale(1);
     box-shadow: none;
   }
 }

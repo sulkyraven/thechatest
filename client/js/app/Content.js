@@ -100,7 +100,7 @@ export default class {
     this.user = {...this.user, ...csu};
 
     const ckey = this.conty === 1 ? 'chats' : 'groups';
-    const cdb = db.ref[ckey]?.find(ck => ck.id === this.user.db.id);
+    const cdb = db.ref[ckey]?.find(ck => ck.id === (this.user?.db?.id || Date.now().toString(32)));
 
     if(this.user?.db?.id) {
       cloud.peer.socket._socket.send(JSON.stringify({d761: {id:"readMsg", data:{id:this.user.db.id}}}));
@@ -110,7 +110,7 @@ export default class {
   }
   renderChats() {
     const ckey = this.conty === 1 ? 'chats' : 'groups';
-    const cdb = db.ref[ckey]?.find(ck => ck.id === this.user.db.id);
+    const cdb = db.ref[ckey]?.find(ck => ck.id === (this.user?.db?.id || Date.now().toString(32)));
 
     const eluname = this.el.querySelector('.top .left .user .name');
     eluname.innerText = this.user.username;
@@ -453,7 +453,11 @@ export default class {
 
     const data = {conty:this.conty, id:this.user.id};
     if(this.contents.text) data.txt = this.contents.text;
-    if(this.contents.file?.name && this.contents.file?.src) data.file = {...this.contents.file};
+    if(this.contents.voice.src) {
+      data.voice = this.contents.voice.src;
+    } else if(this.contents.file?.name && this.contents.file?.src) {
+      data.file = {name:this.contents.file.name,src:this.contents.file.src}
+    }
     if(this.contents.rep) data.rep = this.contents.rep;
 
     this.inpMsg.value = '';
@@ -462,7 +466,6 @@ export default class {
     if(this.contents.file.blob) URL.revokeObjectURL(this.contents.file.blob);
     this.contents.file.blob = null;
     this.contents.rep = null;
-    if(this.contents.voice.blob) URL.revokeObjectURL(this.contents.voice.blob);
     this.contents.voice.blob = null;
     this.contents.voice.src = null;
 
@@ -478,7 +481,7 @@ export default class {
       return;
     }
     const ckey = this.conty === 1 ? 'chats' : 'groups';
-    const cdb = db.ref[ckey]?.find(ck => ck.id === this.user.db.id);
+    const cdb = db.ref[ckey]?.find(ck => ck.id === (this.user?.db?.id || Date.now().toString(32)));
     card.remove();
     cloud.send({ "id": "send-msg", "to": sendMsg.peers, "data": { "text": sendMsg.data.txt } });
 
@@ -639,6 +642,16 @@ export default class {
       ts.innerHTML = '00:00:00';
       let dd = 0, mm = 0, jj = 0;
       recordinterval = setInterval(() => {
+        const stillRecord = document.querySelector('.rec-timestamp');
+        if(!stillRecord) {
+          clearInterval(recordinterval);
+          recordinterval = null;
+          recorder = null;
+          recorderChunks = [];
+          isrecording = false;
+          stoprecord = false;
+          return;
+        }
         dd++;
         if(dd >= 60) { dd = 0; mm++ }
         if(mm >= 60) { mm = 0; jj++ }
@@ -682,8 +695,14 @@ export default class {
       this.chatcount = 0;
       this.contents = {text:null,rep:null,voice:{src:null,blob:null},file:{name:null,src:null,blob:null}};
       this.planesend = false;
-      this.inpMsg.removeEventListener('input', this.growInput);
       this.downed.clear();
+      this.disabelAutoScroll = false;
+      recorder = null;
+      recorderChunks = [];
+      isrecording = false;
+      stoprecord = false;
+      recordinterval = null;
+      this.inpMsg.removeEventListener('input', this.growInput);
       this.el.classList.add('out');
       await modal.waittime();
       this.el.remove();
@@ -693,7 +712,6 @@ export default class {
     });
   }
   async run() {
-    userState.pmbottom = this;
     lang = userState.langs[userState.lang];
     this.user = {...this.user, img: imageSelection(this.user, this.conty)}
     // this.user.img = imageSelection(this.user, this.conty);
@@ -704,6 +722,7 @@ export default class {
     this.setReadChat();
     this.renderChats();
     this.formListener();
+    userState.pmbottom = this;
   }
 }
 

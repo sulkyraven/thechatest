@@ -35,7 +35,7 @@ module.exports = {
       db.ref.c[ckey].u = [uid, s.id];
       db.ref.c[ckey].c = {};
     }
-    if(!s.txt && !s.file) return {code:400};
+    if(!s.txt && !s.file && !s.voice) return {code:400};
     const data = {};
     data.u = uid;
     if(s.rep) {
@@ -50,12 +50,23 @@ module.exports = {
       if(wsonly.test(s.txt)) return {code:400};
       data.txt = s.txt;
     }
-    if(s.file) {
+    if(s.voice) {
+      if(!validate(['voice'], s)) return {code:400};
+      const dataurl = decodeURIComponent(s.voice);
+      const buffer = Buffer.from(dataurl.split(',')?.[1], 'base64');
+      if(buffer.length > 2000000) return {code:402,msg:'ACC_FILE_LIMIT'};
+      if(!fs.existsSync('./server/dbfile')) fs.mkdirSync('./server/dbfile');
+      if(!fs.existsSync(`./server/dbfile/content`)) fs.mkdirSync(`./server/dbfile/content`);
+      if(!fs.existsSync(`./server/dbfile/content/${ckey}`)) fs.mkdirSync(`./server/dbfile/content/${ckey}`);
+      const filename = `F${Date.now().toString(32)}.ogg`;
+      fs.writeFileSync(`./server/dbfile/content/${ckey}/${filename}`, buffer);
+      data.v = filename;
+    } else if(s.file) {
       if(!validate(['name', 'src'], s.file)) return {code:400};
       if(s.file.name.length > 100) return {code:400,msg:'FILENAME_LENGTH'};
       const dataurl = decodeURIComponent(s.file.src);
-      const buffer = Buffer.from(dataurl.split(',')[1], 'base64');
-      if(buffer.length > 2000000) return {code:402,msg:'ACC_IMG_LIMIT'}
+      const buffer = Buffer.from(dataurl.split(',')?.[1], 'base64');
+      if(buffer.length > 2000000) return {code:402,msg:'ACC_FILE_LIMIT'};
 
       if(!fs.existsSync('./server/dbfile')) fs.mkdirSync('./server/dbfile');
       if(!fs.existsSync(`./server/dbfile/content`)) fs.mkdirSync(`./server/dbfile/content`);
