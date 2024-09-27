@@ -200,6 +200,19 @@ $btmheight: 55px;
     top: 60px;left: 0;
     width: 100%;
     height: calc(100% - (60px + $btmheight));
+    .gotolast {
+      position: absolute;
+      right: 20px;
+      bottom: 10px;
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      align-content: center;
+      border-radius: 50%;
+      background-color: v.$sgray;
+      box-shadow: 0 0 5px v.$card_primary;
+      cursor: pointer;
+    }
     .chats {
       position: absolute;
       bottom: 0;left: 0;
@@ -247,6 +260,7 @@ $btmheight: 55px;
           border-bottom-left-radius: 10px;
           color: v.$yellow;
           font-size: 0.8rem;
+          cursor: pointer;
         }
         .attach {
           margin-top: 5px;
@@ -278,13 +292,27 @@ $btmheight: 55px;
           }
           .voice {
             width: 100%;
-            padding-left: 10px;
+            padding: 0 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 10px;
             .control {
               font-size: 1.5rem;
+              min-width: 18px;
+              .btn::after {
+                content: "\f04b";
+                font-family: "Font Awesome 6 Pro";
+                font-weight: 600;
+              }
+              .btn.playing::after {
+                content: "\f04c";
+                font-family: "Font Awesome 6 Pro";
+                font-weight: 600;
+              }
+            }
+            .duration {
+              font-family: monospace, monospace;
             }
             .range {
               input[type="range"] {
@@ -293,7 +321,7 @@ $btmheight: 55px;
                  -webkit-appearance: none;
                  cursor: pointer;
                  background-color: v.$softwhite;
-                 height: 3px;
+                 height: 5px;
               }
               input[type=range]::-webkit-slider-thumb {
                  appearance: none;

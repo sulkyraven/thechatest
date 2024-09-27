@@ -32,6 +32,7 @@ export default class {
     };
     this.planesend = false;
     this.downed = new Set();
+    this.disabelAutoScroll = false;
   }
   createElement() {
     this.el = document.createElement('div');
@@ -124,6 +125,7 @@ export default class {
       const {card, uc} = elgen.contentCard(ch, cdb, this.conty);
       card.onclick = async e => {
         const elsender = card.querySelector('.sender');
+        const elvoice = card.querySelector('.voice');
         const elrep = card.querySelector('.embed');
         if(elsender?.contains(e.target) && ch.u.id !== db.ref.account.id) {
           if(userState.locked.bottom) return;
@@ -142,6 +144,8 @@ export default class {
             this.isLocked = false;
           }, 1495);
           return eldestination.scrollIntoView();
+        } else if(elvoice?.querySelector('.control').contains(e.target) || elvoice?.querySelector('.range').contains(e.target)) {
+          return;
         }
         if(this.isLocked) return;
         this.isLocked = true;
@@ -155,6 +159,7 @@ export default class {
     });
     if(fdb.length > this.chatcount) this.setReadChat();
     this.chatcount = fdb.length;
+    setTimeout(() => {if(!this.disabelAutoScroll) this.chatlist.scrollTop = this.chatlist.scrollHeight}, 100);
   }
   chatOptions(oldcard, ch) {
     const oldchatpop = this.el.querySelector('.chatpop');
@@ -224,7 +229,9 @@ export default class {
       </div>
     </div>`;
     const chtxt = this.ereply.querySelector('.left .msg');
-    if(ch.i) {
+    if(ch.v) {
+      chtxt.innerHTML = '<i class="fa-light fa-microphone"></i> Voice Chat';
+    } else if(ch.i) {
       const imgExt = /\.([a-zA-Z0-9]+)$/;
       const fileExt = ch.i.match(imgExt)?.[1];
 
@@ -279,6 +286,24 @@ export default class {
     }
   }
   formListener() {
+    this.chatlist.onscroll = () => {
+      if(Math.floor(this.chatlist.scrollHeight - this.chatlist.scrollTop) < Math.floor(this.chatlist.clientHeight + 50)) {
+        this.disabelAutoScroll = false;
+        let elGoToLast = this.midclass.querySelector('.gotolast');
+        if(elGoToLast) elGoToLast.remove();
+      } else {
+        this.disabelAutoScroll = true;
+        let elGoToLast = this.midclass.querySelector('.gotolast');
+        if(!elGoToLast) {
+          elGoToLast = document.createElement('div');
+          elGoToLast.classList.add('gotolast');
+          elGoToLast.innerHTML = `<i class="fa-solid fa-chevrons-down"></i>`;
+          this.midclass.append(elGoToLast);
+        }
+        elGoToLast.onclick = () => this.chatlist.scrollTop = this.chatlist.scrollHeight;
+      }
+    }
+
     this.inpMsg = this.el.querySelector('#content-input');
     this.inpMsg.oninput = () => this.growInput();
     this.inpMsg.onkeydown = e => this.keyDown(e);
@@ -289,7 +314,7 @@ export default class {
 
     this.btnFile = this.el.querySelector('.btn-attach');
     this.btnFile.onclick = () => this.findFile();
-    
+
     this.btnSend = this.el.querySelector('.btn-voice');
     this.btnSend.onclick = async() => {
       if(this.planesend) return this.sendMessage();
@@ -420,6 +445,7 @@ export default class {
     card.querySelector('.chp.time p').innerHTML = sdate.time(Date.now()) + ' <i class="fa-regular fa-clock"></i>';
     card.querySelector('.chp.text p i').innerText = this.inpMsg.value.trim();
     this.chatlist.append(card);
+    this.chatlist.scrollTop = this.chatlist.scrollHeight;
     const chTxtTemp = card.querySelector('.chp.text p');
     if(chTxtTemp && chTxtTemp.offsetWidth >= 470) card.classList.add('long');
 

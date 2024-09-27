@@ -132,7 +132,7 @@ export default {
       card.innerHTML = `
       ${conty !== 1 ? `<div class="chp sender"><div class="name">${username}</div></div>` : ''}
       ${ch.r ? `<div class="chp embed"><div class="name"></div><div class="msg"><p></p></div></div>` : ''}
-      ${ch.i ? `<div class="chp attach"></div>` : ''}
+      ${ch.i || ch.v ? `<div class="chp attach"></div>` : ''}
       <div class="chp text">
         <p></p>
       </div>
@@ -181,7 +181,7 @@ export default {
       }
 
       if(ch.v) {
-        
+        card.querySelector('.attach').append(this.audioContentCard(ch, chts, temp));
       } else if(ch.i) {
         const imgExt = /\.([a-zA-Z0-9]+)$/;
         const fileExt = ch.i.match(imgExt)?.[1];
@@ -225,6 +225,89 @@ export default {
       }
     }
     return {card,uc:true};
+  },
+  audioContentCard(ch, chts, temp = false) {
+    let isPlaying = false;
+    const currtime = Date.now().toString(32);
+    const card = document.createElement('div');
+    card.classList.add('voice');
+    card.innerHTML = `
+    <div class="control">
+      <div class="btn"></div>
+    </div>
+    <div class="range">
+      <input type="range" name="range_${ch.id}_${currtime}" id="range_${ch.id}_${currtime}" min="0" max="100" value="0" />
+    </div>
+    <div class="duration">
+      <p>-:--</p>
+    </div>`;
+    const audio = new Audio();
+    audio.src = temp ? ch.v : `/file/content/${chts.id}/${ch.v}`;
+
+    const audioControl = card.querySelector('.control .btn');
+    const audioDur = card.querySelector('.duration p');
+    const audioRange = card.querySelector(`.range #range_${ch.id}_${currtime}`);
+    let rangeUpdating = false, audioLoaded = false, audioError = false;
+
+    audio.onerror = () => {
+      audioError = true;
+      card.classList.remove('voice');
+      card.classList.add('document');
+      card.innerHTML = `<p></p>`;
+      card.querySelector('p').innerText = ch.v;
+    }
+
+    audio.onended = () => {
+      isPlaying = false;
+      if(audioError) return;
+      audio.pause();
+      audio.currentTime = 0;
+      audioControl.classList.remove('playing');
+    }
+    audio.ontimeupdate = () => {
+      if(audioError) return;
+      const elExists = document.querySelector(`#range_${ch.id}_${currtime}`);
+
+      if(!elExists) {
+        audio.pause();
+        audio.currentTime = 0;
+        audioControl.classList.remove('playing');
+        audio.remove();
+      }
+
+      const mm = Math.floor(audio.currentTime / 60);
+      const dd = Math.floor(audio.currentTime - (mm * 60));
+
+      audioDur.innerHTML = dd < 10 ? `${mm}:0${dd}` : `${mm}:${dd}`;
+      if(!rangeUpdating) audioRange.value = Math.floor((audio.currentTime / audio.duration) * 100);
+    }
+    audioRange.onmouseup = () => {
+      rangeUpdating = false;
+      if(audioError) return;
+      audio.currentTime = Math.floor((audioRange.value * audio.duration) / 100);
+    }
+    audioRange.onmousedown = () => rangeUpdating = true;
+    audioControl.onclick = () => {
+      if(audioError) return;
+      if(isPlaying) {
+        isPlaying = false;
+        audio.pause();
+        audioControl.classList.remove('playing');
+      } else {
+        isPlaying = true;
+        audio.play();
+        audioControl.classList.add('playing');
+      }
+    }
+    audio.oncanplay = () => {
+      if(audioError) return;
+      if(audioLoaded) return;
+      audioLoaded = true;
+      const mm = Math.floor(audio.duration / 60);
+      const dd = Math.floor(audio.duration - (mm * 60));
+      audioDur.innerHTML = dd < 10 ? `${mm}:0${dd}` : `${mm}:${dd}`;
+    }
+    return card;
   },
   groupMemberCard(usr, oid) {
     const card = document.createElement('li');
