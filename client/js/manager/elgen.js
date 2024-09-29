@@ -42,7 +42,17 @@ export default {
     return card;
   },
   chatCard(ch) {
-    const {card, card_b} = chtsCard({...ch, cy:0});
+    let user = null;
+    if(ch.code) {
+      user = userState.langs[userState.lang].DELETED_USER;
+    } else if(ch.id === db.ref.account.id) {
+      user = db.ref.account.username;
+    } else {
+      user = ch.username;
+    }
+
+    const {card, card_b} = chtsCard({...ch, username:user, cy:0});
+
     card_b.innerHTML = `<div class="last"></div><div class="unread"></div>`;
 
     const content = db.ref.chats?.find(ct => ct.users.find(k => k.id === ch.id)).chats;
@@ -113,7 +123,7 @@ export default {
   contentCard(ch, chts, conty, temp = false) {
     let card = document.getElementById(`krmn-${ch.id}`);
     let oldUsername = card?.querySelector('.sender .name')?.innerText || null;
-    if(ch.u.id !== db.ref.account.id && ch.u.username !== oldUsername) {
+    if(ch.u.username && ch.u.id !== db.ref.account.id && ch.u.username !== oldUsername) {
       const euname = card?.querySelector('.sender .name');
       if(euname) euname.innerText = ch.u.username;
     }
@@ -132,7 +142,7 @@ export default {
         username = ch.u.username;
       }
       card.innerHTML = `
-      ${conty !== 1 ? `<div class="chp sender"><div class="name">${username}</div></div>` : ''}
+      ${conty !== 1 ? '<div class="chp sender"><div class="name">'+ username +'</div></div>' : ''}
       ${ch.r ? `<div class="chp embed"><div class="name"></div><div class="msg"><p></p></div></div>` : ''}
       ${ch.i || ch.v ? `<div class="chp attach"></div>` : ''}
       <div class="chp text">
@@ -198,14 +208,12 @@ export default {
             card.querySelector('.attach .document p').innerText = temp ? ch.i.replace(fileExt, '').replace('.', '') : ch.i;
             if(temp) {
               URL.revokeObjectURL(ch.i);
-              console.log('revoked');
             }
           }
           newImg.onload = () => {
             card.classList.add('long');
             if(temp) {
               URL.revokeObjectURL(ch.i);
-              console.log('revoked');
             }
           }
           newImg.src = filesrc;
@@ -220,18 +228,15 @@ export default {
             card.querySelector('.attach .document p').innerText = temp ? ch.i.replace(fileExt, '').replace('.', '') : ch.i;
             if(temp) {
               URL.revokeObjectURL(ch.i);
-              console.log('revoked');
             }
           }
           newVideo.onloadeddata = () => {
             card.classList.add('long');
             if(temp) {
               URL.revokeObjectURL(ch.i);
-              console.log('revoked');
             }
           }
           newVideo.src = filesrc;
-          // newVideo.innerHTML = `<source src="${temp ? ch.i.replace(fileExt, '').replace('.', '') : temp ? ch.i.replace(fileExt, '').replace('.', '') : `/file/content/${chts.id}/${ch.i}a`}"/>Your browser does not support the video tag.`;
         } else {
           const filesrc = temp ? ch.i.replace(fileExt, '').replace('.', '') : `/file/content/${chts.id}/${ch.i}`;
           card.querySelector('.attach').innerHTML = `<div class="document" href="${filesrc}"><p></p></div>`;
@@ -387,7 +392,16 @@ export default {
     }
 
     const elLastText = card.querySelector('.detail .last');
-    const user = lastObj.u.id === db.ref.account.id ? db.ref.account.username : lastObj.u.username;
+
+    let user = null;
+    if(lastObj.u.code) {
+      user = userState.langs[userState.lang].DELETED_USER;
+    } else if(lastObj.u.id === db.ref.account.id) {
+      user = db.ref.account.username;
+    } else {
+      user = lastObj.u.username;
+    }
+
     if(elLastText.getAttribute('id') === `text-$${lastObj.id}`) return {card,uc:true};
     elLastText.id = `text-$${lastObj.id}`;
     if(lastObj.i) {

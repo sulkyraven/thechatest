@@ -69,9 +69,7 @@ export default class {
 
     this.eloptions.innerHTML = `<div class="btn">Loading</div>`;
     const setreq = await xhr.post(`/profile/uwu/${ref}`, {id:this.user.id});
-    if(setreq?.code === 200) {
-      this.user = setreq.data.user;
-    }
+    if(setreq.data.user) this.user = setreq.data.user;
     this.isLocked = false;
     return setreq;
   }
@@ -91,7 +89,13 @@ export default class {
     btn.innerHTML = `<i class="fa-solid fa-user-minus"></i> ${lang.PROF_UNFRIEND}`;
     this.eloptions.append(btn);
     btn.onclick = async() => {
-      await this.ActionXHR('unfriend', true, 'PROF_CONF_UNFRIEND');
+      const act = await this.ActionXHR('unfriend', true, 'PROF_CONF_UNFRIEND');
+      if(act?.code === 200) {
+        if(act?.data?.user?.id) {
+          db.ref.friends = db.ref.friends?.filter(usr => usr.id !== act.data.user.id);
+          userState.pmmid?.forceUpdate?.();
+        }
+      }
       this.renderActions();
     }
   }
@@ -105,11 +109,24 @@ export default class {
 
     this.eloptions.append(btn_a, btn_b);
     btn_a.onclick = async() => {
-      await this.ActionXHR('acceptfriend');
+      const act = await this.ActionXHR('acceptfriend');
+      if(act?.code === 200) {
+        if(act?.data?.user?.id) {
+          db.ref.account.req = db.ref.account.req?.filter(usr => usr.id !== act.data.user.id);
+          db.ref.friends.push(act.data.user);
+          userState.pmmid?.forceUpdate?.();
+        }
+      }
       this.renderActions();
     }
     btn_b.onclick = async() => {
-      await this.ActionXHR('ignorefriend', true, 'PROF_CONF_IGNORE');
+      const act = await this.ActionXHR('ignorefriend', true, 'PROF_CONF_IGNORE');
+      if(act?.code === 200) {
+        if(act?.data?.user?.id) {
+          db.ref.account.req = db.ref.account.req?.filter(usr => usr.id !== act.data.user.id);
+          userState.pmmid?.forceUpdate?.();
+        }
+      }
       this.renderActions();
     }
   }

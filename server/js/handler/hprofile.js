@@ -57,7 +57,8 @@ module.exports = {
     if(!validate(['id'], s)) return {code:400};
 
     const mdb = db.ref.u[uid];
-    if(!mdb || !mdb.req || !mdb.req.includes(s.id)) return {code:400};
+    if(!mdb) return {code:400};
+    if(!mdb.req || !mdb.req.includes(s.id)) return {code:400,data:{user:this.getUser(uid,s)}};
 
     const udb = db.ref.u[s.id];
     if(!udb) return {code:400};
@@ -68,7 +69,7 @@ module.exports = {
     });
     if(friendkey) {
       db.ref.u[uid].req = mdb.req.filter(key => key !== s.id);
-      return {code:400}
+      return {code:400,data:{user:this.getUser(uid,s)}}
     }
 
     const newfriendkey = 'D' + Date.now().toString(32);
@@ -92,7 +93,8 @@ module.exports = {
   cancelFriend(uid, s) {
     if(!validate(['id'], s)) return {code:400};
     const udb = db.ref.u[s.id];
-    if(!udb || !udb.req || !udb.req.includes(uid)) return {code:400};
+    if(!udb) return {code:400};
+    if(!udb.req || !udb.req.includes(uid)) return {code:400,data:{user:this.getUser(uid,s)}};
     db.ref.u[s.id].req = udb.req.filter(key => key !== uid);
 
     db.save('u');

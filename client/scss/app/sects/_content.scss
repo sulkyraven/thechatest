@@ -232,7 +232,6 @@ $btmheight: 55px;
         border-radius: 10px;
         background-color: v.$sgray;
         margin-bottom: 10px;
-        animation: popup_in 0.5s;
         .chp {
           margin-bottom: 3px;
         }
@@ -385,6 +384,9 @@ $btmheight: 55px;
           }
         }
       }
+      .card:not(.me) {
+        animation: popup_in 0.5s;
+      }
       .card.long {
         width: calc(100% - 40px);
         max-width: 450px;
@@ -393,6 +395,9 @@ $btmheight: 55px;
         margin-right: 0;
         margin-left: auto;
         background-color: v.$bar_active;
+      }
+      .card.sending {
+        animation: popup_in 0.5s;
       }
       .card.highlight {
         animation: bgTrans 1.5s;

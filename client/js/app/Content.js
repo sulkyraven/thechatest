@@ -113,7 +113,7 @@ export default class {
     const cdb = db.ref[ckey]?.find(ck => ck.id === (this.user?.db?.id || Date.now().toString(32)));
 
     const eluname = this.el.querySelector('.top .left .user .name');
-    eluname.innerText = this.user.username;
+    if(this.user.username !== eluname.innerText) eluname.innerText = this.user.username;
 
     const fdb = (cdb?.chats || []).sort((a, b) => {
       if(a.ts < b.ts) return -1;
@@ -450,8 +450,10 @@ export default class {
       tempdata.i = `${this.contents.file.blob}.${tempfileExt}`;
     }
     if(this.contents.voice) tempdata.v = this.contents.voice.blob;
+    if(this.contents.rep) tempdata.r = this.contents.rep;
 
     const {card} = elgen.contentCard(tempdata, this.user.db, this.conty, 1);
+    card.classList.add('sending');
     card.querySelector('.chp.text p').innerHTML = '<i class="sending"></i>';
     card.querySelector('.chp.time p').innerHTML = sdate.time(Date.now()) + ' <i class="fa-regular fa-clock"></i>';
     card.querySelector('.chp.text p i').innerText = this.inpMsg.value.trim();
@@ -484,7 +486,6 @@ export default class {
     this.growInput();
 
     const sendMsg = await xhr.post('/chat/uwu/sendMessage', data);
-    // await modal.waittime(10000);
     if(sendMsg?.code !== 200) {
       card.querySelector('.chp.text p').innerHTML = `<i class="failed">Gagal Mengirim Pesan<i>`;
       await modal.waittime(10000);
@@ -741,7 +742,7 @@ export default class {
 function chatSelection(obj, conty) {
   if(conty === 1) return {
     id: obj.id,
-    username: obj.username,
+    username: obj.username || 'Deleted User',
     db: db.ref.chats?.find(ch => ch.users.find(k => k.id === obj.id)),
     prof: new Profile({user:{...obj, img:obj.img.includes('/assets/')?null:obj.img}}),
   }

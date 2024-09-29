@@ -21,7 +21,6 @@ const hcloud = require('./js/handler/hcloud');
 const hsocket = require('./js/handler/hsocket');
 if(!fs.existsSync('./server/sessions')) {
   fs.mkdirSync('./server/sessions');
-  fs.writeFileSync('./server/sessions/df.txt', '', 'utf-8');
   console.log('sessions reloaded!');
 }
 

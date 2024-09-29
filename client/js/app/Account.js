@@ -3,6 +3,10 @@ import sceneIn from "../helper/sceneIn.js";
 import xhr from "../helper/xhr.js";
 import db from "../manager/db.js";
 import userState from "../manager/userState.js";
+const langlist = [
+  {id: 'lang-id', val: 'id', label: 'Bahasa Indonesia'},
+  {id: 'lang-en', val: 'en', label: 'English'},
+]
 let lang = {};
 
 export default class {
@@ -62,7 +66,7 @@ export default class {
       <div class="chp userlang">
         <div class="outer">
           <div class="chp-t">Language</div>
-          <div class="chp-f"><p>Bahasa Indonesia</p></div>
+          <div class="chp-f"><p>${langlist.find(k => k.val === userState.lang).label}</p></div>
           <div class="chp-e btn-lang">Change Language <i class="fa-solid fa-chevron-down"></i></div>
         </div>
       </div>
@@ -241,10 +245,6 @@ export default class {
     btnLang.onclick = async() => {
       if(this.isLocked) return;
       this.isLocked = true;
-      const langlist = [
-        {id: 'lang-id', val: 'id', label: 'Bahasa Indonesia'},
-        {id: 'lang-en', val: 'en', label: 'English'},
-      ]
       const langIndex = langlist.findIndex(llang => llang.val === userState.lang);
       if(langIndex >= 0) langlist[langIndex].actived = true;
   
