@@ -124,9 +124,10 @@ export default class {
     fdb.forEach(ch => {
       const {card, uc} = elgen.contentCard(ch, cdb, this.conty);
       card.onclick = async e => {
-        const elsender = card.querySelector('.sender');
+        const elsender = card.querySelector('.sender .name');
         const elvoice = card.querySelector('.voice');
         const elrep = card.querySelector('.embed');
+        const eldoc = card.querySelector('.document');
         if(elsender?.contains(e.target) && ch.u.id !== db.ref.account.id) {
           if(userState.locked.bottom) return;
           userState.locked.bottom = true;
@@ -145,6 +146,14 @@ export default class {
           }, 1495);
           return eldestination.scrollIntoView();
         } else if(elvoice?.querySelector('.control').contains(e.target) || elvoice?.querySelector('.range').contains(e.target)) {
+          return;
+        } else if(eldoc?.contains(e.target)) {
+          const link = document.createElement('a');
+          link.href = eldoc.getAttribute('href');
+          link.target = "_blank";
+          link.download = eldoc.querySelector('p').innerText;
+          link.click();
+          setTimeout(() => link.remove(), 1000);
           return;
         }
         if(this.isLocked) return;
@@ -310,7 +319,7 @@ export default class {
     this.inpMsg.onkeyup = e => this.keyUp(e);
 
     this.btnImg = this.el.querySelector('.btn-image');
-    this.btnImg.onclick = () => this.findFile('image/*');
+    this.btnImg.onclick = () => this.findFile('image/*,video/*');
 
     this.btnFile = this.el.querySelector('.btn-attach');
     this.btnFile.onclick = () => this.findFile();
@@ -402,6 +411,8 @@ export default class {
     img.onerror = () => {
       img.remove();
       this.showDocument(eattach, filename);
+      // ...Video
+      // new Video
     }
     eimg.append(img);
   }
@@ -463,7 +474,6 @@ export default class {
     this.inpMsg.value = '';
     this.contents.file.name = null;
     this.contents.file.src = null;
-    if(this.contents.file.blob) URL.revokeObjectURL(this.contents.file.blob);
     this.contents.file.blob = null;
     this.contents.rep = null;
     this.contents.voice.blob = null;
@@ -474,6 +484,7 @@ export default class {
     this.growInput();
 
     const sendMsg = await xhr.post('/chat/uwu/sendMessage', data);
+    // await modal.waittime(10000);
     if(sendMsg?.code !== 200) {
       card.querySelector('.chp.text p').innerHTML = `<i class="failed">Gagal Mengirim Pesan<i>`;
       await modal.waittime(10000);
@@ -522,7 +533,7 @@ export default class {
     this.isLocked = true;
 
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      return modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
+      return modal.alert(lang.CONTENT_NO_MEDIA_DEVICES + ' #2');
     }
 
     const vrebefore = this.el.querySelector('.vrecorder');
@@ -553,7 +564,7 @@ export default class {
       if(!recorder) {
         isrecording = false;
         await this.vrecDestroy();
-        await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
+        await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES + ' #3');
         this.isLocked = false;
         return;
       }
@@ -564,7 +575,7 @@ export default class {
       if(!recorder) {
         isrecording = false;
         await this.vrecDestroy();
-        await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
+        await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES + ' #4');
         this.isLocked = false;
         return;
       }
@@ -580,7 +591,7 @@ export default class {
           isrecording = false;
           this.voiceTimeStamp(ts, false);
           await this.vrecDestroy();
-          await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
+          await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES + ' #5');
           this.isLocked = false;
           return;
         }
@@ -593,7 +604,7 @@ export default class {
           isrecording = false;
           this.voiceTimeStamp(ts, false);
           await this.vrecDestroy();
-          await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
+          await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES + ' #6');
           this.isLocked = false;
           return;
         }
@@ -614,7 +625,7 @@ export default class {
           isrecording = false;
           this.voiceTimeStamp(ts, false);
           await this.vrecDestroy();
-          await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
+          await modal.alert(lang.CONTENT_NO_MEDIA_DEVICES + ' #7');
           this.isLocked = false;
         }
       }
@@ -667,6 +678,7 @@ export default class {
   async sendVoice(audiosrc, tempsrc) {
     this.contents.voice.src = audiosrc;
     this.contents.voice.blob = tempsrc;
+    window.open(tempsrc);
     this.contents.file.name = null;
     this.contents.file.src = null;
     this.contents.file.blob = null;
@@ -747,17 +759,20 @@ function imageSelection(obj, conty) {
 function SetupAudioRecorder(content) {
   return new Promise(resolve => {
     navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
-      const newRecorder = new MediaRecorder(stream);
+      const newRecorder = new MediaRecorder(stream, {
+        audioBitsPerSecond: 128000,
+        mimeType: 'audio/ogg'
+      });
       newRecorder.onerror = err => {
         console.log(err);
         this.isLocked = false;
-        return modal.alert(lang.CONTENT_NO_MEDIA_DEVICES);
+        return modal.alert(lang.CONTENT_NO_MEDIA_DEVICES + ' #1');
       }
       newRecorder.ondataavailable = e => {
         recorderChunks.push(e.data);
       }
       newRecorder.onstop = () => {
-        const blob = new Blob(recorderChunks, {type:"audio/ogg; codecs=opus"});
+        const blob = new Blob(recorderChunks, {type:"audio/ogg; codecs=0"});
         recorderChunks = [];
         content.voiceTimeStamp(document.querySelector('.rec-timestamp'), false);
         const el = document.querySelector('.recording');

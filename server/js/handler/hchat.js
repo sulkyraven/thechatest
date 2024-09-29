@@ -23,6 +23,7 @@ function findMatchingGroup(group_us, group_all) {
 
 module.exports = {
   sendMessage(uid, s) {
+    // if(!s.makan) return {code:400,msg:'just for testing'};
     if(!validate(['id'], s)) return {code:400};
     if(typeof s?.conty !== 'number') return {code:400};
     const conty = s.conty === 1 ? 'c' : 'g';
@@ -66,7 +67,7 @@ module.exports = {
       if(s.file.name.length > 100) return {code:400,msg:'FILENAME_LENGTH'};
       const dataurl = decodeURIComponent(s.file.src);
       const buffer = Buffer.from(dataurl.split(',')?.[1], 'base64');
-      if(buffer.length > 2000000) return {code:402,msg:'ACC_FILE_LIMIT'};
+      if(buffer.length > 3000000) return {code:402,msg:'ACC_FILE_LIMIT'};
 
       if(!fs.existsSync('./server/dbfile')) fs.mkdirSync('./server/dbfile');
       if(!fs.existsSync(`./server/dbfile/content`)) fs.mkdirSync(`./server/dbfile/content`);

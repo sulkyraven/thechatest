@@ -70,6 +70,8 @@ export default {
 
       if(validatext.image.includes(fileExt.toLowerCase())) {
         elLastText.innerHTML = '<i class="fa-light fa-image"></i> ';
+      } else if(validatext.video.includes(fileExt.toLowerCase())) {
+        elLastText.innerHTML = '<i class="fa-light fa-film"></i> ';
       } else {
         elLastText.innerHTML = '<i class="fa-light fa-file"></i> ';
       }
@@ -154,7 +156,7 @@ export default {
           if(validatext.image.includes(fileExt.toLowerCase())) {
             embedTxt.innerHTML = '<i class="fa-light fa-image"></i> ';
           } else if(validatext.video.includes(fileExt.toLowerCase())) {
-            embedTxt.innerHTML = '<i class="fa-light fa-video"></i> ';
+            embedTxt.innerHTML = '<i class="fa-light fa-film"></i> ';
           } else if(validatext.audio.includes(fileExt.toLowerCase())) {
             embedTxt.innerHTML = '<i class="fa-light fa-music"></i> ';
           } else {
@@ -187,17 +189,52 @@ export default {
         const fileExt = ch.i.match(imgExt)?.[1];
 
         if(validatext.image.includes(fileExt.toLowerCase())) {
+          const filesrc = temp ? ch.i.replace(fileExt, '').replace('.', '') : `/file/content/${chts.id}/${ch.i}`;
           card.querySelector('.attach').innerHTML = `<div class="img"></div>`;
           const newImg = new Image();
-          newImg.src = temp ? ch.i.replace(fileExt, '').replace('.', '') : `/file/content/${chts.id}/${ch.i}`;
           card.querySelector('.attach .img').append(newImg);
-          newImg.onload = () => card.classList.add('long');
           newImg.onerror = () => {
-            card.querySelector('.attach').innerHTML = `<div class="document"><p></p></div>`;
+            card.querySelector('.attach').innerHTML = `<div class="document" href="${filesrc}"><p></p></div>`;
             card.querySelector('.attach .document p').innerText = temp ? ch.i.replace(fileExt, '').replace('.', '') : ch.i;
+            if(temp) {
+              URL.revokeObjectURL(ch.i);
+              console.log('revoked');
+            }
           }
+          newImg.onload = () => {
+            card.classList.add('long');
+            if(temp) {
+              URL.revokeObjectURL(ch.i);
+              console.log('revoked');
+            }
+          }
+          newImg.src = filesrc;
+        } else if(validatext.video.includes(fileExt.toLowerCase())) {
+          const filesrc = temp ? ch.i.replace(fileExt, '').replace('.', '') : `/file/content/${chts.id}/${ch.i}`;
+          card.querySelector('.attach').innerHTML = `<div class="img"></div>`;
+          const newVideo = document.createElement('video');
+          newVideo.controls = true;
+          card.querySelector('.attach .img').append(newVideo);
+          newVideo.onerror = () => {
+            card.querySelector('.attach').innerHTML = `<div class="document" href="${filesrc}"><p></p></div>`;
+            card.querySelector('.attach .document p').innerText = temp ? ch.i.replace(fileExt, '').replace('.', '') : ch.i;
+            if(temp) {
+              URL.revokeObjectURL(ch.i);
+              console.log('revoked');
+            }
+          }
+          newVideo.onloadeddata = () => {
+            card.classList.add('long');
+            if(temp) {
+              URL.revokeObjectURL(ch.i);
+              console.log('revoked');
+            }
+          }
+          newVideo.src = filesrc;
+          // newVideo.innerHTML = `<source src="${temp ? ch.i.replace(fileExt, '').replace('.', '') : temp ? ch.i.replace(fileExt, '').replace('.', '') : `/file/content/${chts.id}/${ch.i}a`}"/>Your browser does not support the video tag.`;
         } else {
-          card.querySelector('.attach').innerHTML = `<div class="document"><p></p></div>`;
+          const filesrc = temp ? ch.i.replace(fileExt, '').replace('.', '') : `/file/content/${chts.id}/${ch.i}`;
+          card.querySelector('.attach').innerHTML = `<div class="document" href="${filesrc}"><p></p></div>`;
           card.querySelector('.attach .document p').innerText = temp ? ch.i.replace(fileExt, '').replace('.', '') : ch.i;
         }
       }
@@ -359,6 +396,8 @@ export default {
 
       if(validatext.image.includes(fileExt.toLowerCase())) {
         elLastText.innerHTML = '<i class="fa-light fa-image"></i> ';
+      } else if(validatext.video.includes(fileExt.toLowerCase())) {
+        elLastText.innerHTML = '<i class="fa-light fa-film"></i> ';
       } else {
         elLastText.innerHTML = '<i class="fa-light fa-file"></i> ';
       }

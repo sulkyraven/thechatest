@@ -232,6 +232,7 @@ $btmheight: 55px;
         border-radius: 10px;
         background-color: v.$sgray;
         margin-bottom: 10px;
+        animation: popup_in 0.5s;
         .chp {
           margin-bottom: 3px;
         }
@@ -240,7 +241,10 @@ $btmheight: 55px;
         }
         .sender {
           .name {
+            width: fit-content;
+            max-width: 100%;
             font-weight: bold;
+            overflow: hidden;
             cursor: pointer;
           }
           .name::before {
@@ -270,6 +274,7 @@ $btmheight: 55px;
             border: 1px solid v.$yellow;
             border-radius: 5px;
             width: 100%;
+            cursor: pointer;
             p::before {
               content: "\f56d";
               font-family: "Font Awesome 6 Pro";
@@ -283,7 +288,7 @@ $btmheight: 55px;
             max-height: 300px;
             border-radius: 5px;
             overflow: hidden;
-            img {
+            img, video {
               max-width: 100%;
               max-height: 300px;
               display: block;
@@ -473,7 +478,7 @@ $btmheight: 55px;
               max-height: 300px;
               border-radius: 5px;
               overflow: hidden;
-              img {
+              img, video {
                 max-width: 100%;
                 max-height: 300px;
                 display: block;
@@ -489,13 +494,23 @@ $btmheight: 55px;
               gap: 10px;
               .control {
                 font-size: 1.5rem;
+                min-width: 18px;
+                .btn::after {
+                  content: "\f04b";
+                  font-family: "Font Awesome 6 Pro";
+                  font-weight: 600;
+                }
+                .btn.playing::after {
+                  content: "\f04c";
+                  font-family: "Font Awesome 6 Pro";
+                  font-weight: 600;
+                }
               }
               .range {
                 input[type="range"] {
                    appearance: none;
                    -moz-appearance: none;
                    -webkit-appearance: none;
-                   cursor: pointer;
                    background-color: v.$softwhite;
                    height: 3px;
                 }

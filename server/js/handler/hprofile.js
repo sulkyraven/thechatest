@@ -55,19 +55,25 @@ module.exports = {
   },
   acceptFriend(uid, s) {
     if(!validate(['id'], s)) return {code:400};
-    const udb = db.ref.u[s.id];
-    if(!udb || !udb.req) return {code:400};
-    if(udb.req.includes(uid)) db.ref.u[s.id].req = udb.req.filter(key => key !== uid);
+
     const mdb = db.ref.u[uid];
-    if(mdb.req?.includes(s.id)) db.ref.u[uid].req = mdb.req.filter(key => key !== s.id);
+    if(!mdb || !mdb.req || !mdb.req.includes(s.id)) return {code:400};
+
+    const udb = db.ref.u[s.id];
+    if(!udb) return {code:400};
+    if(udb.req?.includes(uid)) db.ref.u[s.id].req = udb.req.filter(key => key !== uid);
 
     const friendkey = Object.keys(db.ref.f).find(k => {
       return db.ref.f[k].includes(s.id) && db.ref.f[k].includes(uid);
     });
-    if(friendkey) return {code:400};
+    if(friendkey) {
+      db.ref.u[uid].req = mdb.req.filter(key => key !== s.id);
+      return {code:400}
+    }
 
     const newfriendkey = 'D' + Date.now().toString(32);
     db.ref.f[newfriendkey] = [ s.id, uid ];
+    db.ref.u[uid].req = mdb.req.filter(key => key !== s.id);
 
     db.save('f','u');
     return {code:200,data:{user:this.getUser(uid, s)}};
