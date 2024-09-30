@@ -69,7 +69,7 @@ module.exports = {
     if(udb.img) if(fs.existsSync(`./server/dbfile/user/${udb.img}`)) fs.unlinkSync(`./server/dbfile/user/${udb.img}`);
 
     const imgExt = /\.([a-zA-Z0-9]+)$/;
-    const imgName = `${uid}.${s.name.match(imgExt)[1]}`;
+    const imgName = `${uid}_${Date.now().toString(32)}.${s.name.match(imgExt)?.[1]}`;
     fs.writeFileSync(`./server/dbfile/user/${imgName}`, buffer);
 
     db.ref.u[uid].img = imgName;

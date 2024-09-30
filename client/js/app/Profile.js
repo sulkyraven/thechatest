@@ -21,9 +21,7 @@ export default class {
     </div>
     <div class="wall">
       <div class="chp displayname"><p></p></div>
-      <div class="chp img">
-        <img src="${this.user.img?`/file/user/${this.user.id}`:'/assets/user.jpg'}" alt="${this.user.username}"/>
-      </div>
+      <div class="chp img"></div>
       <div class="chp username"><p>@${this.user.username}</p></div>
       <div class="chp bio">
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt soluta velit explicabo temporibus et excepturi. Provident veritatis, sapiente, perferendis explicabo repudiandae quo, perspiciatis tenetur facilis consectetur aperiam culpa magni consequatur!</p>
@@ -46,6 +44,12 @@ export default class {
     edname.innerText = this.user.displayName;
     const ebio = this.el.querySelector('.wall .bio p');
     ebio.innerText = this.user.bio || 'No bio yet.';
+    const eimg = this.el.querySelector('.wall .img');
+    const img = new Image();
+    img.onerror = () => img.src = '/assets/user.jpg';
+    img.alt = this.user.username;
+    img.src = this.user.img ? `/file/user/${this.user.img}` : '/assets/user.jpg';
+    eimg.append(img);
   }
   renderActions() {
     this.eloptions = document.querySelector('.chp.options');

@@ -79,8 +79,8 @@ export default class {
   }
   getGroupList() {
     const cdb = (db.ref.groups || []).sort((a, b) => {
-      if(a.chats[a.chats.length - 1].ts < b.chats[b.chats.length - 1].ts) return 1;
-      if(a.chats[a.chats.length - 1].ts > b.chats[b.chats.length - 1].ts) return -1;
+      if(a.chats?.[a.chats?.length - 1]?.ts < b.chats?.[b.chats?.length - 1]?.ts) return 1;
+      if(a.chats?.[a.chats?.length - 1]?.ts > b.chats?.[b.chats?.length - 1]?.ts) return -1;
       return 0;
     });
 
@@ -89,28 +89,7 @@ export default class {
     if(cdb.length > 0) this.cardlist.querySelector('.nomore')?.remove();
     cdb.forEach(ch => {
       const {card, uc} = elgen.groupCard(ch);
-      if(!uc) {
-        this.cardlist.append(card);
-        card.onclick = async() => {
-          if(userState.locked.bottom) return;
-          userState.locked.bottom = true;
-          await userState.pmbottom?.destroy?.();
-          new Content({user:ch, conty:2}).run();
-          userState.locked.bottom = false;
-        }
-      }
-    });
-
-    /*
-    this.cardlist = this.el.querySelector('.card-list');
-
-    const ndb = db.ref?.groups || [];
-    const odb = this.list || [];
-    const fdb = ndb.filter(ch => !odb.map(och => och.id).includes(ch.id));
-    fdb.forEach(ch => {
-      this.list.push(ch);
-      const card = elgen.groupCard(ch);
-      this.cardlist.append(card);
+      if(!uc) this.cardlist.append(card);
       card.onclick = async() => {
         if(userState.locked.bottom) return;
         userState.locked.bottom = true;
@@ -119,10 +98,6 @@ export default class {
         userState.locked.bottom = false;
       }
     });
-    if(this.list.length < 1) {
-      this.cardlist.innerHTML = `<p class="center"><i>${lang.CHTS_NOCHAT}</i></p>`;
-    }
-    */
   }
   forceUpdate() {
     this.getGroupList();

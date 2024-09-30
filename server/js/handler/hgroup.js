@@ -55,7 +55,7 @@ module.exports = {
     if(gdb.i) if(fs.existsSync(`./server/dbfile/group/${gdb.i}`)) fs.unlinkSync(`./server/dbfile/group/${gdb.i}`);
 
     const imgExt = /\.([a-zA-Z0-9]+)$/;
-    const imgName = `${s.id}.${s.name.match(imgExt)[1]}`;
+    const imgName = `${s.id}_${Date.now().toString(32)}.${s.name.match(imgExt)[1]}`;
     fs.writeFileSync(`./server/dbfile/group/${imgName}`, buffer);
 
     db.ref.g[s.id].i = imgName;
@@ -116,6 +116,7 @@ module.exports = {
     if(!gdb) return {code:400};
     if(gdb.o !== uid) return this.leaveGroup(uid, s);
     if(gdb.i) if(fs.existsSync(`./server/dbfile/group/${gdb.i}`)) fs.unlinkSync(`./server/dbfile/group/${gdb.i}`);
+    if(fs.existsSync(`./server/dbfile/content/${s.id}`)) fs.rmSync(`./server/dbfile/content/${s.id}`, {recursive:true,force:true});
 
     delete db.ref.g[s.id];
     db.save('g');

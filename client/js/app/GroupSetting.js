@@ -29,7 +29,7 @@ export default class {
     <div class="wall">
       <div class="chp userphoto">
         <div class="outer-img">
-          <img src="${this.group.i ? `/file/group/${this.group.id}` : '/assets/group.jpg'}" alt="${this.group.id}"/>
+          <img src="${this.group.i ? `/file/group/${this.group.i}` : '/assets/group.jpg'}" alt="${this.group.id}"/>
           <div class="btn btn-img"><i class="fa-solid fa-pen-to-square"></i></div>
         </div>
       </div>

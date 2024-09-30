@@ -3,6 +3,18 @@ import validatext from "../helper/validatext.js";
 import db from "./db.js";
 import userState from "./userState.js";
 
+function profileImage(card, ch, newsrc, oldimg = null) {
+  const newImg = new Image();
+  newImg.alt = ch.username;
+  newImg.width = 50;
+  newImg.onerror = () => {
+    card.querySelector('.img').innerHTML = `<img src="/assets/${ch.cy===0?'user':'group'}.jpg" alt="${ch.username}" width="50"/>`;
+  }
+  newImg.onload = () => oldimg?.remove();
+  card.querySelector('.img').append(newImg);
+  newImg.src = newsrc;
+}
+
 function chtsCard(ch) {
   let card = document.getElementById(`kirimin-${ch.id}`);
   let oldUsername = card?.querySelector('.detail .name p').innerText || null;
@@ -12,9 +24,7 @@ function chtsCard(ch) {
     card.classList.add('card');
     card.innerHTML = `
     <div class="left">
-      <div class="img">
-        <img src="${ch.img ? `/file/${ch.cy===0?'user':'group'}/${ch.id}` : `/assets/${ch.cy===0?'user':'group'}.jpg`}" alt="${ch.username}" alt="user" width="50"/>
-      </div>
+      <div class="img"></div>
       <div class="detail">
         <div class="name"><p></p></div>
         <div class="last"></div>
@@ -25,6 +35,17 @@ function chtsCard(ch) {
   if(ch.username !== oldUsername) {
     const euname = card.querySelector('.detail .name p');
     euname.innerText = ch.username;
+  }
+  if(ch.img) {
+    const oldimg = card.querySelector('.img img');
+    const newsrc = `/file/${ch.cy===0?'user':'group'}/${ch.img}`;
+    if(!oldimg || !oldimg.src.includes(newsrc)) {
+      profileImage(card, ch, newsrc, oldimg);
+    }
+  } else {
+    const oldimg = card.querySelector('.img img');
+    const newsrc = `/assets/${ch.cy===0?'user':'group'}.jpg`;
+    if(!oldimg) profileImage(card, ch, newsrc);
   }
   const card_a = card.querySelector('.detail .last');
   const card_b = card.querySelector('.right');
@@ -363,10 +384,14 @@ export default {
     const card = document.createElement('li');
     card.innerHTML = `
     <div class="left">
-      <img src="${usr.img?`/file/user/${usr.id}`:'/assets/user.jpg'}" alt="${usr.username}"/>
       <p class="uname">${usr.username} ${usr.id === oid ? '<i class="fa-light fa-user-crown"></i>' : ''}</p>
     </div>
     ${db.ref.account.id === oid && db.ref.account.id !== usr.id ? `<div class="right"><div class="btn btn-kick"><i class="fa-solid fa-circle-x"></i></div></div>` : ''}`;
+    const img = new Image();
+    img.alt = usr.username;
+    img.onerror = () => img.src = '/assets/user.jpg';
+    img.src = usr.img?`/file/user/${usr.img}`:'/assets/user.jpg';
+    card.querySelector('.left').prepend(img);
     return card;
   },
   groupCard(ch) {

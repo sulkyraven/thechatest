@@ -25,7 +25,6 @@ export default class {
     <div class="wall">
       <div class="chp userphoto">
         <div class="outer-img">
-          <img src="${db.ref.account.img ? `/file/user/${db.ref.account.id}` : '/assets/user.jpg'}" alt="${db.ref.account.username}"/>
           <div class="btn btn-img"><i class="fa-solid fa-pen-to-square"></i></div>
         </div>
       </div>
@@ -79,6 +78,12 @@ export default class {
     this.edname = this.el.querySelector('.userdisplayname .outer .chp-f p');
     this.ebio = this.el.querySelector('.userbio .outer .chp-f p');
     this.elogout = this.el.querySelector('.usersign a.logout');
+
+    const img = new Image();
+    img.onerror = () => img.src = '/assets/user.jpg';
+    img.src = db.ref.account.img ? `/file/user/${db.ref.account.img}` : '/assets/user.jpg';
+    img.alt = db.ref.account.username;
+    this.ephoto.prepend(img);
 
     this.edname.innerText = db.ref.account.displayName;
     this.ebio.innerText = db.ref.account.bio || 'No bio yet.';

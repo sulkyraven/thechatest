@@ -42,9 +42,7 @@ export default class {
       <div class="left">
         <div class="btn back"><i class="fa-solid fa-arrow-left"></i></div>
         <div class="user">
-          <div class="img">
-            <img src="${this.user.img}" alt="${this.user.username}" />
-          </div>
+          <div class="img"></div>
           <div class="name"><p>${this.user.username}</p></div>
         </div>
       </div>
@@ -94,6 +92,18 @@ export default class {
     this.bottomclass = this.el.querySelector('.bottom');
     this.midclass = this.el.querySelector('.mid');
     this.topclass = this.el.querySelector('.top');
+
+    const img = new Image();
+    img.onerror = () => img.src = this.conty === 1 ? '/assets/user.jpg' : '/assets/group.jpg';
+
+    if(this.conty === 1) {
+      if(this.user.img) img.src = `/file/user/${this.user.img}`;
+      else img.src = '/assets/user.jpg';
+    } else {
+      if(this.user.i) img.src = `/file/group/${this.user.i}`;
+      else img.src = '/assets/group.jpg';
+    }
+    this.el.querySelector('.top .left .user .img').appendChild(img);
   }
   setReadChat() {
     const csu = chatSelection(this.user, this.conty);
@@ -129,6 +139,7 @@ export default class {
         const elrep = card.querySelector('.embed');
         const eldoc = card.querySelector('.document');
         if(elsender?.contains(e.target) && ch.u.id !== db.ref.account.id) {
+          if(ch.u.code || !ch.u.id) return modal.alert(lang.PROF_DELETED_USER);
           if(userState.locked.bottom) return;
           userState.locked.bottom = true;
           await userState.pmbottom?.destroy?.();
@@ -273,6 +284,7 @@ export default class {
   btnListener() {
     const eluser = document.querySelector('.top .left .user');
     eluser.onclick = async() => {
+      if(this.user.code || !this.user.id) return modal.alert(lang.PROF_DELETED_USER);
       if(userState.locked.bottom) return;
       userState.locked.bottom = true;
       await userState.pmbottom?.destroy?.();
@@ -485,6 +497,7 @@ export default class {
     this.closeReply();
     this.growInput();
 
+    await modal.waittime();
     const sendMsg = await xhr.post('/chat/uwu/sendMessage', data);
     if(sendMsg?.code !== 200) {
       card.querySelector('.chp.text p').innerHTML = `<i class="failed">Gagal Mengirim Pesan<i>`;
@@ -504,10 +517,7 @@ export default class {
         chats: []
       };
       Object.keys(this.user).forEach(k => {
-        if(k === 'img' && !this.user.img.includes('/assets/')) {
-          newData.users[0][k] = this.user[k];
-        }
-        if(['id', 'username', 'displayName', 'bio', 'peer', 'myreq', 'theirreq', 'isfriend'].includes(k)) {
+        if(['id', 'username', 'img', 'displayName', 'bio', 'peer', 'myreq', 'theirreq', 'isfriend'].includes(k)) {
           newData.users[0][k] = this.user[k];
         }
       });
@@ -679,7 +689,6 @@ export default class {
   async sendVoice(audiosrc, tempsrc) {
     this.contents.voice.src = audiosrc;
     this.contents.voice.blob = tempsrc;
-    window.open(tempsrc);
     this.contents.file.name = null;
     this.contents.file.src = null;
     this.contents.file.blob = null;
@@ -726,8 +735,6 @@ export default class {
   }
   async run() {
     lang = userState.langs[userState.lang];
-    this.user = {...this.user, img: imageSelection(this.user, this.conty)}
-    // this.user.img = imageSelection(this.user, this.conty);
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
     sceneIn(this.el);
@@ -742,9 +749,9 @@ export default class {
 function chatSelection(obj, conty) {
   if(conty === 1) return {
     id: obj.id,
-    username: obj.username || 'Deleted User',
+    username: obj.username || lang.DELETED_USER,
     db: db.ref.chats?.find(ch => ch.users.find(k => k.id === obj.id)),
-    prof: new Profile({user:{...obj, img:obj.img.includes('/assets/')?null:obj.img}}),
+    prof: new Profile({user:{...obj}}),
   }
   if(conty === 2) return {
     id: obj.id,
@@ -754,8 +761,8 @@ function chatSelection(obj, conty) {
   }
 }
 function imageSelection(obj, conty) {
-  if(conty === 1) return obj.img ? `/file/user/${obj.id}` : '/assets/user.jpg';
-  if(conty === 2) return obj.i ? `/file/group/${obj.id}` : '/assets/group.jpg';
+  if(conty === 1) return obj.img ? `/file/user/${obj.img}` : '/assets/user.jpg';
+  if(conty === 2) return obj.i ? `/file/group/${obj.i}` : '/assets/group.jpg';
 }
 function SetupAudioRecorder(content) {
   return new Promise(resolve => {

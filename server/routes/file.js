@@ -9,14 +9,14 @@ router.get('/content/:id/:name', isUser, (req, res) => {
   return res.sendFile(file.data.name, {root: './'});
 });
 
-router.get('/group/:id', isUser, (req, res) => {
-  const file = hfile.group(req.params.id);
+router.get('/group/:filename', isUser, (req, res) => {
+  const file = hfile.group(req.params.filename);
   if(file?.code !== 200) return res.sendStatus(404);
   return res.sendFile(file.data.name, {root: './'});
 });
 
-router.get('/user/:id', isUser, (req, res) => {
-  const file = hfile.user(req.params.id);
+router.get('/user/:filename', isUser, (req, res) => {
+  const file = hfile.user(req.params.filename);
   if(file?.code !== 200) return res.sendStatus(404);
   return res.sendFile(file.data.name, {root: './'});
 });
