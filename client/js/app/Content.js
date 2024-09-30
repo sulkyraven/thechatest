@@ -92,18 +92,51 @@ export default class {
     this.bottomclass = this.el.querySelector('.bottom');
     this.midclass = this.el.querySelector('.mid');
     this.topclass = this.el.querySelector('.top');
-
-    const img = new Image();
-    img.onerror = () => img.src = this.conty === 1 ? '/assets/user.jpg' : '/assets/group.jpg';
-
+  }
+  updateUser() {
     if(this.conty === 1) {
-      if(this.user.img) img.src = `/file/user/${this.user.img}`;
-      else img.src = '/assets/user.jpg';
-    } else {
-      if(this.user.i) img.src = `/file/group/${this.user.i}`;
-      else img.src = '/assets/group.jpg';
+      this.user.db = db.ref.chats?.find(ch => ch.users.find(k => k.id === this.user.id));
+      this.user.id = this.user.id;
+      if(this.user.db) {
+        this.user.u = this.user.db.users.find(k => k.id !== db.ref.account.id);
+        this.user.username = this.user.u.username;
+        this.user.img = this.user.u.img;
+      }
+      this.user.prof = new Profile({user:{...this.user}});
+    } else if(this.conty === 2) {
+      this.user.db = db.ref.groups?.find(ch => ch.id === this.user.id);
+      this.user.prof = new GroupSetting({group:{...this.user}});
+      this.user.id = this.user.id;
+      if(this.user.db) {
+        this.user.username = this.user.db.n;
+        this.user.img = this.user.db.i;
+        this.user.i = this.user.db.i;
+        this.user.n = this.user.db.n;
+      }
+      this.user.prof = new GroupSetting({group:{...this.user}});
     }
-    this.el.querySelector('.top .left .user .img').appendChild(img);
+
+    const euname = this.el.querySelector('.top .left .user .name p');
+    if(euname.innerText !== this.user.username) euname.innerText = this.user.username;
+
+    const oldimg = this.el.querySelector('.top .left .user .img img');
+    const dbimg = this.user.img;
+    if(dbimg) {
+      if(!oldimg || !oldimg.src.includes(dbimg)) {
+        const img = new Image();
+        img.onerror = () => img.src = this.conty === 1 ? '/assets/user.jpg' : '/assets/group.jpg';
+        img.onload = () => oldimg?.remove();
+        img.src = this.conty === 1 ? `/file/user/${dbimg}` : `/file/group/${dbimg}`;
+        this.el.querySelector('.top .left .user .img').appendChild(img);
+      }
+    } else {
+      if(!oldimg) {
+        const img = new Image();
+        img.onerror = () => img.src = this.conty === 1 ? '/assets/user.jpg' : '/assets/group.jpg';
+        img.src = this.conty === 1 ? '/assets/user.jpg' : '/assets/group.jpg';
+        this.el.querySelector('.top .left .user .img').appendChild(img);
+      }
+    }
   }
   setReadChat() {
     const csu = chatSelection(this.user, this.conty);
@@ -710,6 +743,7 @@ export default class {
     });
   }
   forceUpdate() {
+    this.updateUser();
     this.renderChats();
   }
   destroy() {
@@ -740,6 +774,7 @@ export default class {
     sceneIn(this.el);
     this.btnListener();
     this.setReadChat();
+    this.updateUser();
     this.renderChats();
     this.formListener();
     userState.pmbottom = this;
