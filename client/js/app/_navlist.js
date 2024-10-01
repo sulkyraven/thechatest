@@ -4,6 +4,7 @@ import Friends from "./Friends.js";
 import Grps from "./Grps.js";
 import userState from "../manager/userState.js";
 import Empty from "./Empty.js";
+import Posts from "./Posts.js";
 
 export default [
   { id:'find', text:'<i class="fa-solid fa-magnifying-glass"></i><p>Search</p>', async run() {
@@ -41,9 +42,17 @@ export default [
     userState.locked.mid = false;
   } },
   { id:'posts', text:'<i class="fa-solid fa-images"></i><p>Posts</p>', async run() {
-    if(userState.locked.mid) return;
-    userState.locked.mid = true;
-    await userState.pmmid?.destroy?.();
-    userState.locked.mid = false;
+    // if(userState.locked.mid) return;
+    // userState.locked.mid = true;
+    // await userState.pmmid?.destroy?.();
+    // userState.locked.mid = false;
+
+    if(userState.locked.bottom) return;
+    userState.locked.bottom = true;
+    await userState.pmbottom?.destroy?.();
+    await new Posts().run();
+    userState.locked.bottom = false;
+
+
   } },
 ]

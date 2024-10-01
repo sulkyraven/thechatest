@@ -1,5 +1,7 @@
 @use "../../variable" as v;
 
+$topheight: 60px;
+
 .acc {
   position: absolute;
   top: 0;left: calc(350px + 100px);
@@ -9,15 +11,21 @@
   .top {
     position: absolute;
     top: 0;left: 0;
-    background-color: v.$bar_bg;
     width: 100%;
-    height: 60px;
-    padding: 0 10px;
+    background-color: v.$bar_bg;
+    color: v.$white;
+    height: $topheight;
     display: flex;
-    justify-content: left;
+    justify-content: center;
     align-items: center;
-    gap: 10px;
     font-size: 1.25rem;
+    .btn {
+      position: absolute;
+      left: 10px;
+    }
+    .sec-title {
+      font-weight: bold;
+    }
   }
   .top.flex {
     justify-content: space-between;
@@ -37,9 +45,9 @@
   }
   .wall {
     position: absolute;
-    top: 60px;left: 0;
+    top: $topheight;left: 0;
     width: 100%;
-    height: calc(100% - 60px);
+    height: calc(100% - $topheight);
     padding: 20px;
     overflow-y: auto;
     .chp {

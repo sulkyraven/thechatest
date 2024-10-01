@@ -1,6 +1,7 @@
 import modal from "../helper/modal.js";
 import sceneIn from "../helper/sceneIn.js";
 import userState from "../manager/userState.js";
+let lang = {};
 
 export default class {
   constructor() {
@@ -12,12 +13,12 @@ export default class {
     this.el.innerHTML = `
     <div class="title">
       <div class="img">
-        <img src="./assets/kirimin_icon.png" alt="Kirimin" width="75" />
+        <img src="/assets/kirimin_icon.png" alt="Kirimin" width="75" />
       </div>
       <h1>KIRIMIN</h1>
     </div>
     <div class="desc">
-      <p>Select a chat to start messaging</p>
+      <p>${lang.LANDING}</p>
     </div>`;
   }
   destroy() {
@@ -31,8 +32,8 @@ export default class {
     });
   }
   async run() {
-    await userState.pmbottom?.destroy?.();
     userState.pmbottom = this;
+    lang = userState.langs[userState.lang];
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
     sceneIn(this.el);

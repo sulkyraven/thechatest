@@ -242,6 +242,14 @@ export default class {
       const btnEdit = document.createElement('div');
       btnEdit.classList.add('btn', 'btn-edit');
       btnEdit.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> EDIT`;
+      btnEdit.onclick = async() => {
+        chatpop.classList.add('out');
+        await modal.waittime();
+        card.remove();
+        chatpop.remove();
+        this.isLocked = false;
+        this.showEdit(ch);
+      }
 
       const btnDelete = document.createElement('div');
       btnDelete.classList.add('btn', 'btn-delete');
@@ -267,6 +275,7 @@ export default class {
   showReply(ch) {
     const oldreply = this.el.querySelector('.bottom .embed');
     if(oldreply) oldreply.remove();
+    this.chatedit = null;
     this.contents.rep = null;
 
     this.ereply = document.createElement('div');
@@ -290,21 +299,19 @@ export default class {
 
       if(validatext.image.includes(fileExt.toLowerCase())) {
         chtxt.innerHTML = '<i class="fa-light fa-image"></i> ';
+      } else if(validatext.video.includes(fileExt.toLowerCase())) {
+        chtxt.innerHTML = '<i class="fa-light fa-film"></i> ';
       } else {
         chtxt.innerHTML = '<i class="fa-light fa-file"></i> ';
       }
       if(!ch.txt) chtxt.append('Media');
     }
     if(ch.txt) {
-      chtxt.append(ch.txt.length > 50 ? ch.txt.substring(0,47).trim().replace(/\s/g, ' ') + ' ...' : ch.txt.trim().replace(/\s/g, ' '))
+      chtxt.append(elgen.ss(ch.txt, 50).replace(/\s/g, ' '));
     }
 
     const cancelReply = this.ereply.querySelector('.right .btn-cancel-rep');
-    cancelReply.onclick = () => {
-      this.contents.rep = null;
-      this.ereply.remove();
-      this.growInput();
-    }
+    cancelReply.onclick = () => this.closeReply();
     this.contents.rep = ch.id;
     this.bottomclass.prepend(this.ereply);
     this.growInput();
@@ -312,6 +319,46 @@ export default class {
   closeReply() {
     this.contents.rep = null;
     this.ereply?.remove();
+    this.growInput();
+  }
+  showEdit(ch) {
+    const oldEdit = this.el.querySelector('.bottom .embed');
+    if(oldEdit) oldEdit.remove();
+    this.attach?.remove();
+    this.chatedit = ch.id;
+    if(this.contents.voice.blob) URL.revokeObjectURL(this.contents.voice.blob);
+    if(this.contents.file.blob) URL.revokeObjectURL(this.contents.file.blob);
+    this.contents = {
+      text:null,
+      rep:null,
+      voice:{ src:null, blob:null },
+      file:{ name:null, src:null, blob:null }
+    }
+
+    this.eedit = document.createElement('div');
+    this.eedit.classList.add('embed', 'cb');
+    this.eedit.innerHTML = `
+    <div class="box">
+      <div class="left">
+        <p><i class="fa-light fa-pencil"></i> Editing</p>
+        <p class="msg"></p>
+      </div>
+      <div class="right">
+        <div class="btn btn-cancel-rep"><i class="fa-duotone fa-circle-x"></i></div>
+      </div>
+    </div>`;
+    const chtxt = this.eedit.querySelector('.left .msg');
+    chtxt.append(elgen.ss(ch.txt, 50).replace(/\s/g, ' '));
+
+    const cancelEdit = this.ereply.querySelector('.right .btn-cancel-rep');
+    cancelEdit.onclick = () => this.closeEdit();
+
+    this.bottomclass.prepend(this.eedit);
+    this.growInput();
+  }
+  closeEdit() {
+    this.chatedit = null;
+    this.eedit?.remove();
     this.growInput();
   }
   btnListener() {
@@ -400,6 +447,9 @@ export default class {
     inp.type = 'file';
     if(fileAccept) inp.accept = fileAccept;
     inp.onchange = async() => {
+      if(this.eedit) this.eedit.remove();
+      this.chatedit = null;
+
       const file = inp.files[0];
 
       const filesrc = await new Promise(resolve => {
@@ -528,6 +578,7 @@ export default class {
 
     this.closeAttach();
     this.closeReply();
+    this.closeEdit();
     this.growInput();
 
     await modal.waittime();
@@ -768,6 +819,7 @@ export default class {
     });
   }
   async run() {
+    userState.pmbottom = this;
     lang = userState.langs[userState.lang];
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
@@ -777,7 +829,6 @@ export default class {
     this.updateUser();
     this.renderChats();
     this.formListener();
-    userState.pmbottom = this;
   }
 }
 

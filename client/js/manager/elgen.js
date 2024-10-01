@@ -51,14 +51,15 @@ function chtsCard(ch) {
   const card_b = card.querySelector('.right');
   return {card, card_a, card_b};
 }
-function txtSS(txt, n = 100) {
-  return txt.length > 20 ? txt.substring(0, 17) + '...' : txt;
-}
 
 export default {
+  ss(txt, n=20, o=0) {
+    return (txt.length > n ? txt.substring(o, n - 3) + '...' : txt).trim();
+  },
   findCard(ch) {
     const {card, card_a, card_b} = chtsCard({...ch, cy:0});
-    card_a.innerText = ch.bio.length > 20 ? ch.bio.substring(0, 17) + '...' : ch.bio;
+    // card_a.innerText = ch.bio.length > 20 ? ch.bio.substring(0, 17) + '...' : ch.bio;
+    card_a.append(this.ss(ch.bio));
     if(ch.isfriend) card_b.innerHTML = '<div class="btn"><i class="fa-light fa-user-check"></i></div>';
     return card;
   },
@@ -107,14 +108,14 @@ export default {
         elLastText.innerHTML = '<i class="fa-light fa-file"></i> ';
       }
       if(lastObj.txt && lastObj.txt.length > 1) {
-        elLastText.append(txtSS(lastObj.txt.replace(/\s/g, ' '), 20));
+        elLastText.append(this.ss(lastObj.txt.replace(/\s/g, ' '), 20));
       } else {
         elLastText.append('Media');
       }
     } else if(lastObj.v) {
       elLastText.innerHTML = '<i class="fa-light fa-microphone"></i> Voice Chat';
     } else {
-      elLastText.innerText = txtSS(lastObj.txt.replace(/\s/g, ' '), 20);
+      elLastText.innerText = this.ss(lastObj.txt.replace(/\s/g, ' '), 20);
     }
 
     if(lastObj.u.id === db.ref.account.id) {
@@ -137,7 +138,8 @@ export default {
   },
   friendCard(ch) {
     const {card, card_a, card_b} = chtsCard({...ch, cy:0});
-    card_a.innerText = ch.bio.length > 20 ? ch.bio.substring(0, 17) + '...' : ch.bio;
+    // card_a.innerText = ch.bio.length > 20 ? ch.bio.substring(0, 17) + '...' : ch.bio;
+    card_a.append(this.ss(ch.bio));
     if(card_b) card_b.remove();
     return card;
   },
@@ -194,14 +196,14 @@ export default {
             embedTxt.innerHTML = '<i class="fa-light fa-file"></i> ';
           }
           if(edb.txt && edb.txt.length > 1) {
-            embedTxt.append(txtSS(edb.txt.replace(/\s/g, ' '), 20));
+            embedTxt.append(this.ss(edb.txt.replace(/\s/g, ' '), 20));
           } else {
             embedTxt.append('Media');
           }
         } else if(edb.v) {
           embedTxt.innerHTML = '<i class="fa-light fa-microphone"></i> Voice Chat';
         } else {
-          embedTxt.innerText = txtSS(edb.txt.replace(/\s/g, ' '), 30);
+          embedTxt.innerText = this.ss(edb.txt.replace(/\s/g, ' '), 30);
         }
       }
 
@@ -220,11 +222,13 @@ export default {
         const fileExt = ch.i.match(imgExt)?.[1];
 
         if(validatext.image.includes(fileExt.toLowerCase())) {
+          card.classList.add('long');
           const filesrc = temp ? ch.i.replace(fileExt, '').replace('.', '') : `/file/content/${chts.id}/${ch.i}`;
           card.querySelector('.attach').innerHTML = `<div class="img"></div>`;
           const newImg = new Image();
           card.querySelector('.attach .img').append(newImg);
           newImg.onerror = () => {
+            card.classList.remove('long');
             card.querySelector('.attach').innerHTML = `<div class="document" href="${filesrc}"><p></p></div>`;
             card.querySelector('.attach .document p').innerText = temp ? ch.i.replace(fileExt, '').replace('.', '') : ch.i;
             if(temp) {
@@ -232,19 +236,20 @@ export default {
             }
           }
           newImg.onload = () => {
-            card.classList.add('long');
             if(temp) {
               URL.revokeObjectURL(ch.i);
             }
           }
           newImg.src = filesrc;
         } else if(validatext.video.includes(fileExt.toLowerCase())) {
+          card.classList.add('long');
           const filesrc = temp ? ch.i.replace(fileExt, '').replace('.', '') : `/file/content/${chts.id}/${ch.i}`;
           card.querySelector('.attach').innerHTML = `<div class="img"></div>`;
           const newVideo = document.createElement('video');
           newVideo.controls = true;
           card.querySelector('.attach .img').append(newVideo);
           newVideo.onerror = () => {
+            card.classList.remove('long');
             card.querySelector('.attach').innerHTML = `<div class="document" href="${filesrc}"><p></p></div>`;
             card.querySelector('.attach .document p').innerText = temp ? ch.i.replace(fileExt, '').replace('.', '') : ch.i;
             if(temp) {
@@ -252,7 +257,6 @@ export default {
             }
           }
           newVideo.onloadeddata = () => {
-            card.classList.add('long');
             if(temp) {
               URL.revokeObjectURL(ch.i);
             }
@@ -441,15 +445,15 @@ export default {
         elLastText.innerHTML = '<i class="fa-light fa-file"></i> ';
       }
       if(lastObj.txt && lastObj.txt.length > 1) {
-        elLastText.append(txtSS((`${user}: ${lastObj.txt}`).replace(/\s/g, ' '), 20));
+        elLastText.append(this.ss((`${user}: ${lastObj.txt}`).replace(/\s/g, ' '), 20));
       } else {
-        elLastText.append(txtSS(`${user}: Media`, 20));
+        elLastText.append(this.ss(`${user}: Media`, 20));
       }
     } else if(lastObj.v) {
       elLastText.innerHTML = '<i class="fa-light fa-microphone"></i> ';
-      elLastText.append(txtSS(`${user}: Voice Chat`, 20));
+      elLastText.append(this.ss(`${user}: Voice Chat`, 20));
     } else {
-      elLastText.innerText = txtSS((`${user}: ${lastObj.txt}`).replace(/\s/g, ' '), 20);
+      elLastText.innerText = this.ss((`${user}: ${lastObj.txt}`).replace(/\s/g, ' '), 20);
     }
     return {card};
   },

@@ -17,14 +17,9 @@ export default class {
     this.el = document.createElement('div');
     this.el.classList.add('acc', 'pmb');
     this.el.innerHTML = `
-    <div class="top flex">
-      <div class="left">
-        <div class="btn"><i class="fa-solid fa-arrow-left"></i></div>
-        <div class="sect-title">Groups</div>
-      </div>
-      <div class="right">
-        <div class="btn"><i class="fa-solid fa-ellipsis-vertical"></i></div>
-      </div>
+    <div class="top">
+      <div class="btn"><i class="fa-solid fa-arrow-left"></i></div>
+      <div class="sect-title">Groups</div>
     </div>
     <div class="wall">
       <div class="chp userphoto">

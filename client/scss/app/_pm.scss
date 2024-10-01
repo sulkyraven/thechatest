@@ -25,6 +25,38 @@
   animation: slide_right_out 0.5s forwards;
 }
 
+.Badge {
+  font-size: 1rem;
+  // padding: 2px 3px;
+  // border-radius: 5px;
+  // font-style: normal;
+  // font-weight: bold;
+}
+.B::before {
+  font-family: "Font Awesome 6 Pro";
+  font-style: normal;
+}
+.B.dev::before {
+  content: "\f121";
+  font-weight: 600;
+  color: v.$sblurple;
+}
+.B.mod::before {
+  content: "\f3ed";
+  font-weight: 600;
+  color: v.$sred;
+}
+.B.staff::before {
+  content: "\f6e3";
+  font-weight: 600;
+  color: v.$yellow;
+}
+.B.verified::before {
+  content: "\f058";
+  font-weight: 400;
+  color: v.$cgreen;
+}
+
 @import "./sects/nav";
 @import "./sects/appname";
 @import "./sects/chts";
@@ -32,3 +64,4 @@
 @import "./sects/content";
 @import "./sects/prof";
 @import "./sects/acc";
+@import "./sects/posts";
