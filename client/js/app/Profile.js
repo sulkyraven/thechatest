@@ -25,7 +25,7 @@ export default class {
       <div class="chp img"></div>
       <div class="chp username"><p></p></div>
       <div class="chp bio">
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt soluta velit explicabo temporibus et excepturi. Provident veritatis, sapiente, perferendis explicabo repudiandae quo, perspiciatis tenetur facilis consectetur aperiam culpa magni consequatur!</p>
+        <p></p>
       </div>
       <div class="chp actions">
         <div class="btn btn-chat"><i class="fa-solid fa-comment-dots"></i><p>Open Chat</p></div>

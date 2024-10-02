@@ -103,7 +103,14 @@ export default class {
         this.user.username = this.user.u.username;
         this.user.img = this.user.u.img;
       }
-      this.user.prof = new Profile({user:{...this.user}});
+      const profileData = {};
+      Object.keys(this.user).forEach(k => {
+        if(['id', 'username', 'displayName', 'bio', 'peer', 'myreq', 'theirreq', 'isfriend', 'b']) {
+          profileData[k] = this.user[k];
+        }
+      });
+      this.user.prof = new Profile({user:profileData});
+      // this.user.prof = new Profile({user:{...this.user}});
     } else if(this.conty === 2) {
       this.user.db = db.ref.groups?.find(ch => ch.id === this.user.id);
       this.user.prof = new GroupSetting({group:{...this.user}});
@@ -119,6 +126,7 @@ export default class {
 
     const euname = this.el.querySelector('.top .left .user .name p');
     if(euname.innerText !== this.user.username) {
+      euname.innerHTML = '';
       euname.append(this.user.username);
       if(this.user.u?.b) {
         for(const badge of this.user.u?.b?.sort((a,b) => b - a)) {
@@ -358,7 +366,7 @@ export default class {
     const chtxt = this.eedit.querySelector('.left .msg');
     chtxt.append(elgen.ss(ch.txt, 50).replace(/\s/g, ' '));
 
-    const cancelEdit = this.ereply.querySelector('.right .btn-cancel-rep');
+    const cancelEdit = this.eedit.querySelector('.right .btn-cancel-rep');
     cancelEdit.onclick = () => this.closeEdit();
 
     this.bottomclass.prepend(this.eedit);
@@ -609,7 +617,7 @@ export default class {
         chats: []
       };
       Object.keys(this.user).forEach(k => {
-        if(['id', 'username', 'img', 'displayName', 'bio', 'peer', 'myreq', 'theirreq', 'isfriend'].includes(k)) {
+        if(['id', 'username', 'img', 'displayName', 'bio', 'peer', 'myreq', 'theirreq', 'isfriend', 'b'].includes(k)) {
           newData.users[0][k] = this.user[k];
         }
       });
@@ -809,6 +817,7 @@ export default class {
     return new Promise(async resolve => {
       this.chatcount = 0;
       this.contents = {text:null,rep:null,voice:{src:null,blob:null},file:{name:null,src:null,blob:null}};
+      this.chatedit = null;
       this.planesend = false;
       this.downed.clear();
       this.disabelAutoScroll = false;

@@ -35,8 +35,8 @@ function chtsCard(ch) {
   }
   if(ch.username !== oldUsername) {
     const euname = card.querySelector('.detail .name p');
+    euname.innerHTML = '';
     euname.append(ch.username);
-
     if(ch.b) {
       for(const badge of ch.b.sort((a,b) => b - a)) {
         euname.append(setbadge(badge));
@@ -157,6 +157,8 @@ export default {
     if(ch.u.username && ch.u.id !== db.ref.account.id && ch.u.username !== oldUsername) {
       const euname = card?.querySelector('.sender .name');
       if(euname) {
+        euname.innerHTML = '';
+        euname.append(ch.u.username);
         const badges = ch.u.b || (ch.u.id === db.ref.account.id && db.ref.account.b) || null;
         if(badges) {
           for(const badge of badges.sort((a,b) => b - a)) {
@@ -417,6 +419,25 @@ export default {
       <p class="uname">${usr.username} ${usr.id === oid ? '<i class="fa-light fa-user-crown"></i>' : ''}</p>
     </div>
     ${db.ref.account.id === oid && db.ref.account.id !== usr.id ? `<div class="right"><div class="btn btn-kick"><i class="fa-solid fa-circle-x"></i></div></div>` : ''}`;
+
+    const euname = card.querySelector('.left .uname');
+    const oldname = euname.innerText || null;
+    if(usr.username !== oldname) {
+      euname.innerHTML = '';
+      euname.append(usr.username);
+      if(usr.b) { 
+        for(const badge of usr.b.sort((a,b) => b - a)) {
+          euname.append(setbadge(badge));
+        }
+      }
+      if(usr.id === oid) {
+        const i = document.createElement('i');
+        i.classList.add('fa-light', 'fa-user-crown');
+        i.title = 'GROUP OWNER';
+        euname.append(i);
+      }
+    }
+
     const img = new Image();
     img.alt = usr.username;
     img.onerror = () => img.src = '/assets/user.jpg';

@@ -25,14 +25,14 @@ export default class {
       <div class="chp userphoto">
         <div class="outer-img">
           <img src="${this.group.i ? `/file/group/${this.group.i}` : '/assets/group.jpg'}" alt="${this.group.id}"/>
-          <div class="btn btn-img"><i class="fa-solid fa-pen-to-square"></i></div>
+          ${this.group.o === db.ref.account.id ? '<div class="btn btn-img"><i class="fa-solid fa-pen-to-square"></i></div>' : ''}
         </div>
       </div>
       <div class="chp groupname">
         <div class="outer">
           <div class="chp-t">Group Name</div>
           <div class="chp-f"><p></p></div>
-          <div class="chp-e btn-groupname"><i class="fa-solid fa-pen-to-square"></i> Edit</div>
+          ${this.group.o === db.ref.account.id ? '<div class="chp-e btn-groupname"><i class="fa-solid fa-pen-to-square"></i> Edit</div>' : ''}
         </div>
       </div>
       <div class="chp groupid">
@@ -41,16 +41,7 @@ export default class {
           <div class="chp-f"><p></p></div>
         </div>
       </div>
-      <div class="chp groupinvite">
-        <div class="outer">
-          <div class="chp-t">Group Invite Link</div>
-          <div class="chp-f">
-            <p class="type">Private</p>
-            <p class="link"><a href="${window.location.origin}/invite/g/${this.group.l}" target="_blank">${window.location.origin}/invite/g/${this.group.l}</a></p>
-          </div>
-          <div class="chp-e btn-type">Change Group Invite <i class="fa-solid fa-chevron-down"></i></div>
-        </div>
-      </div>
+      <div class="chp groupinvite"></div>
       <div class="chp groupmember">
         <div class="outer">
           <div class="chp-t">Members</div>
@@ -64,14 +55,38 @@ export default class {
     this.gimg = this.el.querySelector('.userphoto .outer-img');
     this.gname = this.el.querySelector('.groupname .chp-f p');
     this.gid = this.el.querySelector('.groupid .chp-f p');
-    this.gtype = this.el.querySelector('.groupinvite .chp-f p.type');
-    this.glink = this.el.querySelector('.groupinvite .chp-f p.link');
     this.gmember = this.el.querySelector('.groupmember .chp-u ul');
   }
   renderDetail() {
     this.gname.innerText = this.group.n;
     this.gid.innerHTML = this.group.id.toUpperCase();
-    this.gtype.innerHTML = this.group.t === '1' ? 'Private' : 'Public';
+
+    const sectInvite = this.el.querySelector('.groupinvite');
+    if(this.group.o === db.ref.account.id) {
+      sectInvite.innerHTML = `
+      <div class="outer">
+        <div class="chp-t">Group Invite Link</div>
+        <div class="chp-f">
+          <p class="type">Private</p>
+          <p class="link"><a href="${window.location.origin}/invite/g/${this.group.l}" target="_blank">${window.location.origin}/invite/g/${this.group.l}</a></p>
+        </div>
+        <div class="chp-e btn-type">Change Group Invite <i class="fa-solid fa-chevron-down"></i></div>
+      </div>`;
+      this.gtype = this.el.querySelector('.groupinvite .chp-f p.type');
+      this.gtype.innerHTML = this.group.t === '1' ? 'Private' : 'Public';
+      this.glink = this.el.querySelector('.groupinvite .chp-f p.link');
+    } else if(this.group.t) {
+      sectInvite.innerHTML = `
+      <div class="outer">
+        <div class="chp-t">Group Invite Link</div>
+        <div class="chp-f">
+          <p class="type">${this.group.t === '1' ? 'Private' : 'Public'}</p>
+          ${this.group.t === '1' ? '' : '<p class="link"><a href="' + window.location.origin + '/invite/g/' + this.group.l + '" target="_blank">' + window.location.origin + '/invite/g/' + this.group.l + '</a></p>'}
+        </div>
+      </div>`;
+      this.glink = this.el.querySelector('.groupinvite .chp-f p.link');
+    }
+
     this.group.users.forEach(usr => {
       const card = elgen.groupMemberCard(usr, this.group.o);
       this.gmember.append(card);
@@ -91,7 +106,15 @@ export default class {
           this.isLocked = false;
           return;
         }
-        const setKick = await modal.loading(xhr.post('/group', {gid:this.group.id, id:usr.id}));
+        const setKick = await modal.loading(xhr.post('/group/uwu/kick-member', {gid:this.group.id, id:usr.id}));
+        if(setKick?.code !== 200) {
+          await modal.alert(lang.ERROR);
+          this.isLocked = false;
+          return;
+        }
+
+        const gdb = db.ref.groups?.find(ch => ch.id === this.group.id);
+        if(gdb) gdb.users = gdb.users.filter(k => k.id !== setKick.data.user.id);
         card.remove();
         this.isLocked = false;
       }
@@ -130,7 +153,7 @@ export default class {
     }
 
     const btnGname = this.el.querySelector('.btn-groupname');
-    btnGname.onclick = async() => {
+    if(btnGname) btnGname.onclick = async() => {
       if(this.isLocked === true) return;
       this.isLocked = true;
       const getGname = await modal.prompt({
@@ -166,10 +189,10 @@ export default class {
       this.gname.innerText = setGname.data.text;
       this.isLocked = false;
       userState.pmmid?.forceUpdate?.();
-    }
+    };
 
     const btnImg = this.el.querySelector('.btn-img');
-    btnImg.onclick = () => {
+    if(btnImg) btnImg.onclick = () => {
       const inp = document.createElement('input');
       inp.type = 'file';
       inp.accept = 'image/*';
@@ -210,9 +233,9 @@ export default class {
         return;
       }
       inp.click();
-    }
+    };
     const btnType = this.el.querySelector('.btn-type');
-    btnType.onclick = async() => {
+    if(btnType) btnType.onclick = async() => {
       if(this.isLocked) return;
       this.isLocked = true;
 
@@ -247,10 +270,10 @@ export default class {
 
       this.group.t = setType.data.text;
       this.group.l = setType.data.link;
-      this.gtype.innerText = setType.data.text === '1' ? 'Private' : 'Public';
-      this.glink.innerHTML = `<a href="${window.location.origin}/invite/g/${setType.data.link}" target="_blank">${window.location.origin}/invite/g/${setType.data.link}</a>`;
+      if(this.gtype) this.gtype.innerText = setType.data.text === '1' ? 'Private' : 'Public';
+      if(this.glink) this.glink.innerHTML = `<a href="${window.location.origin}/invite/g/${setType.data.link}" target="_blank">${window.location.origin}/invite/g/${setType.data.link}</a>`;
       this.isLocked = false;
-    }
+    };
   }
   destroy() {
     return new Promise(async resolve => {

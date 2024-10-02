@@ -125,9 +125,15 @@ module.exports = {
   },
   kickMember(uid, s) {
     if(!validate(['id', 'gid'], s)) return {code:400};
+    s.gid = s.gid.toLowerCase();
     const gdb = db.ref.g[s.gid];
     if(!gdb) return {code:400};
     if(gdb.o !== uid) return {code:400};
+    if(!gdb.u.includes(s.id)) return {code:400};
+
+    db.ref.g[s.gid].u = gdb.u.filter(k => k !== s.id);
+    db.save('g');
+    return {code:200,data:{user:{id:s.id}}};
   },
   joinGroup(uid, s) {
     if(!validate(['id'], s)) return {code:400};

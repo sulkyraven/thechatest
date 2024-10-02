@@ -164,9 +164,10 @@ $topheight: 60px;
                 -o-object-position: center;
               }
               .uname {
-                i {
+                i.fa-user-crown {
                   font-size: 0.8rem;
                   color: v.$yellow;
+                  margin-left: 5px;
                 }
               }
             }

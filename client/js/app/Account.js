@@ -142,6 +142,7 @@ export default class {
         return;
       }
       db.ref.account.username = setUname.data.text;
+      this.euname.innerHTML = '';
       this.euname.append('@'+setUname.data.text);
       if(db.ref.account.b) {
         for(const badge of db.ref.account.b.sort((a, b) => b - a)) {
