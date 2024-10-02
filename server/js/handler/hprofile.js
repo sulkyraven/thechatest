@@ -14,6 +14,7 @@ module.exports = {
     if(udb.peer) data.peer = udb.peer;
     if(udb.bio) data.bio = udb.bio;
     if(udb.img) data.img = udb.img;
+    if(udb.b) data.b = udb.b;
     if(udb.req && udb.req.includes(uid)) data.myreq = true;
     const mdb = db.ref.u[uid];
     if(mdb.req && mdb.req.includes(s.id)) data.theirreq = true;

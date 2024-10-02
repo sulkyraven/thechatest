@@ -25,35 +25,43 @@
   animation: slide_right_out 0.5s forwards;
 }
 
-.Badge {
-  font-size: 1rem;
-  // padding: 2px 3px;
-  // border-radius: 5px;
-  // font-style: normal;
-  // font-weight: bold;
-}
 .B::before {
-  font-family: "Font Awesome 6 Pro";
   font-style: normal;
+  margin-left: 5px;
 }
 .B.dev::before {
-  content: "\f121";
-  font-weight: 600;
-  color: v.$sblurple;
-}
-.B.mod::before {
-  content: "\f3ed";
-  font-weight: 600;
-  color: v.$sred;
+  content: "DEV";
+  font-family: monospace, monospace;
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: v.$cred;
 }
 .B.staff::before {
   content: "\f6e3";
+  font-family: "Font Awesome 6 Pro";
+  font-weight: 400;
+  font-size: 1rem;
+  color: v.$cred;
+}
+.B.mod::before {
+  content: "\f3ed";
+  font-family: "Font Awesome 6 Pro";
   font-weight: 600;
+  font-size: 1rem;
+  color: v.$cred;
+}
+.B.donator::before {
+  content: "\f09d";
+  font-family: "Font Awesome 6 Pro";
+  font-weight: 600;
+  font-size: 1rem;
   color: v.$yellow;
 }
 .B.verified::before {
-  content: "\f058";
-  font-weight: 400;
+  content: "\f336";
+  font-family: "Font Awesome 6 Pro";
+  font-weight: 600;
+  font-size: 1rem;
   color: v.$cgreen;
 }
 

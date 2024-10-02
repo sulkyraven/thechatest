@@ -1,5 +1,6 @@
 import sdate from "../helper/sdate.js";
 import validatext from "../helper/validatext.js";
+import { setbadge } from "./badge.js";
 import db from "./db.js";
 import userState from "./userState.js";
 
@@ -34,7 +35,14 @@ function chtsCard(ch) {
   }
   if(ch.username !== oldUsername) {
     const euname = card.querySelector('.detail .name p');
-    euname.innerText = ch.username;
+    euname.append(ch.username);
+
+    if(ch.b) {
+      for(const badge of ch.b.sort((a,b) => b - a)) {
+        euname.append(setbadge(badge));
+      }
+    }
+
   }
   if(ch.img) {
     const oldimg = card.querySelector('.img img');
@@ -148,7 +156,14 @@ export default {
     let oldUsername = card?.querySelector('.sender .name')?.innerText || null;
     if(ch.u.username && ch.u.id !== db.ref.account.id && ch.u.username !== oldUsername) {
       const euname = card?.querySelector('.sender .name');
-      if(euname) euname.innerText = ch.u.username;
+      if(euname) {
+        const badges = ch.u.b || (ch.u.id === db.ref.account.id && db.ref.account.b) || null;
+        if(badges) {
+          for(const badge of badges.sort((a,b) => b - a)) {
+            euname.append(setbadge(badge));
+          }
+        }
+      }
     }
     if(!card) {
       card = document.createElement('div');
@@ -163,9 +178,10 @@ export default {
         username = db.ref.account.username;
       } else { 
         username = ch.u.username;
-      }
+      } 
+
       card.innerHTML = `
-      ${conty !== 1 ? '<div class="chp sender"><div class="name">'+ username +'</div></div>' : ''}
+      ${conty !== 1 ? '<div class="chp sender"><div class="name"></div></div>' : ''}
       ${ch.r ? `<div class="chp embed"><div class="name"></div><div class="msg"><p></p></div></div>` : ''}
       ${ch.i || ch.v ? `<div class="chp attach"></div>` : ''}
       <div class="chp text">
@@ -174,6 +190,16 @@ export default {
       <div class="chp time">
         <p></p>
       </div>`;
+      const eluname = card.querySelector('.sender .name');
+      if(eluname) {
+        eluname.append(username);
+        const badges = ch.u.b || (ch.u.id === db.ref.account.id && db.ref.account.b) || null;
+        if(badges) {
+          for(const badge of badges.sort((a,b) => b - a)) {
+            eluname.append(setbadge(badge));
+          }
+        }
+      }
 
       if(ch.r) {
         const edb = (conty === 1 ? db.ref.chats.find(k => k.id === chts.id) || [] : db.ref.groups.find(k => k.id === chts.id) || []).chats.find(k => k.id === ch.r);

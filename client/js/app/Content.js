@@ -3,6 +3,7 @@ import sceneIn from "../helper/sceneIn.js";
 import sdate from "../helper/sdate.js";
 import validatext from "../helper/validatext.js";
 import xhr from "../helper/xhr.js";
+import { setbadge } from "../manager/badge.js";
 import cloud from "../manager/cloud.js";
 import db from "../manager/db.js";
 import elgen from "../manager/elgen.js";
@@ -43,7 +44,7 @@ export default class {
         <div class="btn back"><i class="fa-solid fa-arrow-left"></i></div>
         <div class="user">
           <div class="img"></div>
-          <div class="name"><p>${this.user.username}</p></div>
+          <div class="name"><p></p></div>
         </div>
       </div>
       <div class="right">
@@ -117,7 +118,14 @@ export default class {
     }
 
     const euname = this.el.querySelector('.top .left .user .name p');
-    if(euname.innerText !== this.user.username) euname.innerText = this.user.username;
+    if(euname.innerText !== this.user.username) {
+      euname.append(this.user.username);
+      if(this.user.u?.b) {
+        for(const badge of this.user.u?.b?.sort((a,b) => b - a)) {
+          euname.append(setbadge(badge));
+        }
+      }
+    }
 
     const oldimg = this.el.querySelector('.top .left .user .img img');
     const dbimg = this.user.img;

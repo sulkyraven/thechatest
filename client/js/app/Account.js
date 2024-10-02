@@ -1,6 +1,7 @@
 import modal from "../helper/modal.js";
 import sceneIn from "../helper/sceneIn.js";
 import xhr from "../helper/xhr.js";
+import { setbadge } from "../manager/badge.js";
 import db from "../manager/db.js";
 import userState from "../manager/userState.js";
 const langlist = [
@@ -37,7 +38,7 @@ export default class {
       <div class="chp username">
         <div class="outer">
           <div class="chp-t">Username</div>
-          <div class="chp-f"><p>@${db.ref.account.username}</p></div>
+          <div class="chp-f"><p></p></div>
           <div class="chp-e btn-username"><i class="fa-solid fa-pen-to-square"></i> Edit</div>
         </div>
       </div>
@@ -75,6 +76,13 @@ export default class {
     </div>`;
     this.ephoto = this.el.querySelector('.userphoto .outer-img');
     this.euname = this.el.querySelector('.username .outer .chp-f p');
+    this.euname.append(db.ref.account.username);
+    if(db.ref.account.b) {
+      for(const badge of db.ref.account.b.sort((a, b) => b - a)) {
+        this.euname.append(setbadge(badge));
+      }
+    }
+
     this.edname = this.el.querySelector('.userdisplayname .outer .chp-f p');
     this.ebio = this.el.querySelector('.userbio .outer .chp-f p');
     this.elogout = this.el.querySelector('.usersign a.logout');
@@ -134,7 +142,12 @@ export default class {
         return;
       }
       db.ref.account.username = setUname.data.text;
-      this.euname.innerText = '@'+setUname.data.text;
+      this.euname.append('@'+setUname.data.text);
+      if(db.ref.account.b) {
+        for(const badge of db.ref.account.b.sort((a, b) => b - a)) {
+          this.euname.append(setbadge(badge));
+        }
+      }
       this.isLocked = false;
     }
     const btnDname = this.el.querySelector('.btn-displayname');

@@ -11,6 +11,7 @@ module.exports = {
     if(!udb) return {};
 
     let data = {email: udb.email, username: udb.uname, displayName: udb.dname, bio: udb.bio, id:uid}
+    if(udb.b) data.b = udb.b;
     if(udb.img) data.img = udb.img;
     if(udb.req) data.req = udb.req.map(k => hprofile.getUser(uid, {id:k}));
     return {name:'account', data};

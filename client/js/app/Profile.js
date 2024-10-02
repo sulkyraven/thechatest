@@ -1,6 +1,7 @@
 import modal from "../helper/modal.js";
 import sceneIn from "../helper/sceneIn.js";
 import xhr from "../helper/xhr.js";
+import { setbadge } from "../manager/badge.js";
 import db from "../manager/db.js";
 import userState from "../manager/userState.js";
 import Content from "./Content.js";
@@ -22,7 +23,7 @@ export default class {
     <div class="wall">
       <div class="chp displayname"><p></p></div>
       <div class="chp img"></div>
-      <div class="chp username"><p>@${this.user.username}</p></div>
+      <div class="chp username"><p></p></div>
       <div class="chp bio">
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt soluta velit explicabo temporibus et excepturi. Provident veritatis, sapiente, perferendis explicabo repudiandae quo, perspiciatis tenetur facilis consectetur aperiam culpa magni consequatur!</p>
       </div>
@@ -40,10 +41,18 @@ export default class {
         <div class="btn sr"><i class="fa-solid fa-user-minus"></i> Unfriend</div>
       </div>
     </div>`;
+    const euname = this.el.querySelector('.wall .username p');
+    euname.append('@' + this.user.username);
+    if(this.user.b) {
+      for(const badge of this.user.b.sort((a,b) => b - a)) {
+        euname.append(setbadge(badge));
+      }
+    }
+
     const edname = this.el.querySelector('.wall .displayname p');
-    edname.innerText = this.user.displayName;
+    edname.append(this.user.displayName);
     const ebio = this.el.querySelector('.wall .bio p');
-    ebio.innerText = this.user.bio || 'No bio yet.';
+    ebio.append(this.user.bio || 'No bio yet.');
     const eimg = this.el.querySelector('.wall .img');
     const img = new Image();
     img.onerror = () => img.src = '/assets/user.jpg';
