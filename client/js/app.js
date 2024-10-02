@@ -1,5 +1,5 @@
-import checkuser from "./helper/checkuser.js";
-import userState from "./manager/userState.js";
+import checkuser from "/js/helper/checkuser.js";
+import userState from "/js/manager/userState.js";
 
 let lang = {};
 userState.langs.forEach(async k => {

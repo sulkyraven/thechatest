@@ -50,6 +50,8 @@
   "PROF_WAIT": "Your friend request has been sent",
   "PROF_CANCEL": "Cancel Friend Request",
   "PROF_DELETED_USER": "This user has disappeared from the earth",
+  "PROF_ALR_NOFRIEND_1": "You need to be friends to be able to make calls",
+  "PROF_ALR_NOFRIEND_2": "You need to be friends to be able to make video calls",
   "CHTS_NOCHAT": "- Empty -",
   "GRPS_CREATE": "CREATE",
   "GRPS_JOIN": "JOIN",

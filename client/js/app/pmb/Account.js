@@ -1,9 +1,9 @@
-import modal from "../helper/modal.js";
-import sceneIn from "../helper/sceneIn.js";
-import xhr from "../helper/xhr.js";
-import { setbadge } from "../manager/badge.js";
-import db from "../manager/db.js";
-import userState from "../manager/userState.js";
+import modal from "/js/helper/modal.js";
+import sceneIn from "/js/helper/sceneIn.js";
+import xhr from "/js/helper/xhr.js";
+import { setbadge } from "/js/manager/badge.js";
+import db from "/js/manager/db.js";
+import userState from "/js/manager/userState.js";
 const langlist = [
   {id: 'lang-id', val: 'id', label: 'Bahasa Indonesia'},
   {id: 'lang-en', val: 'en', label: 'English'},

@@ -1,4 +1,4 @@
-import modal from "./modal.js";
+import modal from "/js/helper/modal.js";
 
 export default async function(el) {
   return new Promise(async resolve => {

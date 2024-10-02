@@ -1,8 +1,8 @@
-import modal from "../helper/modal.js";
-import xhr from "../helper/xhr.js";
-import cloud from "../manager/cloud.js";
-import userState from "../manager/userState.js";
-import pm from "./pm.js";
+import modal from "/js/helper/modal.js";
+import xhr from "/js/helper/xhr.js";
+import cloud from "/js/manager/cloud.js";
+import userState from "/js/manager/userState.js";
+import pm from "/js/app/main/pm.js";
 let lang = {};
 
 export default class Sign {

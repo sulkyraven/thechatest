@@ -1,4 +1,4 @@
-import userState from "../manager/userState.js";
+import userState from "/js/manager/userState.js";
 let lang = {};
 
 export default {

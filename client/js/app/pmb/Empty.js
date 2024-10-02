@@ -1,6 +1,6 @@
-import modal from "../helper/modal.js";
-import sceneIn from "../helper/sceneIn.js";
-import userState from "../manager/userState.js";
+import modal from "/js/helper/modal.js";
+import sceneIn from "/js/helper/sceneIn.js";
+import userState from "/js/manager/userState.js";
 let lang = {};
 
 export default class {

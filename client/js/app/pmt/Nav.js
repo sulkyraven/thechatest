@@ -1,6 +1,6 @@
-import modal from "../helper/modal.js";
-import userState from "../manager/userState.js";
-import _navlist from "./_navlist.js";
+import modal from "/js/helper/modal.js";
+import userState from "/js/manager/userState.js";
+import _navlist from "/js/app/pmt/_navlist.js";
 
 export default class {
   constructor() {

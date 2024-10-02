@@ -1,15 +1,15 @@
-import modal from "../helper/modal.js";
-import sceneIn from "../helper/sceneIn.js";
-import sdate from "../helper/sdate.js";
-import validatext from "../helper/validatext.js";
-import xhr from "../helper/xhr.js";
-import { setbadge } from "../manager/badge.js";
-import cloud from "../manager/cloud.js";
-import db from "../manager/db.js";
-import elgen from "../manager/elgen.js";
-import userState from "../manager/userState.js";
-import GroupSetting from "./GroupSetting.js";
-import Profile from "./Profile.js";
+import modal from "/js/helper/modal.js";
+import sceneIn from "/js/helper/sceneIn.js";
+import sdate from "/js/helper/sdate.js";
+import validatext from "/js/helper/validatext.js";
+import xhr from "/js/helper/xhr.js";
+import { setbadge } from "/js/manager/badge.js";
+import cloud from "/js/manager/cloud.js";
+import db from "/js/manager/db.js";
+import elgen from "/js/manager/elgen.js";
+import userState from "/js/manager/userState.js";
+import GroupSetting from "/js/app/pmb/GroupSetting.js";
+import Profile from "/js/app/pmb/Profile.js";
 let lang = null;
 
 let recorder = null;
@@ -48,10 +48,10 @@ export default class {
         </div>
       </div>
       <div class="right">
-        <div class="btn">
+        <div class="btn btn-video">
           <i class="fa-solid fa-video"></i>
         </div>
-        <div class="btn">
+        <div class="btn btn-call">
           <i class="fa-solid fa-phone"></i>
         </div>
         <div class="btn">
@@ -403,6 +403,33 @@ export default class {
     }
   }
   formListener() {
+
+    const btnCall = this.el.querySelector('.btn-call');
+    btnCall.onclick = async() => {
+      if(this.isLocked) return;
+      this.isLocked = true;
+      if(!this.user.isfriend) {
+        await modal.alert(lang.PROF_ALR_NOFRIEND_1);
+        this.isLocked = false;
+        return;
+      }
+      console.log('memanggil');
+      this.isLocked = false;
+    }
+    
+    const btnVideo = this.el.querySelector('.btn-video');
+    btnVideo.onclick = async() => {
+      if(this.isLocked) return;
+      this.isLocked = true;
+      if(!this.user.isfriend) {
+        await modal.alert(lang.PROF_ALR_NOFRIEND_2);
+        this.isLocked = false;
+        return;
+      }
+      console.log('memanggil');
+      this.isLocked = false;
+    }
+
     this.chatlist.onscroll = () => {
       if(Math.floor(this.chatlist.scrollHeight - this.chatlist.scrollTop) < Math.floor(this.chatlist.clientHeight + 50)) {
         this.disabelAutoScroll = false;

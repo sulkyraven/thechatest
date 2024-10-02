@@ -1,10 +1,10 @@
-import Find from "./Find.js";
-import Chts from "./Chts.js";
-import Friends from "./Friends.js";
-import Grps from "./Grps.js";
-import userState from "../manager/userState.js";
-import Empty from "./Empty.js";
-import Posts from "./Posts.js";
+import Find from "/js/app/pmm/Find.js";
+import Chts from "/js/app/pmm/Chts.js";
+import Friends from "/js/app/pmm/Friends.js";
+import Grps from "/js/app/pmm/Grps.js";
+import userState from "/js/manager/userState.js";
+import Empty from "/js/app/pmb/Empty.js";
+import Posts from "/js/app/pmb/Posts.js";
 
 export default [
   { id:'find', text:'<i class="fa-solid fa-magnifying-glass"></i><p>Search</p>', async run() {

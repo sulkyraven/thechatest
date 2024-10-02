@@ -1,9 +1,9 @@
-import modal from "../helper/modal.js";
-import sceneIn from "../helper/sceneIn.js";
-import db from "../manager/db.js";
-import elgen from "../manager/elgen.js";
-import userState from "../manager/userState.js";
-import Content from "./Content.js";
+import modal from "/js/helper/modal.js";
+import sceneIn from "/js/helper/sceneIn.js";
+import db from "/js/manager/db.js";
+import elgen from "/js/manager/elgen.js";
+import userState from "/js/manager/userState.js";
+import Content from "/js/app/pmb/Content.js";
 let lang = {};
 
 export default class {

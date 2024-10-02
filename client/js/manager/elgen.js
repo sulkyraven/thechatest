@@ -1,8 +1,8 @@
-import sdate from "../helper/sdate.js";
-import validatext from "../helper/validatext.js";
-import { setbadge } from "./badge.js";
-import db from "./db.js";
-import userState from "./userState.js";
+import sdate from "/js/helper/sdate.js";
+import validatext from "/js/helper/validatext.js";
+import { setbadge } from "/js/manager/badge.js";
+import db from "/js/manager/db.js";
+import userState from "/js/manager/userState.js";
 
 function profileImage(card, ch, newsrc, oldimg = null) {
   const newImg = new Image();

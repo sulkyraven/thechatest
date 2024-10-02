@@ -1,8 +1,8 @@
-import Nav from "./Nav.js";
-import AppName from "./AppName.js";
-import Chts from "./Chts.js";
-import Empty from "./Empty.js";
-import Account from "./Account.js";
+import Nav from "/js/app/pmt/Nav.js";
+import AppName from "/js/app/pmt/AppName.js";
+import Chts from "/js/app/pmm/Chts.js";
+import Empty from "/js/app/pmb/Empty.js";
+import Account from "/js/app/pmb/Account.js";
 
 export default class {
   constructor() {}

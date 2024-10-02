@@ -1,7 +1,7 @@
 import { Peer } from "https://esm.sh/peerjs@1.5.4?bundle-deps";
-import db from "./db.js";
-import xhr from "../helper/xhr.js";
-import userState from "./userState.js";
+import db from "/js/manager/db.js";
+import xhr from "/js/helper/xhr.js";
+import userState from "/js/manager/userState.js";
 
 async function waittime(ms = 200) {return new Promise(resolve => setTimeout(resolve, ms))}
 // this.peer.socket._socket.send(JSON.stringify({selfadded: {data:"aaw"}}));

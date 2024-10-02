@@ -1,10 +1,10 @@
-import modal from "../helper/modal.js";
-import sceneIn from "../helper/sceneIn.js";
-import xhr from "../helper/xhr.js";
-import { setbadge } from "../manager/badge.js";
-import db from "../manager/db.js";
-import userState from "../manager/userState.js";
-import Content from "./Content.js";
+import modal from "/js/helper/modal.js";
+import sceneIn from "/js/helper/sceneIn.js";
+import xhr from "/js/helper/xhr.js";
+import { setbadge } from "/js/manager/badge.js";
+import db from "/js/manager/db.js";
+import userState from "/js/manager/userState.js";
+import Content from "/js/app/pmb/Content.js";
 let lang = {};
 
 export default class {
@@ -33,12 +33,6 @@ export default class {
         <div class="btn btn-video"><i class="fa-solid fa-video"></i><p>Video Call</p></div>
       </div>
       <div class="chp options">
-        <div class="btn sb"><i class="fa-solid fa-user-plus"></i> Add Friend</div>
-        <div class="btn sg"><i class="fa-solid fa-user-check"></i> Accept Friend Request</div>
-        <div class="btn sr"><i class="fa-solid fa-user-xmark"></i> Ignore Friend Request</div>
-        <div class="note sy">Your Friend Request Has Been Sent</div>
-        <div class="btn sr"><i class="fa-solid fa-user-xmark"></i> Cancel Friend Request</div>
-        <div class="btn sr"><i class="fa-solid fa-user-minus"></i> Unfriend</div>
       </div>
     </div>`;
     const euname = this.el.querySelector('.wall .username p');
@@ -48,7 +42,6 @@ export default class {
         euname.append(setbadge(badge));
       }
     }
-
     const edname = this.el.querySelector('.wall .displayname p');
     edname.append(this.user.displayName);
     const ebio = this.el.querySelector('.wall .bio p');
@@ -63,7 +56,9 @@ export default class {
   renderActions() {
     this.eloptions = document.querySelector('.chp.options');
     this.eloptions.innerHTML = '';
-    if(this.user.isfriend) return this.ActionFriend();
+    if(this.user.isfriend) {
+      return this.ActionFriend();
+    };
     if(this.user.theirreq) return this.ActionRequest();
     if(this.user.myreq) return this.ActionSent();
     return this.ActionNoFriend();
@@ -164,7 +159,29 @@ export default class {
       userState.locked.bottom = false;
     }
     const btnCall = this.el.querySelector('.actions .btn-call');
+    btnCall.onclick = async() => {
+      if(this.isLocked) return;
+      this.isLocked = true;
+      if(!this.user.isfriend) {
+        await modal.alert(lang.PROF_ALR_NOFRIEND_1);
+        this.isLocked = false;
+        return;
+      }
+      console.log('memanggil');
+      this.isLocked = false;
+    }
     const btnVideo = this.el.querySelector('.actions .btn-video');
+    btnVideo.onclick = async() => {
+      if(this.isLocked) return;
+      this.isLocked = true;
+      if(!this.user.isfriend) {
+        await modal.alert(lang.PROF_ALR_NOFRIEND_2);
+        this.isLocked = false;
+        return;
+      }
+      console.log('memanggil');
+      this.isLocked = false;
+    }
   }
   destroy() {
     return new Promise(async resolve => {

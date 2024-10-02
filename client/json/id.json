@@ -50,6 +50,8 @@
   "PROF_WAIT": "Permintaan Pertemanan Terkirim",
   "PROF_CANCEL": "Batalakan Permintaan Pertemanan",
   "PROF_DELETED_USER": "Akun ini telah lenyap dari muka bumi sejak dahulu kala",
+  "PROF_ALR_NOFRIEND_1": "Mau telepon? Kalian perlu berteman terlebih dahulu.",
+  "PROF_ALR_NOFRIEND_2": "Kalian harus temenan biar bisa video call-an",
   "CHTS_NOCHAT": "- Masih kosong nih -",
   "GRPS_CREATE": "BUAT",
   "GRPS_JOIN": "GABUNG",

@@ -1,8 +1,8 @@
-import pm from "../app/pm.js";
-import sign from "../app/sign.js";
-import cloud from "../manager/cloud.js";
-import modal from "./modal.js";
-import xhr from "./xhr.js";
+import pm from "/js/app/main/pm.js";
+import sign from "/js/app/main/sign.js";
+import cloud from "/js/manager/cloud.js";
+import modal from "/js/helper/modal.js";
+import xhr from "/js/helper/xhr.js";
 
 export default async function() {
   const isUser = await modal.loading(xhr.get('/auth/isUser'));
