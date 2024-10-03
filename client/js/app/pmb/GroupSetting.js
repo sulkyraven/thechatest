@@ -285,7 +285,7 @@ export default class {
       resolve();
     });
   }
-  async run() {
+  run() {
     userState.pmbottom = this;
     lang = userState.langs[userState.lang];
     this.createElement();

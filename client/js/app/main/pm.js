@@ -1,6 +1,6 @@
 import Nav from "/js/app/pmt/Nav.js";
 import AppName from "/js/app/pmt/AppName.js";
-import Chts from "/js/app/pmm/Chts.js";
+import Chats from "/js/app/pmm/Chats.js";
 import Empty from "/js/app/pmb/Empty.js";
 import Account from "/js/app/pmb/Account.js";
 
@@ -13,7 +13,7 @@ export default class {
   renderSects() {
     new Nav().run();
     new AppName().run();
-    new Chts().run();
+    new Chats().run();
     this.isfirst ? new Account().run() : new Empty().run();
   }
   run(isfirst = false) {

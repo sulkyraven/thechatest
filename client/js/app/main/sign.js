@@ -10,9 +10,6 @@ export default class Sign {
     this.islocked = false;
     this.path = '/login';
   }
-  async getLang() {
-    lang = userState.langs[userState.lang];
-  }
   createElement() {
     this.el = document.createElement('div');
     this.el.classList.add('sign');
@@ -139,8 +136,8 @@ export default class Sign {
       resolve();
     });
   }
-  async run() {
-    await this.getLang();
+  run() {
+    lang = userState.langs[userState.lang];
     this.createElement();
     document.querySelector('.app').append(this.el);
     this.formListener();

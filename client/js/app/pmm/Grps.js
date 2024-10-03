@@ -16,7 +16,7 @@ export default class {
   }
   createElement() {
     this.el = document.createElement('div');
-    this.el.classList.add('chts', 'pmm');
+    this.el.classList.add('chats', 'pmm');
     this.el.innerHTML = `
     <div class="search flex">
       <div class="btn btn-join"><i class="fa-solid fa-right-to-bracket"></i> Join</div>
@@ -113,7 +113,7 @@ export default class {
       resolve();
     });
   }
-  async run() {
+  run() {
     userState.pmmid = this;
     lang = userState.langs[userState.lang];
     this.createElement();

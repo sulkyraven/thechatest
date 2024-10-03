@@ -221,7 +221,7 @@ $btmheight: 55px;
       box-shadow: 0 0 5px v.$card_primary;
       cursor: pointer;
     }
-    .chats {
+    .chatlist {
       position: absolute;
       bottom: 0;left: 0;
       width: 100%;
@@ -432,7 +432,7 @@ $btmheight: 55px;
     .box {
       padding: 10px;
       animation: popup_in 0.5s;
-      .chats {
+      .chatlist {
         border-bottom: 1px solid v.$softwhite;
         .card {
           margin: auto;

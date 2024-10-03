@@ -15,7 +15,7 @@ export default class {
   }
   createElement() {
     this.el = document.createElement('div');
-    this.el.classList.add('chts', 'pmm');
+    this.el.classList.add('chats', 'pmm');
     this.el.innerHTML = `<div class="card-list"></div>`;
   }
   getFriendlist() {
@@ -108,7 +108,7 @@ export default class {
       resolve();
     })
   }
-  async run() {
+  run() {
     userState.pmmid = this;
     lang = userState.langs[userState.lang];
     this.createElement();

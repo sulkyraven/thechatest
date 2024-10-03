@@ -22,8 +22,10 @@ export default class {
         this.isLocked = true;
         let midtop = [userState.pmmid?.id||'none',userState.pmbottom?.id||'none'];
         if(!midtop.includes(btn.id)) {
-          this.el.querySelectorAll('.selected').forEach(elod=>elod.classList.remove('selected'));
-          elnav.classList.add('selected');
+          if(!btn.noactive) {
+            this.el.querySelectorAll('.selected').forEach(elod=>elod.classList.remove('selected'));
+            elnav.classList.add('selected');
+          }
           await btn.run();
           this.isLocked = false;
         }

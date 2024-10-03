@@ -5,18 +5,13 @@ let lang = {};
 
 export default class {
   constructor() {
-    this.id = 'posts';
+    this.id = 'calls';
+    this.isLocked = false;
   }
   createElement() {
     this.el = document.createElement('div');
-    this.el.classList.add('empty', 'pmb');
-    this.el.innerHTML = `
-    <div class="title">
-      <h1>Comeback Later</h1>
-    </div>
-    <div class="desc">
-      <p>This -Posts- feature is currently under maintenance</p>
-    </div`;
+    this.el.classList.add('chats', 'pmm');
+    this.el.innerHTML = `<br/><br/><div class="center"><p>This -Calls- feature is currently under development</p></div>`;
   }
   destroy() {
     return new Promise(async resolve => {
@@ -24,12 +19,12 @@ export default class {
       await modal.waittime();
       this.el.remove();
       this.isLocked = false;
-      userState.pmbottom = null;
+      userState.pmmid = null;
       resolve();
     });
   }
   run() {
-    userState.pmbottom = this;
+    userState.pmmid = this;
     lang = userState.langs[userState.lang];
     this.createElement();
     document.querySelector('.app .pm').append(this.el);

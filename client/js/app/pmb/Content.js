@@ -60,7 +60,7 @@ export default class {
       </div>
     </div>
     <div class="mid">
-      <div class="chats"></div>
+      <div class="chatlist"></div>
     </div>
     <div class="bottom">
       <div class="field">
@@ -89,7 +89,7 @@ export default class {
         </div>
       </div>
     </div>`;
-    this.chatlist = this.el.querySelector('.mid .chats');
+    this.chatlist = this.el.querySelector('.mid .chatlist');
     this.bottomclass = this.el.querySelector('.bottom');
     this.midclass = this.el.querySelector('.mid');
     this.topclass = this.el.querySelector('.top');
@@ -236,10 +236,10 @@ export default class {
     const chatpop = document.createElement('div');
     chatpop.classList.add('chatpop');
     chatpop.innerHTML = `
-    <div class="box"><div class="chats"></div><div class="actions"></div></div>`;
+    <div class="box"><div class="chatlist"></div><div class="actions"></div></div>`;
     const card = oldcard.cloneNode(true);
     card.removeAttribute('id');
-    chatpop.querySelector('.chats').append(card);
+    chatpop.querySelector('.chatlist').append(card);
 
     const btnReply = document.createElement('div');
     btnReply.classList.add('btn', 'btn-reply');
@@ -862,7 +862,7 @@ export default class {
       resolve();
     });
   }
-  async run() {
+  run() {
     userState.pmbottom = this;
     lang = userState.langs[userState.lang];
     this.createElement();
@@ -889,10 +889,6 @@ function chatSelection(obj, conty) {
     db: db.ref.groups?.find(ch => ch.id === obj.id),
     prof: new GroupSetting({group:obj}),
   }
-}
-function imageSelection(obj, conty) {
-  if(conty === 1) return obj.img ? `/file/user/${obj.img}` : '/assets/user.jpg';
-  if(conty === 2) return obj.i ? `/file/group/${obj.i}` : '/assets/group.jpg';
 }
 function SetupAudioRecorder(content) {
   return new Promise(resolve => {
