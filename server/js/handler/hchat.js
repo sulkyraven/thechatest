@@ -51,7 +51,21 @@ module.exports = {
       if(wsonly.test(s.txt)) return {code:400};
       data.txt = s.txt;
     }
-    if(s.voice) {
+    if(s.edit) {
+      s.edit = s.edit.toLowerCase();
+      if(!cdb[ckey].c[s.edit]) return {code:400,data:{edit:s.edit}};
+      if(!cdb[ckey].c[s.edit].txt) return {code:400,data:{edit:s.edit}};
+
+      db.ref[conty][ckey].c[s.edit].txt = s.txt;
+      db.ref[conty][ckey].c[s.edit].e = Date.now();
+      db.save(conty);
+
+      const peers = db.ref[conty][ckey].u.filter(k => k !== uid && db.ref.u[k]?.peer)?.map(k => {
+        return db.ref.u[k].peer;
+      }) || [];
+
+      return {code:200,data: {...db.ref[conty][ckey].c[s.edit],id:s.edit,ckey,u:{id:uid}}, peers};
+    } else if(s.voice) {
       if(!validate(['voice'], s)) return {code:400};
       const dataurl = decodeURIComponent(s.voice);
       const buffer = Buffer.from(dataurl.split(',')?.[1], 'base64');
@@ -91,4 +105,6 @@ module.exports = {
 
     return {code:200,data: {...data,id:newKey,ckey,u:{id:uid}}, peers};
   },
+  delMessage(uid, s) {
+  }
 }

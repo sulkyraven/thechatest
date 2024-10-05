@@ -239,7 +239,7 @@ $btmheight: 55px;
         padding: 10px;
         border-radius: 10px;
         background-color: v.$sgray;
-        margin-bottom: 10px;
+        margin-top: 10px;
         .chp {
           margin-bottom: 3px;
         }
@@ -378,9 +378,6 @@ $btmheight: 55px;
             .failed {
               color: v.$sred;
             }
-            .sending {
-              color: v.$softwhite;
-            }
           }
         }
         .time {
@@ -389,6 +386,9 @@ $btmheight: 55px;
           color: v.$softwhite;
           .cy {
             color: v.$yellow;
+          }
+          .edited {
+            margin-right: 3px;
           }
         }
       }
@@ -406,6 +406,10 @@ $btmheight: 55px;
       }
       .card.sending {
         animation: popup_in 0.5s;
+        .text {
+          color: v.$softwhite;
+          font-style: italic;
+        }
       }
       .card.highlight {
         animation: bgTrans 1.5s;
@@ -413,8 +417,14 @@ $btmheight: 55px;
       .card.me.highlight {
         animation: bgTrans2 1.5s;
       }
-      .card:last-child {
-        margin-bottom: 0;
+      .card:first-child {
+        margin-top: 0;
+      }
+      .card.follow {
+        margin-top: 4px;
+        .sender {
+          display: none;
+        }
       }
     }
   }
@@ -569,9 +579,6 @@ $btmheight: 55px;
               hyphens: auto;
               .failed {
                 color: v.$sred;
-              }
-              .sending {
-                color: v.$softwhite;
               }
             }
           }

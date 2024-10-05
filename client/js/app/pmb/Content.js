@@ -239,6 +239,8 @@ export default class {
     <div class="box"><div class="chatlist"></div><div class="actions"></div></div>`;
     const card = oldcard.cloneNode(true);
     card.removeAttribute('id');
+    const sendername = card.querySelector('.sender');
+    if(sendername) sendername.style.display = 'block';
     chatpop.querySelector('.chatlist').append(card);
 
     const btnReply = document.createElement('div');
@@ -270,6 +272,8 @@ export default class {
       const btnDelete = document.createElement('div');
       btnDelete.classList.add('btn', 'btn-delete');
       btnDelete.innerHTML = `<i class="fa-solid fa-trash-can"></i> DELETE`;
+      btnDelete.onclick = () => {
+      }
 
       chatpop.querySelector('.actions').append(btnEdit, btnDelete);
     }
@@ -578,7 +582,7 @@ export default class {
     if(this.isLocked) return;
 
     const tempdata = {};
-    tempdata.id = "temp" + Date.now();
+    tempdata.id = this.chatedit || "temp" + Date.now();
     tempdata.ts = Date.now();
     tempdata.txt = this.inpMsg.value.trim();
     tempdata.u = {id:db.ref.account.id};
@@ -589,14 +593,17 @@ export default class {
     }
     if(this.contents.voice) tempdata.v = this.contents.voice.blob;
     if(this.contents.rep) tempdata.r = this.contents.rep;
+    if(this.chatedit) tempdata.e = this.chatedit;
 
-    const {card} = elgen.contentCard(tempdata, this.user.db, this.conty, 1);
+    const {card, uc} = elgen.contentCard(tempdata, this.user.db, this.conty, 1);
     card.classList.add('sending');
-    card.querySelector('.chp.text p').innerHTML = '<i class="sending"></i>';
+    card.querySelector('.chp.text p').innerHTML = '';
     card.querySelector('.chp.time p').innerHTML = sdate.time(Date.now()) + ' <i class="fa-regular fa-clock"></i>';
-    card.querySelector('.chp.text p i').innerText = this.inpMsg.value.trim();
-    this.chatlist.append(card);
-    this.chatlist.scrollTop = this.chatlist.scrollHeight;
+    card.querySelector('.chp.text p').append(this.inpMsg.value.trim());
+    if(!uc) {
+      this.chatlist.append(card);
+      this.chatlist.scrollTop = this.chatlist.scrollHeight;
+    }
     const chTxtTemp = card.querySelector('.chp.text p');
     if(chTxtTemp && chTxtTemp.offsetWidth >= 470) card.classList.add('long');
 
@@ -610,6 +617,7 @@ export default class {
       data.file = {name:this.contents.file.name,src:this.contents.file.src}
     }
     if(this.contents.rep) data.rep = this.contents.rep;
+    if(this.chatedit) data.edit = this.chatedit;
 
     this.inpMsg.value = '';
     this.contents.file.name = null;
@@ -618,6 +626,7 @@ export default class {
     this.contents.rep = null;
     this.contents.voice.blob = null;
     this.contents.voice.src = null;
+    this.chatedit = null;
 
     this.closeAttach();
     this.closeReply();
@@ -634,7 +643,7 @@ export default class {
     }
     const ckey = this.conty === 1 ? 'chats' : 'groups';
     const cdb = db.ref[ckey]?.find(ck => ck.id === (this.user?.db?.id || Date.now().toString(32)));
-    card.remove();
+    if(!tempdata.e) card.remove();
     cloud.send({ "id": "send-msg", "to": sendMsg.peers, "data": { "text": sendMsg.data.txt } });
 
     if(!this.user.db) {
@@ -659,10 +668,15 @@ export default class {
     // this.user.db.chats.push(sendMsg.data);
     cdb?.chats?.push(sendMsg.data);
 
-    const sentcard = elgen.contentCard(sendMsg.data, this.user.db, this.conty).card;
-    this.chatlist.appendChild(sentcard);
-    const chTxt = sentcard.querySelector('.chp.text p');
-    if(chTxt && chTxt.offsetWidth >= 470) sentcard.classList.add('long');
+    const sentcard = elgen.contentCard(sendMsg.data, this.user.db, this.conty);
+    if(sentcard.uc) {
+      sentcard.card.classList.remove('sending');
+    } else {
+      this.chatlist.appendChild(sentcard.card);
+      this.chatlist.scrollTop = this.chatlist.scrollHeight;
+    }
+    const chTxt = sentcard.card.querySelector('.chp.text p');
+    if(chTxt && chTxt.offsetWidth >= 470) sentcard.card.classList.add('long');
     userState.pmbottom?.forceUpdate?.();
     userState.pmmid?.forceUpdate?.();
   }

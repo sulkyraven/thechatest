@@ -59,6 +59,12 @@ function chtsCard(ch) {
   const card_b = card.querySelector('.right');
   return {card, card_a, card_b};
 }
+function getEditedMessage() {
+  const i = document.createElement('i');
+  i.classList.add('edited');
+  i.append(userState.langs[userState.lang].CONTENT_EDITED);
+  return i;
+}
 
 export default {
   ss(txt, n=20, o=0) {
@@ -171,14 +177,21 @@ export default {
       card = document.createElement('div');
       card.id = `krmn-${ch.id}`;
       card.classList.add('card');
+      const lastcard = document.querySelector('.content .mid .chatlist').lastElementChild;
+      if(lastcard) {
+        const lastSender = lastcard.getAttribute('data-sender');
+        if(lastSender && lastSender === (ch.u?.id || null)) card.classList.add('follow');
+      }
 
       let username = null;
       if(ch.u.code) {
         username = `<i class="sw">${userState.langs[userState.lang].DELETED_USER}</i>`;
       } else if(ch.u.id === db.ref.account.id) {
         card.classList.add('me');
+        card.setAttribute('data-sender', ch.u.id);
         username = db.ref.account.username;
       } else { 
+        card.setAttribute('data-sender', ch.u.id);
         username = ch.u.username;
       } 
 
@@ -238,10 +251,12 @@ export default {
       const sameDay = sdate.sameday(new Date(Date.now()), new Date(ch.ts));
       const eTimeStamp = card.querySelector('.time p');
       if(sameDay) {
-        eTimeStamp.innerText = sdate.time(ch.ts);
+        eTimeStamp.append(sdate.time(ch.ts));
       } else {
-        eTimeStamp.innerText = `${sdate.date(ch.ts)} ${sdate.time(ch.ts)}`;
+        eTimeStamp.append(`${sdate.date(ch.ts)} ${sdate.time(ch.ts)}`);
       }
+
+      if(ch.e) eTimeStamp.prepend(getEditedMessage());
 
       if(ch.v) {
         card.querySelector('.attach').append(this.audioContentCard(ch, chts, temp));
@@ -312,11 +327,22 @@ export default {
       return {card};
     }
 
+    const oldTimeStamp = card.querySelector('.time p');
+    if(ch.e && oldTimeStamp && !oldTimeStamp.querySelector('.edited')) oldTimeStamp.prepend(getEditedMessage());
+
     if(ch.u.id === db.ref.account.id && conty === 1) {
-      const estatus = card?.querySelector('.time p i');
-      if(ch.w?.filter(k => k !== db.ref.account.id).length >= 1 && estatus.classList.contains('fa-check')) {
-        estatus.classList.remove('fa-check');
-        estatus.classList.add('fa-check-double', 'cy')
+      const estatus = card?.querySelector('.time p i.fa-regular');
+      if(ch.w?.filter(k => k !== db.ref.account.id).length >= 1) {
+        if(estatus.classList.contains('fa-check')) {
+          estatus.classList.remove('fa-check');
+          estatus.classList.add('fa-check-double', 'cy');
+        } else if(estatus.classList.contains('fa-clock')) {
+          estatus.classList.remove('fa-clock');
+          estatus.classList.add('fa-check');
+        }
+      } else if(estatus.classList.contains('fa-clock')) {
+        estatus.classList.remove('fa-clock');
+        estatus.classList.add('fa-check');
       }
     }
     return {card,uc:true};
