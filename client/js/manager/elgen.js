@@ -101,7 +101,7 @@ export default {
     if(unread >= 1) card.querySelector('.right .unread').innerHTML = `<div class="circle">${unread}</div>`;
     if(unread < 1) card.querySelector('.right .unread .circle')?.remove();
 
-    const sameDay = sdate.sameday(new Date(Date.now()), new Date(lastObj.ts));
+    const sameDay = sdate.sameday(Date.now(), lastObj.ts);
     const eTimeStamp = card.querySelector('.right .last');
     if(sameDay) {
       eTimeStamp.innerText = sdate.time(lastObj.ts);
@@ -248,7 +248,7 @@ export default {
         }
       }
 
-      const sameDay = sdate.sameday(new Date(Date.now()), new Date(ch.ts));
+      const sameDay = sdate.sameday(Date.now(), ch.ts);
       const eTimeStamp = card.querySelector('.time p');
       if(sameDay) {
         eTimeStamp.append(sdate.time(ch.ts));
@@ -331,7 +331,7 @@ export default {
     if(ch.e && oldTimeStamp && !oldTimeStamp.querySelector('.edited')) oldTimeStamp.prepend(getEditedMessage());
 
     if(ch.u.id === db.ref.account.id && conty === 1) {
-      const estatus = card?.querySelector('.time p i.fa-regular');
+      const estatus = card?.querySelector('.time p .fa-regular');
       if(ch.w?.filter(k => k !== db.ref.account.id).length >= 1) {
         if(estatus.classList.contains('fa-check')) {
           estatus.classList.remove('fa-check');
@@ -485,7 +485,7 @@ export default {
     if(unread >= 1) card.querySelector('.right .unread').innerHTML = `<div class="circle">${unread}</div>`;
     if(unread < 1) card.querySelector('.right .unread .circle')?.remove();
   
-    const sameDay = sdate.sameday(new Date(Date.now()), new Date(lastObj.ts));
+    const sameDay = sdate.sameday(Date.now(), lastObj.ts);
     const eTimeStamp = card.querySelector('.right .last');
     if(sameDay) {
       eTimeStamp.innerText = sdate.time(lastObj.ts);

@@ -3,17 +3,17 @@ const db = require("../db");
 const { validate } = require('../middlewares');
 const hprofile = require('./hprofile');
 const helper = require('../helper');
+const hchat = require('./hchat');
 
 module.exports = {
   getGroup(uid, s) {
     if(!validate(['id'], s)) return {code:400};
+    s.id = s.id.toLowerCase();
     const gdb = db.ref.g[s.id];
     const data = {
       o: gdb.o, n:gdb.n, id:s.id, t:gdb.t,
       users: gdb.u.filter(k => k !== uid && !hprofile.getUser(uid, {id:k})?.code).map(k => hprofile.getUser(uid, {id:k})),
-      chats: Object.keys(gdb.c).map(k => {
-        return {...gdb.c[k], id:k, u:gdb.c[k].u === uid ? {id:uid} : {...hprofile.getUser(uid, {id:gdb.c[k].u})}}
-      })
+      chats: Object.keys(gdb.c).map(k => hchat.getChat(uid, {ckey:'g', id:s.id, text_id:k}))
     }
     if(gdb.i) data.i = gdb.i;
     if(gdb.o === uid || gdb.t === '0') data.l = gdb.l;

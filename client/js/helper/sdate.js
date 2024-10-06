@@ -1,5 +1,7 @@
 export default {
   sameday(t1, t2) {
+    t1 = new Date(t1);
+    t2 = new Date(t2);
     return t1.getFullYear() === t2.getFullYear() && t1.getMonth() === t2.getMonth() && t1.getDate() === t2.getDate();
   },
   time(ts) {

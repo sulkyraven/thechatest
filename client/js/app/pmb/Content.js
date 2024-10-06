@@ -17,6 +17,7 @@ let recorderChunks = [];
 let isrecording = false;
 let stoprecord = false;
 let recordinterval = null;
+let renderedData = false;
 
 export default class {
   constructor({ user, conty }) {
@@ -295,7 +296,7 @@ export default class {
   showReply(ch) {
     const oldreply = this.el.querySelector('.bottom .embed');
     if(oldreply) oldreply.remove();
-    this.chatedit = null;
+    this.chatedit = {};
     this.contents.rep = null;
 
     this.ereply = document.createElement('div');
@@ -345,7 +346,7 @@ export default class {
     const oldEdit = this.el.querySelector('.bottom .embed');
     if(oldEdit) oldEdit.remove();
     this.attach?.remove();
-    this.chatedit = ch.id;
+    this.chatedit = { id:ch.id, ts:ch.ts };
     if(this.contents.voice.blob) URL.revokeObjectURL(this.contents.voice.blob);
     if(this.contents.file.blob) URL.revokeObjectURL(this.contents.file.blob);
     this.contents = {
@@ -377,7 +378,7 @@ export default class {
     this.growInput();
   }
   closeEdit() {
-    this.chatedit = null;
+    this.chatedit = {};
     this.eedit?.remove();
     this.growInput();
   }
@@ -495,7 +496,7 @@ export default class {
     if(fileAccept) inp.accept = fileAccept;
     inp.onchange = async() => {
       if(this.eedit) this.eedit.remove();
-      this.chatedit = null;
+      this.chatedit = {};
 
       const file = inp.files[0];
 
@@ -582,8 +583,8 @@ export default class {
     if(this.isLocked) return;
 
     const tempdata = {};
-    tempdata.id = this.chatedit || "temp" + Date.now();
-    tempdata.ts = Date.now();
+    tempdata.id = this.chatedit?.id || "temp" + Date.now();
+    tempdata.ts = this.chatedit?.ts || Date.now();
     tempdata.txt = this.inpMsg.value.trim();
     tempdata.u = {id:db.ref.account.id};
     if(this.contents.file.src) {
@@ -593,12 +594,19 @@ export default class {
     }
     if(this.contents.voice) tempdata.v = this.contents.voice.blob;
     if(this.contents.rep) tempdata.r = this.contents.rep;
-    if(this.chatedit) tempdata.e = this.chatedit;
+    if(this.chatedit?.id) tempdata.e = this.chatedit.id;
 
     const {card, uc} = elgen.contentCard(tempdata, this.user.db, this.conty, 1);
     card.classList.add('sending');
     card.querySelector('.chp.text p').innerHTML = '';
-    card.querySelector('.chp.time p').innerHTML = sdate.time(Date.now()) + ' <i class="fa-regular fa-clock"></i>';
+
+    const sameDay = sdate.sameday(Date.now(), tempdata.ts);
+    if(sameDay) {
+      card.querySelector('.chp.time p').innerHTML = sdate.time(tempdata.ts) + ' <i class="fa-regular fa-clock"></i>';
+    } else {
+      card.querySelector('.chp.time p').innerHTML = `${sdate.date(tempdata.ts)} ${sdate.time(tempdata.ts)} <i class="fa-regular fa-clock"></i>`;
+    }
+
     card.querySelector('.chp.text p').append(this.inpMsg.value.trim());
     if(!uc) {
       this.chatlist.append(card);
@@ -617,7 +625,7 @@ export default class {
       data.file = {name:this.contents.file.name,src:this.contents.file.src}
     }
     if(this.contents.rep) data.rep = this.contents.rep;
-    if(this.chatedit) data.edit = this.chatedit;
+    if(this.chatedit?.id) data.edit = this.chatedit.id;
 
     this.inpMsg.value = '';
     this.contents.file.name = null;
@@ -626,7 +634,7 @@ export default class {
     this.contents.rep = null;
     this.contents.voice.blob = null;
     this.contents.voice.src = null;
-    this.chatedit = null;
+    this.chatedit = {};
 
     this.closeAttach();
     this.closeReply();
@@ -858,7 +866,7 @@ export default class {
     return new Promise(async resolve => {
       this.chatcount = 0;
       this.contents = {text:null,rep:null,voice:{src:null,blob:null},file:{name:null,src:null,blob:null}};
-      this.chatedit = null;
+      this.chatedit = {};
       this.planesend = false;
       this.downed.clear();
       this.disabelAutoScroll = false;

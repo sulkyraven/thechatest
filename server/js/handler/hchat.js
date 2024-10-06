@@ -1,6 +1,7 @@
 const fs = require('fs');
 const db = require("../db");
 const {validate} = require('../middlewares');
+const hprofile = require('./hprofile');
 
 function compareArrays(arr1, arr2) {
   if (arr1.length !== arr2.length) return false;
@@ -19,12 +20,35 @@ function findMatchingGroup(group_us, group_all) {
   }
   return null;
 };
-// findMatchingGroup(group_us, group_all);
 
 module.exports = {
+  getChat(uid, s) {
+    if(!validate(['ckey', 'id', 'text_id'], s)) return {code:400};
+    if(s.ckey !== 'c' && s.ckey !== 'g') return {code:400};
+    s.id = s.id.toLowerCase();
+    const cdb = db.ref[s.ckey][s.id]?.c?.[s.text_id];
+    if(!cdb) return {code:400};
+
+    const data = {};
+    data.id = s.text_id;
+    data.u = cdb.u === uid ? {id:uid} : {...hprofile.getUser(uid, {id:cdb.u})};
+    data.ts = cdb.ts;
+    if(cdb.r) data.r = cdb.r;
+    if(cdb.w) data.w = cdb.w;
+    if(cdb.d) {
+      data.d = cdb.d;
+    } else {
+      if(cdb.v) data.v = cdb.v;
+      if(cdb.txt) data.txt = cdb.txt;
+      if(cdb.i) data.i = cdb.i;
+      if(cdb.e) data.e = cdb.e;
+    }
+    return data;
+  },
   sendMessage(uid, s) {
     // if(!s.makan) return {code:400,msg:'just for testing'};
     if(!validate(['id'], s)) return {code:400};
+    s.id = s.id.toLowerCase();
     if(typeof s?.conty !== 'number') return {code:400};
     const conty = s.conty === 1 ? 'c' : 'g';
     const cdb = db.ref[conty];
@@ -106,5 +130,29 @@ module.exports = {
     return {code:200,data: {...data,id:newKey,ckey,u:{id:uid}}, peers};
   },
   delMessage(uid, s) {
+    if(!validate(['id', 'text_id'], s)) return {code:400};
+    s.id = s.id.toLowerCase();
+    s.text_id = s.text_id.toLowerCase();
+    if(typeof s?.conty !== 'number') return {code:400};
+    const conty = s.conty === 1 ? 'c' : 'g';
+    const cdb = db.ref[conty];
+    let ckey = s.conty === 1 ? findMatchingGroup([uid, s.id], db.ref.c) : cdb[s.id] ? s.id : null;
+    if(!ckey) return {code:400};
+    if(!cdb[ckey].c[s.text_id]) return {code:400,data:{text_id:s.text_id}};
+    if(cdb[ckey].c[s.text_id].e) delete db.ref[conty][ckey].c[s.text_id].e;
+
+    db.ref[conty][ckey].c[s.text_id].d = Date.now();
+    db.save(conty);
+
+    const peers = db.ref[conty][ckey].u.filter(k => k !== uid && db.ref.u[k]?.peer)?.map(k => {
+      return db.ref.u[k].peer;
+    }) || [];
+
+    const newData = {...db.ref[conty][ckey].c[s.text_id]};
+    if(newData.txt) delete newData.txt;
+    if(newData.v) delete newData.v;
+    if(newData.i) delete newData.i;
+
+    return {code:200,data: {...newData, id:s.text_id, ckey, u:{id:uid}}, peers};
   }
 }
