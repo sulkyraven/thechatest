@@ -2,10 +2,13 @@ class userState {
   constructor() {
     this.lang = 'en';
     this.langs = ['id','en'];
+    this.pmtitle = null;
     this.pmtop = null;
     this.pmmid = null;
     this.pmbottom = null;
-    this.locked = { bottom: false, mid: false }
+    this.pmlast = null;
+    this.pmqueue = [];
+    this.locked = { bottom: false, mid: false };
   }
   save() {
     window.localStorage.setItem('kirimin_cache_01', JSON.stringify({

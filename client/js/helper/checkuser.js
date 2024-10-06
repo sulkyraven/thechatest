@@ -11,5 +11,3 @@ export default async function() {
   isUser.data.forEach(obj => cloud.clientData(obj));
   return new pm().run();
 }
-
-// setiap ada yang baru online, bikin request dapetin peer lagi

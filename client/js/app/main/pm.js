@@ -3,6 +3,7 @@ import AppName from "/js/app/pmt/AppName.js";
 import Chats from "/js/app/pmm/Chats.js";
 import Empty from "/js/app/pmb/Empty.js";
 import Account from "/js/app/pmb/Account.js";
+import nrw from "/js/manager/nrw.js";
 
 export default class {
   constructor() {}
@@ -21,5 +22,6 @@ export default class {
     this.createElement();
     document.querySelector('.app').append(this.el);
     this.renderSects();
+    nrw();
   }
 }

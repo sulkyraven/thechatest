@@ -4,6 +4,7 @@ import _navlist from "/js/app/pmt/_navlist.js";
 
 export default class {
   constructor() {
+    this.id = 'nav';
     this.isLocked = false;
   }
   createElement() {
@@ -14,7 +15,12 @@ export default class {
     _navlist.forEach(btn => {
       const elnav = document.createElement('div');
       elnav.classList.add('btn', `nav-${btn.id}`);
-      if(btn.id === 'chats') elnav.classList.add('selected');
+      // if(userState.pmmid?.id === btn.id) elnav.classList.add('selected');
+      if(userState.pmmid?.id === btn.id) {
+        elnav.classList.add('selected');
+      } else if(!userState.pmmid?.id && btn.id === 'chats') {
+        elnav.classList.add('selected');
+      }
       elnav.innerHTML = btn.text;
       this.el.append(elnav);
       elnav.onclick = async() => {

@@ -21,9 +21,9 @@ let renderedData = false;
 
 export default class {
   constructor({ user, conty }) {
+    this.id = 'content';
     this.conty = conty;
     this.user = user;
-    this.id = 'content';
     this.isLocked = false;
     this.chatcount = 0;
     this.contents = {
@@ -862,6 +862,24 @@ export default class {
     this.updateUser();
     this.renderChats();
   }
+  fRemove() {
+    this.chatcount = 0;
+    this.contents = {text:null,rep:null,voice:{src:null,blob:null},file:{name:null,src:null,blob:null}};
+    this.chatedit = {};
+    this.planesend = false;
+    this.downed.clear();
+    this.disabelAutoScroll = false;
+    recorder = null;
+    recorderChunks = [];
+    isrecording = false;
+    stoprecord = false;
+    recordinterval = null;
+    this.inpMsg.removeEventListener('input', this.growInput);
+    this.isLocked = false;
+    userState.pmbottom = null;
+    userState.pmlast = null;
+    this.el.remove();
+  }
   destroy() {
     return new Promise(async resolve => {
       this.chatcount = 0;
@@ -881,11 +899,13 @@ export default class {
       this.el.remove();
       this.isLocked = false;
       userState.pmbottom = null;
+      userState.pmlast = null;
       resolve();
     });
   }
   run() {
     userState.pmbottom = this;
+    userState.pmlast = this.id;
     lang = userState.langs[userState.lang];
     this.createElement();
     document.querySelector('.app .pm').append(this.el);

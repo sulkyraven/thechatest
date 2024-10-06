@@ -16,10 +16,6 @@ export default class {
       <div class="btn btn-settings"><i class="fa-solid fa-gear"></i></div>
     </div>`;
   }
-  destroy() {
-    this.isLocked = false;
-    this.el.remove();
-  }
   btnListener() {
     const btnSettings = this.el.querySelector('.btn-settings');
     btnSettings.onclick = async() => {
@@ -36,7 +32,13 @@ export default class {
       if(navFind) navFind.click();
     }
   }
+  destroy() {
+    this.isLocked = false;
+    userState.pmtitle = null;
+    this.el.remove();
+  }
   run() {
+    userState.pmtitle = this;
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
     this.btnListener();

@@ -21,6 +21,11 @@ export default class {
       <p>${lang.LANDING}</p>
     </div>`;
   }
+  fRemove() {
+    this.isLocked = false;
+    userState.pmbottom = null;
+    this.el.remove();
+  }
   destroy() {
     return new Promise(async resolve => {
       this.el.classList.add('out');
