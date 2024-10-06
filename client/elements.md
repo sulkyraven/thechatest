@@ -76,9 +76,21 @@
 ### PM - OUTER
 ```html
 <div class="fuwi pm">
+  <div class="appname"></div>
   <div class="nav"></div>
-  <div class="chts"></div>
+  <div class="chats"></div>
   <div class="content"></div>
+</div>
+```
+
+### PM - APPNAME
+```html
+<div class="appname">
+  <div class="title">KIRIMIN</div>
+  <div class="actions">
+    <div class="btn btn-find"><i class="fa-solid fa-magnifying-glass"></i></div>
+    <div class="btn btn-settings"><i class="fa-solid fa-gear"></i></div>
+  </div>
 </div>
 ```
 
@@ -98,7 +110,7 @@
 
 ### PM - CHATS LIST
 ```html
-<div class="chts">
+<div class="chats">
   <div class="search">
     <p>Find Random User</p>
     <div class="btn"><i class="fa-solid fa-play"></i> Start Now</div>
@@ -426,13 +438,7 @@
       <div class="outer">
         <div class="chp-t">Language</div>
         <div class="chp-f"><p>Bahasa Indonesia</p></div>
-        <div class="chp-l">
-          <select name="sel-lang" id="sel-lang">
-            <option value="null">Change Language</option>
-            <option value="id">Bahasa Indonesia</option>
-            <option value="en">English</option>
-          </select>
-        </div>
+        <div class="chp-e btn-lang">Change Language <i class="fa-solid fa-chevron-down"></i></div>
       </div>
     </div>
     <div class="chp usersign">
@@ -444,14 +450,9 @@
 ### PM - GROUP SETTING
 ```html
 <div class="acc">
-  <div class="top flex">
-    <div class="left">
-      <div class="btn"><i class="fa-solid fa-arrow-left"></i></div>
-      <div class="sect-title">Groups</div>
-    </div>
-    <div class="right">
-      <div class="btn"><i class="fa-solid fa-ellipsis-vertical"></i></div>
-    </div>
+  <div class="top">
+    <div class="btn"><i class="fa-solid fa-arrow-left"></i></div>
+    <div class="sect-title">Groups</div>
   </div>
   <div class="wall">
     <div class="chp userphoto">
@@ -477,13 +478,7 @@
       <div class="outer">
         <div class="chp-t">Visibility</div>
         <div class="chp-f"><p>Private</p></div>
-        <div class="chp-l">
-          <select name="sel-lang" id="sel-lang">
-            <option value="null">Change Visibility</option>
-            <option value="id">Private</option>
-            <option value="en">Public</option>
-          </select>
-        </div>
+        <div class="chp-e btn-lang">Change Language <i class="fa-solid fa-chevron-down"></i></div>
       </div>
     </div>
     <div class="chp groupmember">
