@@ -24,7 +24,7 @@ function onresize() {
   } else {
     if(isNarrow) {
       isNarrow = false;
-      const pmlist = [userState.pmmid?.id, userState.pmtop?.id, userState.pmtitle?.id]
+      const pmlist = [userState.pmbottom?.id, userState.pmmid?.id, userState.pmtop?.id, userState.pmtitle?.id];
 
       let makelast = null;
       if(userState.pmbottom?.id) {
@@ -63,7 +63,15 @@ export function setEmpty() {
   queue = [];
   queue.push(new Empty());
 }
+export function runQueue() {
+  const pmlist = [userState.pmbottom?.id, userState.pmmid?.id, userState.pmtop?.id, userState.pmtitle?.id];
 
+  for(const cls of queue) {
+    if(!pmlist.includes(cls.id)) cls.run();
+  }
+
+  queue = [];
+}
 export function windowresize() {
   if(window.innerWidth <= 850) isNarrow = true;
   window.addEventListener('resize', onresize);

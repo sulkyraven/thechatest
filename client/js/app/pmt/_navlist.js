@@ -8,42 +8,42 @@ import Calls from "/js/app/pmm/Calls.js";
 import { destroyPM, fRemovePM, isNarrow, setQueue } from "/js/manager/nrw.js";
 
 export default [
-  { id:'find', text:'<i class="fa-solid fa-magnifying-glass"></i><p>Search</p>', async run() {
+  { id:'find', text:`<i class="fa-solid fa-magnifying-glass"></i><p>APP_SEARCH</p>`, async run() {
     if(userState.locked.mid) return;
     userState.locked.mid = true;
     await userState.pmmid?.destroy?.();
     new Find().run();
     userState.locked.mid = false;
   }},
-  { id:'chats', text:'<i class="fa-solid fa-comments"></i><p>Chats</p>', async run() {
+  { id:'chats', text:'<i class="fa-solid fa-comments"></i><p>APP_CHATS</p>', async run() {
     if(userState.locked.mid) return;
     userState.locked.mid = true;
     await userState.pmmid?.destroy?.();
     new Chats().run();
     userState.locked.mid = false;
   }},
-  { id:'friends', text:'<i class="fa-solid fa-address-book"></i><p>Friends</p>', async run() {
+  { id:'friends', text:'<i class="fa-solid fa-address-book"></i><p>APP_FRIENDS</p>', async run() {
     if(userState.locked.mid) return;
     userState.locked.mid = true;
     await userState.pmmid?.destroy?.();
     new Friends().run();
     userState.locked.mid = false;
   }},
-  { id:'groups', text:'<i class="fa-solid fa-users"></i><p>Groups</p>', async run() {
+  { id:'groups', text:'<i class="fa-solid fa-users"></i><p>APP_GROUPS</p>', async run() {
     if(userState.locked.mid) return;
     userState.locked.mid = true;
     await userState.pmmid?.destroy?.();
     new Grps().run();
     userState.locked.mid = false;
   } },
-  { id:'calls', text:'<i class="fa-solid fa-phone"></i><p>Calls</p>', async run() {
+  { id:'calls', text:'<i class="fa-solid fa-phone"></i><p>APP_CALLS</p>', async run() {
     if(userState.locked.mid) return;
     userState.locked.mid = true;
     await userState.pmmid?.destroy?.();
     new Calls().run();
     userState.locked.mid = false;
   } },
-  { id:'posts', text:'<i class="fa-solid fa-camera-polaroid"></i><p>Posts</p>', async run() {
+  { id:'posts', text:'<i class="fa-solid fa-camera-polaroid"></i><p>APP_POSTS</p>', async run() {
     if(userState.locked.bottom) return;
     userState.locked.bottom = true;
     await userState.pmbottom?.destroy?.();

@@ -111,6 +111,8 @@ export default class {
   }
   fRemove() {
     this.isLocked = false;
+    this.list = [];
+    this.reqlist = [];
     userState.pmmid = null;
     userState.pmlast = null;
     this.el.remove();
@@ -119,10 +121,12 @@ export default class {
     return new Promise(async resolve => {
       this.el.classList.add('out');
       await modal.waittime();
-      this.el.remove();
       this.isLocked = false;
+      this.list = [];
+      this.reqlist = [];
       userState.pmmid = null;
       userState.pmlast = null;
+      this.el.remove();
       resolve();
     })
   }
@@ -130,6 +134,7 @@ export default class {
     userState.pmmid = this;
     userState.pmlast = this.id;
     lang = userState.langs[userState.lang];
+    userState.pmtitle?.setTitle(lang.APP_FRIENDS);
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
     sceneIn(this.el);

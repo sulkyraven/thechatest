@@ -5,7 +5,6 @@ import db from "/js/manager/db.js";
 import elgen from "/js/manager/elgen.js";
 import userState from "/js/manager/userState.js";
 import Content from "/js/app/pmb/Content.js";
-import GroupSetting from "/js/app/pmb/GroupSetting.js";
 import { destroyPM, fRemovePM, isNarrow, setQueue } from "/js/manager/nrw.js";
 let lang = {};
 
@@ -54,7 +53,8 @@ export default class {
         await destroyPM();
         fRemovePM();
       }
-      new GroupSetting({group:cgroup.data}).run();
+      // new GroupSetting({group:cgroup.data}).run();
+      new Content({user:cgroup.data, conty:2}).run();
       userState.locked.bottom = false;
       this.forceUpdate();
     }
@@ -141,6 +141,7 @@ export default class {
     userState.pmmid = this;
     userState.pmlast = this.id;
     lang = userState.langs[userState.lang];
+    userState.pmtitle?.setTitle(lang.APP_GROUPS);
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
     sceneIn(this.el);

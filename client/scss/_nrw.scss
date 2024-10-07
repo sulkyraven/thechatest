@@ -4,6 +4,7 @@
     width: 100%;
     height: 50px;
     border-color: #00000000;
+    animation: slide_left_in 0.5s;
   }
   .appname.out {
     animation: slide_right_out 0.5s forwards;
@@ -18,6 +19,7 @@
     align-items: center;
     gap: 0;
     background-color: v.$card_secondary;
+    animation: slide_left_in 0.5s;
     .btn {
       margin-bottom: 0;
       width: calc(100% / 6);

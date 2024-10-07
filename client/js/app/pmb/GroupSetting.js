@@ -6,12 +6,14 @@ import elgen from "/js/manager/elgen.js";
 import userState from "/js/manager/userState.js";
 import Empty from "/js/app/pmb/Empty.js";
 import Profile from "/js/app/pmb/Profile.js";
+import * as nrw from "/js/manager/nrw.js";
 let lang = {};
 
 export default class {
-  constructor({group}) {
+  constructor({group, classBefore = null} = { group }) {
     this.id = 'group_setting';
     this.group = group;
+    this.classBefore = classBefore;
     this.isLocked = false;
   }
   createElement() {
@@ -19,7 +21,7 @@ export default class {
     this.el.classList.add('acc', 'pmb');
     this.el.innerHTML = `
     <div class="top">
-      <div class="btn"><i class="fa-solid fa-arrow-left"></i></div>
+      <div class="btn btn-back"><i class="fa-solid fa-arrow-left"></i></div>
       <div class="sect-title">Groups</div>
     </div>
     <div class="wall">
@@ -124,6 +126,16 @@ export default class {
     this.gmember.prepend(scard);
   }
   btnListener() {
+    const btnBack = this.el.querySelector('.btn-back');
+    if(btnBack) btnBack.onclick = async() => {
+      if(nrw.isNarrow) {
+        await this.destroy();
+        if(this.classBefore) return this.classBefore.run();
+        nrw.runQueue();
+        nrw.setEmpty();
+      }
+    }
+
     const btnDelete = this.el.querySelector('a.btn-delete');
     btnDelete.onclick = async e => {
       e.preventDefault();
@@ -147,7 +159,13 @@ export default class {
       await userState.pmbottom?.destroy?.();
       db.ref.groups = db.ref.groups.filter(grp => grp.id !== this.group.id);
       elgen.delCard(this.group.id);
-      new Empty().run();
+      if(nrw.isNarrow) {
+        nrw.runQueue();
+        nrw.setEmpty();
+      } else {
+        new Empty().run();
+      }
+      userState.pmlast = userState.pmmid?.id || 'chats';
       userState.locked.bottom = false;
       this.isLocked = false;
       userState.pmmid?.forceUpdate?.();

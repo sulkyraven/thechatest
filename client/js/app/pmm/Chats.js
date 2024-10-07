@@ -72,6 +72,7 @@ export default class {
     userState.pmmid = this;
     userState.pmlast = this.id;
     lang = userState.langs[userState.lang];
+    userState.pmtitle?.setTitle('KIRIMIN');
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
     sceneIn(this.el);

@@ -7,6 +7,7 @@
   height: 100%;
   padding: 10px;
   background-color: v.$bar_bg;
+  animation: slide_right_in 0.5s;
   .btn {
     margin-bottom: 10px;
     width: 100%;
@@ -17,6 +18,11 @@
     border-left: 1px solid #00000000;
     i {
       font-size: 1.25rem;
+    }
+    p {
+      word-break: break-all;
+      word-break: break-word;
+      hyphens: auto;
     }
   }
   .btn:last-child {

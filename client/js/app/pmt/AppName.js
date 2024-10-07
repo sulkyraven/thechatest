@@ -39,6 +39,9 @@ export default class {
       if(navFind) navFind.click();
     }
   }
+  setTitle(newtitle) {
+    if(this.el) this.el.querySelector('.title').innerHTML = newtitle;
+  }
   fRemove() {
     this.isLocked = false;
     userState.pmtitle = null;

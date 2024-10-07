@@ -10,6 +10,7 @@ import elgen from "/js/manager/elgen.js";
 import userState from "/js/manager/userState.js";
 import GroupSetting from "/js/app/pmb/GroupSetting.js";
 import Profile from "/js/app/pmb/Profile.js";
+import * as nrw from "/js/manager/nrw.js";
 let lang = null;
 
 let recorder = null;
@@ -42,7 +43,7 @@ export default class {
     this.el.innerHTML = `
     <div class="top">
       <div class="left">
-        <div class="btn back"><i class="fa-solid fa-arrow-left"></i></div>
+        <div class="btn btn-back"><i class="fa-solid fa-arrow-left"></i></div>
         <div class="user">
           <div class="img"></div>
           <div class="name"><p></p></div>
@@ -110,11 +111,10 @@ export default class {
           profileData[k] = this.user[k];
         }
       });
-      this.user.prof = new Profile({user:profileData});
-      // this.user.prof = new Profile({user:{...this.user}});
+      this.user.prof = new Profile({user:profileData,classBefore:this});
     } else if(this.conty === 2) {
       this.user.db = db.ref.groups?.find(ch => ch.id === this.user.id);
-      this.user.prof = new GroupSetting({group:{...this.user}});
+      this.user.prof = new GroupSetting({group:{...this.user},classBefore:this});
       this.user.id = this.user.id;
       if(this.user.db) {
         this.user.username = this.user.db.n;
@@ -122,7 +122,7 @@ export default class {
         this.user.i = this.user.db.i;
         this.user.n = this.user.db.n;
       }
-      this.user.prof = new GroupSetting({group:{...this.user}});
+      this.user.prof = new GroupSetting({group:{...this.user},classBefore:this});
     }
 
     const euname = this.el.querySelector('.top .left .user .name p');
@@ -391,6 +391,14 @@ export default class {
       await userState.pmbottom?.destroy?.();
       this.user.prof.run();
       userState.locked.bottom = false;
+    }
+    const btnBack = this.el.querySelector('.btn-back');
+    if(btnBack) btnBack.onclick = async() => {
+      if(nrw.isNarrow) {
+        await this.destroy();
+        nrw.runQueue();
+        nrw.setEmpty();
+      }
     }
   }
   keyDown(e) {
@@ -910,10 +918,10 @@ export default class {
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
     sceneIn(this.el);
-    this.btnListener();
     this.setReadChat();
     this.updateUser();
     this.renderChats();
+    this.btnListener();
     this.formListener();
   }
 }
@@ -922,14 +930,12 @@ function chatSelection(obj, conty) {
   if(conty === 1) return {
     id: obj.id,
     username: obj.username || lang.DELETED_USER,
-    db: db.ref.chats?.find(ch => ch.users.find(k => k.id === obj.id)),
-    prof: new Profile({user:{...obj}}),
+    db: db.ref.chats?.find(ch => ch.users.find(k => k.id === obj.id))
   }
   if(conty === 2) return {
     id: obj.id,
     username: obj.n,
-    db: db.ref.groups?.find(ch => ch.id === obj.id),
-    prof: new GroupSetting({group:obj}),
+    db: db.ref.groups?.find(ch => ch.id === obj.id)
   }
 }
 function SetupAudioRecorder(content) {

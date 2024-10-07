@@ -5,12 +5,14 @@ import { setbadge } from "/js/manager/badge.js";
 import db from "/js/manager/db.js";
 import userState from "/js/manager/userState.js";
 import Content from "/js/app/pmb/Content.js";
+import * as nrw from "/js/manager/nrw.js";
 let lang = {};
 
 export default class {
-  constructor({user}) {
+  constructor({user, classBefore = null} = { user }) {
     this.id = 'profile';
     this.user = user;
+    this.classBefore = classBefore;
     this.isLocked = false;
   }
   createElement() {
@@ -18,7 +20,7 @@ export default class {
     this.el.classList.add('prof', 'pmb');
     this.el.innerHTML = `
     <div class="top">
-      <div class="btn"><i class="fa-solid fa-arrow-left"></i></div>
+      <div class="btn btn-back"><i class="fa-solid fa-arrow-left"></i></div>
       <div class="sect-title">User Detail</div>
     </div>
     <div class="wall">
@@ -151,6 +153,16 @@ export default class {
     }
   }
   btnListener() {
+    const btnBack = this.el.querySelector('.btn-back');
+    if(btnBack) btnBack.onclick = async() => {
+      if(nrw.isNarrow) {
+        await this.destroy();
+        if(this.classBefore) return this.classBefore.run();
+        nrw.runQueue();
+        nrw.setEmpty();
+      }
+    }
+
     const btnChat = this.el.querySelector('.actions .btn-chat');
     btnChat.onclick = async() => {
       if(userState.locked.bottom) return;

@@ -10,10 +10,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  animation: slide_down_in 0.5s;
   .title {
     padding: 10px;
     font-weight: bold;
     font-size: 1.5rem;
+    text-transform: uppercase;
   }
   .actions {
     padding: 10px;

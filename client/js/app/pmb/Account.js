@@ -4,6 +4,7 @@ import xhr from "/js/helper/xhr.js";
 import { setbadge } from "/js/manager/badge.js";
 import db from "/js/manager/db.js";
 import userState from "/js/manager/userState.js";
+import * as nrw from "/js/manager/nrw.js";
 const langlist = [
   {id: 'lang-id', val: 'id', label: 'Bahasa Indonesia'},
   {id: 'lang-en', val: 'en', label: 'English'},
@@ -20,7 +21,7 @@ export default class {
     this.el.classList.add('acc', 'pmb');
     this.el.innerHTML = `
     <div class="top">
-      <div class="btn"><i class="fa-solid fa-arrow-left"></i></div>
+      <div class="btn btn-back"><i class="fa-solid fa-arrow-left"></i></div>
       <div class="sect-title">Settings</div>
     </div>
     <div class="wall">
@@ -295,6 +296,14 @@ export default class {
       window.location.reload();
 
       this.isLocked = false;
+    }
+    const btnBack = this.el.querySelector('.btn-back');
+    if(btnBack) btnBack.onclick = async() => {
+      if(nrw.isNarrow) {
+        await this.destroy();
+        nrw.runQueue();
+        nrw.setEmpty();
+      }
     }
   }
   fRemove() {

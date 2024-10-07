@@ -1,6 +1,7 @@
 import modal from "/js/helper/modal.js";
 import userState from "/js/manager/userState.js";
 import _navlist from "/js/app/pmt/_navlist.js";
+let lang = {};
 
 export default class {
   constructor() {
@@ -22,6 +23,7 @@ export default class {
         elnav.classList.add('selected');
       }
       elnav.innerHTML = btn.text;
+      elnav.querySelector('p').innerText = lang[elnav.querySelector('p').innerText];
       this.el.append(elnav);
       elnav.onclick = async() => {
         if(this.isLocked) return;
@@ -56,6 +58,7 @@ export default class {
   }
   run() {
     userState.pmtop = this;
+    lang = userState.langs[userState.lang];
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
     this.getNav();
