@@ -5,6 +5,9 @@
     height: 50px;
     border-color: #00000000;
   }
+  .appname.out {
+    animation: slide_right_out 0.5s forwards;
+  }
   .nav {
     top: 50px;left: 0;
     width: 100%;
@@ -40,6 +43,9 @@
       border-color: v.$sblurple;
       border-left: none;
     }
+  }
+  .nav.out {
+    animation: slide_right_out 0.5s forwards;
   }
   .chats {
     top: 100px;left: 0;
@@ -80,5 +86,11 @@
   .posts {
     left: 0;
     width: 100%;
+  }
+  .pmb.out {
+    animation: slide_right_out 0.5s forwards;
+  }
+  .pmm {
+    animation: slide_left_in 0.5s;
   }
 }

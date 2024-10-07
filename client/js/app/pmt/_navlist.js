@@ -3,9 +3,9 @@ import Chats from "/js/app/pmm/Chats.js";
 import Friends from "/js/app/pmm/Friends.js";
 import Grps from "/js/app/pmm/Grps.js";
 import userState from "/js/manager/userState.js";
-import Empty from "/js/app/pmb/Empty.js";
 import Posts from "/js/app/pmb/Posts.js";
 import Calls from "/js/app/pmm/Calls.js";
+import { destroyPM, fRemovePM, isNarrow, setQueue } from "/js/manager/nrw.js";
 
 export default [
   { id:'find', text:'<i class="fa-solid fa-magnifying-glass"></i><p>Search</p>', async run() {
@@ -47,6 +47,11 @@ export default [
     if(userState.locked.bottom) return;
     userState.locked.bottom = true;
     await userState.pmbottom?.destroy?.();
+    if(isNarrow) {
+      setQueue();
+      await destroyPM();
+      fRemovePM();
+    }
     new Posts().run();
     userState.locked.bottom = false;
   }, noactive: true },

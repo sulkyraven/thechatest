@@ -39,10 +39,20 @@ export default class {
       }
     });
   }
-  destroy() {
+  fRemove() {
     this.isLocked = false;
-    this.el.remove();
     userState.pmtop = null;
+    this.el.remove();
+  }
+  destroy() {
+    return new Promise(async resolve => {
+      this.el.classList.add('out');
+      await modal.waittime();
+      this.isLocked = false;
+      userState.pmtop = null;
+      this.el.remove();
+      resolve();
+    });
   }
   run() {
     userState.pmtop = this;

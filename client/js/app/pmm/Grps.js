@@ -6,6 +6,7 @@ import elgen from "/js/manager/elgen.js";
 import userState from "/js/manager/userState.js";
 import Content from "/js/app/pmb/Content.js";
 import GroupSetting from "/js/app/pmb/GroupSetting.js";
+import { destroyPM, fRemovePM, isNarrow, setQueue } from "/js/manager/nrw.js";
 let lang = {};
 
 export default class {
@@ -48,6 +49,11 @@ export default class {
       if(userState.locked.bottom) return;
       userState.locked.bottom = true;
       await userState.pmbottom?.destroy?.();
+      if(isNarrow) {
+        setQueue();
+        await destroyPM();
+        fRemovePM();
+      }
       new GroupSetting({group:cgroup.data}).run();
       userState.locked.bottom = false;
       this.forceUpdate();
@@ -72,6 +78,11 @@ export default class {
       if(userState.locked.bottom) return;
       userState.locked.bottom = true;
       await userState.pmbottom?.destroy?.();
+      if(isNarrow) {
+        setQueue();
+        await destroyPM();
+        fRemovePM();
+      }
       new Content({user:setjoin.data, conty:2}).run();
       userState.locked.bottom = false;
       this.forceUpdate();
@@ -94,6 +105,11 @@ export default class {
         if(userState.locked.bottom) return;
         userState.locked.bottom = true;
         await userState.pmbottom?.destroy?.();
+        if(isNarrow) {
+          setQueue();
+          await destroyPM();
+          fRemovePM();
+        }
         new Content({user:ch, conty:2}).run();
         userState.locked.bottom = false;
       }

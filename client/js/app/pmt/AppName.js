@@ -1,5 +1,7 @@
 import userState from "/js/manager/userState.js";
 import Account from "/js/app/pmb/Account.js";
+import modal from "/js/helper/modal.js";
+import { destroyPM, fRemovePM, isNarrow, setQueue } from "/js/manager/nrw.js";
 
 export default class {
   constructor() {
@@ -23,6 +25,11 @@ export default class {
       if(userState.locked.bottom) return;
       userState.locked.bottom = true;
       await userState.pmbottom?.destroy?.();
+      if(isNarrow) {
+        setQueue();
+        await destroyPM();
+        fRemovePM();
+      }
       new Account().run();
       userState.locked.bottom = false;
     }
@@ -32,10 +39,20 @@ export default class {
       if(navFind) navFind.click();
     }
   }
-  destroy() {
+  fRemove() {
     this.isLocked = false;
     userState.pmtitle = null;
     this.el.remove();
+  }
+  destroy() {
+    return new Promise(async resolve => {
+      this.el.classList.add('out');
+      await modal.waittime();
+      this.isLocked = false;
+      userState.pmtitle = null;
+      this.el.remove();
+      resolve();
+    })
   }
   run() {
     userState.pmtitle = this;

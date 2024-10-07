@@ -4,6 +4,7 @@ import db from "/js/manager/db.js";
 import elgen from "/js/manager/elgen.js";
 import userState from "/js/manager/userState.js";
 import Content from "/js/app/pmb/Content.js";
+import { destroyPM, fRemovePM, isNarrow, setQueue } from "/js/manager/nrw.js";
 let lang = {};
 
 export default class {
@@ -35,6 +36,11 @@ export default class {
         if(userState.locked.bottom) return;
         userState.locked.bottom = true;
         await userState.pmbottom?.destroy?.();
+        if(isNarrow) {
+          setQueue();
+          await destroyPM();
+          fRemovePM();
+        }
         new Content({user, conty:1}).run();
         userState.locked.bottom = false;
       }

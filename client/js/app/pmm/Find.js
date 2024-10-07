@@ -4,6 +4,7 @@ import xhr from "/js/helper/xhr.js";
 import elgen from "/js/manager/elgen.js";
 import userState from "/js/manager/userState.js";
 import Profile from "/js/app/pmb/Profile.js";
+import { destroyPM, fRemovePM, isNarrow, setQueue } from "/js/manager/nrw.js";
 let lang = {};
 
 export default class {
@@ -66,6 +67,11 @@ export default class {
           if(userState.locked.bottom) return;
           userState.locked.bottom = true;
           await userState.pmbottom?.destroy?.();
+          if(isNarrow) {
+            setQueue();
+            await destroyPM();
+            fRemovePM();
+          }
           new Profile({user:usr}).run();
           userState.locked.bottom = false;
         }

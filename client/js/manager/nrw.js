@@ -1,26 +1,21 @@
+import Empty from "/js/app/pmb/Empty.js";
 import userState from "/js/manager/userState.js";
 
 const bottomclasses = ['account', 'content', 'group_setting', 'posts', 'profile'];
 const topclasses = ['calls', 'chats', 'friends', 'groups', 'find'];
 
-let isNarrow = false;
-let queue = [];
+export let isNarrow = false;
+export let queue = [];
 
 function onresize() {
   if(window.innerWidth <= 850) {
     if(!isNarrow) {
       isNarrow = true;
       if(bottomclasses.includes(userState.pmlast)) {
-        // if(userState.pmmid) userState.pmqueue = userState.pmmid;
-        if(userState.pmmid) queue.push(userState.pmmid, userState.pmtop, userState.pmtitle);
-        userState.pmtitle?.fRemove?.();
-        userState.pmtitle?.destroy?.();
-        userState.pmtop?.fRemove?.();
-        userState.pmtop?.destroy?.();
-        userState.pmmid?.fRemove?.();
-        userState.pmmid?.destroy?.();
+        setQueue();
+        fRemovePM();
+        destroyPM();
       } else if(topclasses.includes(userState.pmlast)) {
-        // if(userState.pmbottom) userState.pmqueue = userState.pmbottom;
         if(userState.pmbottom) queue.push(userState.pmbottom);
         userState.pmbottom?.fRemove?.();
         userState.pmbottom?.destroy?.();
@@ -29,14 +24,7 @@ function onresize() {
   } else {
     if(isNarrow) {
       isNarrow = false;
-      const pmlist = [userState.pmbottom?.id, userState.pmmid?.id, userState.pmtop?.id, userState.pmtitle?.id]
-      // if(userState.pmqueue?.id === userState.pmbottom?.id) return;
-      // if(userState.pmqueue?.id === userState.pmmid?.id) return;
-
-      // if(queue.map(cls => cls.id).includes(userState.pmbottom?.id)) return;
-      // if(queue.map(cls => cls.id).includes(userState.pmmid?.id)) return;
-      // if(queue.map(cls => cls.id).includes(userState.pmtop?.id)) return;
-      // if(queue.map(cls => cls.id).includes(userState.pmtitle?.id)) return;
+      const pmlist = [userState.pmmid?.id, userState.pmtop?.id, userState.pmtitle?.id]
 
       let makelast = null;
       if(userState.pmbottom?.id) {
@@ -55,6 +43,28 @@ function onresize() {
   }
 }
 
-export default function() {
+export function fRemovePM() {
+  userState.pmtitle?.fRemove?.();
+  userState.pmtop?.fRemove?.();
+  userState.pmmid?.fRemove?.();
+}
+export async function destroyPM() {
+  userState.pmtitle?.destroy?.();
+  userState.pmtop?.destroy?.();
+  await userState.pmmid?.destroy?.();
+}
+export function setQueue() {
+  queue = [];
+  if(userState.pmmid) queue.push(userState.pmmid);
+  if(userState.pmtop) queue.push(userState.pmtop);
+  if(userState.pmtitle) queue.push(userState.pmtitle);
+}
+export function setEmpty() {
+  queue = [];
+  queue.push(new Empty());
+}
+
+export function windowresize() {
+  if(window.innerWidth <= 850) isNarrow = true;
   window.addEventListener('resize', onresize);
 }
