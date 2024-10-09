@@ -79,5 +79,8 @@
   "GRPS_TYPE_PRIVATE": "Tipe grup ini adalah pribadi. Kamu harus punya link undangan buat masuk.",
   "CONTENT_NO_MEDIA_DEVICES": "Gada akses",
   "CONTENT_SENDING": "Mengirim",
-  "CONTENT_EDITED": "Diedit"
+  "CONTENT_EDITED": "Diedit",
+  "CONTENT_DEL": "Dihapus",
+  "CONTENT_DELETED": "Pesan ini dihapus",
+  "CONTENT_YOU_DELETED": "Kamu menghapus pesan ini"
 }

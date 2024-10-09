@@ -147,12 +147,12 @@ module.exports = {
     const peers = db.ref[conty][ckey].u.filter(k => k !== uid && db.ref.u[k]?.peer)?.map(k => {
       return db.ref.u[k].peer;
     }) || [];
-
+    
     const newData = {...db.ref[conty][ckey].c[s.text_id]};
     if(newData.txt) delete newData.txt;
     if(newData.v) delete newData.v;
     if(newData.i) delete newData.i;
-
+    
     return {code:200,data: {...newData, id:s.text_id, ckey, u:{id:uid}}, peers};
   }
 }

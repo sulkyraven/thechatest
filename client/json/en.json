@@ -79,5 +79,8 @@
   "GRPS_TYPE_PRIVATE": "The group you are trying to join is a private group. You must have the invite link to join.",
   "CONTENT_NO_MEDIA_DEVICES": "No media device premission",
   "CONTENT_SENDING": "Sending",
-  "CONTENT_EDITED": "Edited"
+  "CONTENT_EDITED": "Edited",
+  "CONTENT_DEL": "Deleted",
+  "CONTENT_DELETED": "This message was deleted",
+  "CONTENT_YOU_DELETED": "You deleted this message"
 }

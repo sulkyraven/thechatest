@@ -395,6 +395,11 @@ $btmheight: 55px;
       .card:not(.me) {
         animation: popup_in 0.5s;
       }
+      .card.deleted {
+        .text {
+          color: v.$softwhite;
+        }
+      }
       .card.long {
         width: calc(100% - 40px);
         max-width: 450px;

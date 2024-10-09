@@ -92,7 +92,7 @@ export default {
     card_b.innerHTML = `<div class="last"></div><div class="unread"></div>`;
 
     const content = db.ref.chats?.find(ct => ct.users.find(k => k.id === ch.id)).chats;
-    const unread = content.filter(ct => ct.u.id !== db.ref.account.id && !ct.w?.includes(db.ref.account.id)).length;
+    const unread = content.filter(ct => ct.u.id !== db.ref.account.id && !ct.d && !ct.w?.includes(db.ref.account.id)).length;
     const lastObj = content[content.length - 1];
     if(!lastObj) {
       if(document.getElementById(`kirimin-${ch.id}`)) return {card,uc:true};
@@ -108,9 +108,36 @@ export default {
     } else {
       eTimeStamp.innerText = sdate.date(lastObj.ts);
     }
-  
+
     const elLastText = card.querySelector('.detail .last');
-    if(lastObj.i) {
+    if(elLastText.getAttribute('id') === `text-$${lastObj.id}` && !lastObj.d) {
+      if(elLastText.classList.contains('deleted')) elLastText.classList.remove('deleted');
+      if(lastObj.u.id === db.ref.account.id) {
+        let hasCheck = elLastText.querySelector('.fa-regular');
+        if(!hasCheck) {
+          hasCheck = document.createElement('i');
+          hasCheck.classList.add('fa-regular', 'fa-check');
+        }
+        if(lastObj.w?.filter(k => k !== db.ref.account.id).length > 0 && !hasCheck.classList.contains('fa-check-double')) {
+          hasCheck.classList.remove('fa-check');
+          hasCheck.classList.add('fa-check-double');
+          elLastText.prepend(hasCheck, ' ');
+        }
+      }
+      if(lastObj.txt) {
+        if(this.ss(lastObj.txt.replace(/\s/g, ' '), 20).trim() === elLastText.innerText.trim()) return {card,uc:true};
+        elLastText.innerText = this.ss(lastObj.txt.replace(/\s/g, ' '), 20);
+      }
+      return {card,uc:true}
+    }
+    if(lastObj.d) {
+      if(elLastText.classList.contains('deleted')) return {card,uc:true};
+      elLastText.classList.add('deleted');
+      const lang = userState.langs[userState.lang];
+      elLastText.innerHTML = `<i class="fa-solid fa-ban"></i> <i>${lastObj.u.id === db.ref.account.id ? lang.CONTENT_YOU_DELETED : lang.CONTENT_DELETED}</i>`;
+      elLastText.id = `text-$${lastObj.id}`;
+      return {card};
+    } else if(lastObj.i) {
       const imgExt = /\.([a-zA-Z0-9]+)$/;
       const fileExt = lastObj.i.match(imgExt)?.[1];
 
@@ -158,6 +185,7 @@ export default {
     return card;
   },
   contentCard(ch, chts, conty, temp = false) {
+    const lang = userState.langs[userState.lang];
     let card = document.getElementById(`krmn-${ch.id}`);
     let oldUsername = card?.querySelector('.sender .name')?.innerText || null;
     if(ch.u.username && ch.u.id !== db.ref.account.id && ch.u.username !== oldUsername) {
@@ -173,6 +201,7 @@ export default {
         }
       }
     }
+
     if(!card) {
       card = document.createElement('div');
       card.id = `krmn-${ch.id}`;
@@ -216,6 +245,16 @@ export default {
         }
       }
 
+      if(ch.d) {
+        if(card.classList.contains('deleted')) return {card,uc:true};
+        card.classList.add('deleted');
+        if(card.querySelector('.chp.embed')) card.querySelector('.chp.embed').style.display = 'none';
+        if(card.querySelector('.chp.attach')) card.querySelector('.chp.attach').style.display = 'none';
+        if(card.querySelector('.chp.time')) card.querySelector('.chp.time').style.display = 'none';
+        card.querySelector('.chp.text p').innerHTML = `<i class="fa-solid fa-ban"></i> <i>${ch.u.id === db.ref.account.id ? lang.CONTENT_YOU_DELETED : lang.CONTENT_DELETED}</i>`;
+        return {card};
+      }
+
       if(ch.r) {
         const edb = (conty === 1 ? db.ref.chats.find(k => k.id === chts.id) || [] : db.ref.groups.find(k => k.id === chts.id) || []).chats.find(k => k.id === ch.r);
         card.querySelector('.embed').setAttribute('data-rep', edb.id);
@@ -223,7 +262,9 @@ export default {
         embedName.innerText = edb.u.id === db.ref.account.id ? db.ref.account.username : edb.u.username;
         const embedTxt = card.querySelector('.embed .msg');
 
-        if(edb.i) {
+        if(edb.d) {
+          embedTxt.innerHTML = `<i class="fa-solid fa-ban"></i> <i>${edb.u.id === db.ref.account.id ? lang.CONTENT_YOU_DELETED : lang.CONTENT_DELETED}</i>`;
+        } else if(edb.i) {
           const splitExt = /\.([a-zA-Z0-9]+)$/;
           const fileExt = edb.i.match(splitExt)?.[1];
   
@@ -327,8 +368,25 @@ export default {
       return {card};
     }
 
+    if(ch.d) {
+      if(card.classList.contains('deleted')) return {card,uc:true};
+      card.classList.add('deleted');
+      if(card.querySelector('.chp.embed')) card.querySelector('.chp.embed').style.display = 'none';
+      if(card.querySelector('.chp.attach')) card.querySelector('.chp.attach').style.display = 'none';
+      if(card.querySelector('.chp.time')) card.querySelector('.chp.time').style.display = 'none';
+      card.querySelector('.chp.text p').innerHTML = `<i class="fa-solid fa-ban"></i> <i>${ch.u.id === db.ref.account.id ? lang.CONTENT_YOU_DELETED : lang.CONTENT_DELETED}</i>`;
+      return {card,uc:true};
+    }
+
     const oldTimeStamp = card.querySelector('.time p');
     if(ch.e && oldTimeStamp && !oldTimeStamp.querySelector('.edited')) oldTimeStamp.prepend(getEditedMessage());
+
+    if(ch.e) {
+      const oldText = card.querySelector('.chp.text p');
+      if(ch.txt && ch.txt?.trim() !== oldText.innerText?.trim()) {
+        oldText.innerText = ch.txt;
+      }
+    }
 
     if(ch.u.id === db.ref.account.id && conty === 1) {
       const estatus = card?.querySelector('.time p .fa-regular');
@@ -344,6 +402,9 @@ export default {
         estatus.classList.remove('fa-clock');
         estatus.classList.add('fa-check');
       }
+    } else if(ch.u.id === db.ref.account.id && conty === 2) {
+      const estatus = card?.querySelector('.time p .fa-regular');
+      if(estatus) estatus.remove();
     }
     return {card,uc:true};
   },
@@ -476,7 +537,7 @@ export default {
     card_b.innerHTML = `<div class="last"></div><div class="unread"></div>`;
 
     const content = db.ref.groups?.find(ct => ct.id === ch.id).chats;
-    const unread = content.filter(ct => ct.u.id !== db.ref.account.id && !ct.w?.includes(db.ref.account.id)).length;
+    const unread = content.filter(ct => ct.u.id !== db.ref.account.id && !ct.d && !ct.w?.includes(db.ref.account.id)).length;
     const lastObj = content[content.length - 1];
     if(!lastObj) {
       if(document.getElementById(`kirimin-${ch.id}`)) return {card,uc:true};
@@ -504,9 +565,23 @@ export default {
       user = lastObj.u.username;
     }
 
-    if(elLastText.getAttribute('id') === `text-$${lastObj.id}`) return {card,uc:true};
-    elLastText.id = `text-$${lastObj.id}`;
-    if(lastObj.i) {
+    if(elLastText.getAttribute('id') === `text-$${lastObj.id}` && !lastObj.d) {
+      if(elLastText.classList.contains('deleted')) elLastText.classList.remove('deleted');
+      if(lastObj.txt) {
+        if(this.ss((`${user}: ${lastObj.txt}`).replace(/\s/g, ' '), 20) === elLastText.innerText) return {card,uc:true};
+        elLastText.innerText = this.ss((`${user}: ${lastObj.txt}`).replace(/\s/g, ' '), 20);
+      }
+      return {card,uc:true}
+    }
+    if(lastObj.d) {
+      if(elLastText.classList.contains('deleted')) return {card,uc:true};
+      elLastText.classList.add('deleted');
+      const lang = userState.langs[userState.lang];
+      elLastText.innerHTML = `<i class="fa-solid fa-ban"></i> `;
+      elLastText.append(this.ss((`${user}: ${lang.CONTENT_DEL}`).replace(/\s/g, ' '), 20));
+      elLastText.id = `text-$${lastObj.id}`;
+      return {card};
+    } else if(lastObj.i) {
       const imgExt = /\.([a-zA-Z0-9]+)$/;
       const fileExt = lastObj.i.match(imgExt)?.[1];
 
@@ -528,6 +603,9 @@ export default {
     } else {
       elLastText.innerText = this.ss((`${user}: ${lastObj.txt}`).replace(/\s/g, ' '), 20);
     }
+
+    elLastText.id = `text-$${lastObj.id}`;
+
     return {card};
   },
   delCard() {

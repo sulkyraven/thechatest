@@ -188,7 +188,9 @@ export default class {
         const elvoice = card.querySelector('.voice');
         const elrep = card.querySelector('.embed');
         const eldoc = card.querySelector('.document');
-        if(elsender?.contains(e.target) && ch.u.id !== db.ref.account.id) {
+        if(card.classList.contains('deleted')) {
+          return;
+        } else if(elsender?.contains(e.target) && ch.u.id !== db.ref.account.id) {
           if(ch.u.code || !ch.u.id) return modal.alert(lang.PROF_DELETED_USER);
           if(userState.locked.bottom) return;
           userState.locked.bottom = true;
@@ -273,7 +275,36 @@ export default class {
       const btnDelete = document.createElement('div');
       btnDelete.classList.add('btn', 'btn-delete');
       btnDelete.innerHTML = `<i class="fa-solid fa-trash-can"></i> DELETE`;
-      btnDelete.onclick = () => {
+      btnDelete.onclick = async() => {
+        chatpop.classList.add('out');
+        await modal.waittime();
+        card.remove();
+        chatpop.remove();
+        this.isLocked = false;
+        const tempdata = {};
+        tempdata.id = ch.id;
+        tempdata.ts = ch.ts;
+        tempdata.d = Date.now();
+        tempdata.u = {id:db.ref.account.id};
+
+        const dcard = elgen.contentCard(tempdata, this.user.db, this.conty, 1);
+
+        const ckey = this.conty === 1 ? 'chats' : 'groups';
+        const cdb = db.ref[ckey]?.find(ck => ck.id === (this.user?.db?.id || Date.now().toString(32)));
+
+        const chatid = cdb?.chats?.findIndex(och => och.id === ch.id);
+        if(chatid >= 0) cdb.chats[chatid] = {...tempdata};
+
+        const data = {conty:this.conty, id:this.user.id, text_id:ch.id};
+        const delMsg = await xhr.post('/chat/uwu/deleteMessage', data);
+        if(delMsg?.code !== 200) {
+          dcard.card.querySelector('.chp.text p').innerHTML = `<i class="failed">Gagal Mengirim Pesan<i>`;
+          return;
+        }
+
+        cloud.send({ "id": "send-msg", "to": delMsg.peers, "data": { "text": delMsg.data.txt } });
+        userState.pmbottom?.forceUpdate?.();
+        userState.pmmid?.forceUpdate?.();
       }
 
       chatpop.querySelector('.actions').append(btnEdit, btnDelete);
@@ -653,8 +684,10 @@ export default class {
     const sendMsg = await xhr.post('/chat/uwu/sendMessage', data);
     if(sendMsg?.code !== 200) {
       card.querySelector('.chp.text p').innerHTML = `<i class="failed">Gagal Mengirim Pesan<i>`;
-      await modal.waittime(10000);
-      card.remove();
+      if(!tempdata.e) {
+        await modal.waittime(10000);
+        card.remove();
+      }
       return;
     }
     const ckey = this.conty === 1 ? 'chats' : 'groups';
