@@ -260,16 +260,19 @@ export default class {
     }
 
     if(ch.u.id === db.ref.account.id) {
-      const btnEdit = document.createElement('div');
-      btnEdit.classList.add('btn', 'btn-edit');
-      btnEdit.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> EDIT`;
-      btnEdit.onclick = async() => {
-        chatpop.classList.add('out');
-        await modal.waittime();
-        card.remove();
-        chatpop.remove();
-        this.isLocked = false;
-        this.showEdit(ch);
+      if(!ch.v) {
+        const btnEdit = document.createElement('div');
+        btnEdit.classList.add('btn', 'btn-edit');
+        btnEdit.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> EDIT`;
+        btnEdit.onclick = async() => {
+          chatpop.classList.add('out');
+          await modal.waittime();
+          card.remove();
+          chatpop.remove();
+          this.isLocked = false;
+          this.showEdit(ch);
+        }
+        chatpop.querySelector('.actions').append(btnEdit);
       }
 
       const btnDelete = document.createElement('div');
@@ -306,8 +309,8 @@ export default class {
         userState.pmbottom?.forceUpdate?.();
         userState.pmmid?.forceUpdate?.();
       }
-
-      chatpop.querySelector('.actions').append(btnEdit, btnDelete);
+      
+      chatpop.querySelector('.actions').append(btnDelete);
     }
 
     const btnCancel = document.createElement('div');
@@ -325,9 +328,7 @@ export default class {
     this.el.append(chatpop);
   }
   showReply(ch) {
-    const oldreply = this.el.querySelector('.bottom .embed');
-    if(oldreply) oldreply.remove();
-    this.chatedit = {};
+    this.closeEdit();
     this.contents.rep = null;
 
     this.ereply = document.createElement('div');
@@ -387,6 +388,8 @@ export default class {
       file:{ name:null, src:null, blob:null }
     }
 
+    this.inpMsg.value = ch.txt;
+
     this.eedit = document.createElement('div');
     this.eedit.classList.add('embed', 'cb');
     this.eedit.innerHTML = `
@@ -409,6 +412,7 @@ export default class {
     this.growInput();
   }
   closeEdit() {
+    this.inpMsg.value = '';
     this.chatedit = {};
     this.eedit?.remove();
     this.growInput();
@@ -457,7 +461,7 @@ export default class {
         this.isLocked = false;
         return;
       }
-      console.log('memanggil');
+      await modal.alert('This -Voice Call- feature is currently under development');
       this.isLocked = false;
     }
     
@@ -470,7 +474,7 @@ export default class {
         this.isLocked = false;
         return;
       }
-      console.log('memanggil');
+      await modal.alert('This -Video Call- feature is currently under development');
       this.isLocked = false;
     }
 
@@ -534,8 +538,7 @@ export default class {
     inp.type = 'file';
     if(fileAccept) inp.accept = fileAccept;
     inp.onchange = async() => {
-      if(this.eedit) this.eedit.remove();
-      this.chatedit = {};
+      this.closeEdit();
 
       const file = inp.files[0];
 
@@ -772,7 +775,6 @@ export default class {
     }
 
     btnrec.onclick = async() => {
-      // console.log('recording', isrecording);
       if(!recorder) {
         isrecording = false;
         await this.vrecDestroy();
@@ -979,7 +981,7 @@ function SetupAudioRecorder(content) {
         mimeType: 'audio/ogg'
       });
       newRecorder.onerror = err => {
-        console.log(err);
+        // console.log(err);
         this.isLocked = false;
         return modal.alert(lang.CONTENT_NO_MEDIA_DEVICES + ' #1');
       }

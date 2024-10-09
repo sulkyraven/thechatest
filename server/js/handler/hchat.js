@@ -142,17 +142,31 @@ module.exports = {
     if(cdb[ckey].c[s.text_id].e) delete db.ref[conty][ckey].c[s.text_id].e;
 
     db.ref[conty][ckey].c[s.text_id].d = Date.now();
+
+    const newData = {...db.ref[conty][ckey].c[s.text_id]};
+    if(newData.txt) {
+      delete db.ref[conty][ckey].c[s.text_id].txt;
+      delete newData.txt;
+    }
+    if(newData.v) {
+      if(fs.existsSync(`./server/dbfile/content/${ckey}/${newData.v}`)) fs.unlinkSync(`./server/dbfile/content/${ckey}/${newData.v}`);
+      delete db.ref[conty][ckey].c[s.text_id].v;
+      delete newData.v;
+    }
+    if(newData.i) {
+      if(fs.existsSync(`./server/dbfile/content/${ckey}/${newData.i}`)) fs.unlinkSync(`./server/dbfile/content/${ckey}/${newData.i}`);
+      delete db.ref[conty][ckey].c[s.text_id].i;
+      delete newData.i;
+    }
+
     db.save(conty);
+
 
     const peers = db.ref[conty][ckey].u.filter(k => k !== uid && db.ref.u[k]?.peer)?.map(k => {
       return db.ref.u[k].peer;
     }) || [];
-    
-    const newData = {...db.ref[conty][ckey].c[s.text_id]};
-    if(newData.txt) delete newData.txt;
-    if(newData.v) delete newData.v;
-    if(newData.i) delete newData.i;
-    
+
+
     return {code:200,data: {...newData, id:s.text_id, ckey, u:{id:uid}}, peers};
   }
 }

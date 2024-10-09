@@ -180,7 +180,7 @@ export default class {
         this.isLocked = false;
         return;
       }
-      console.log('memanggil');
+      await modal.alert('This -Voice Call- feature is currently under development');
       this.isLocked = false;
     }
     const btnVideo = this.el.querySelector('.actions .btn-video');
@@ -192,7 +192,7 @@ export default class {
         this.isLocked = false;
         return;
       }
-      console.log('memanggil');
+      await modal.alert('This -Voice Call- feature is currently under development');
       this.isLocked = false;
     }
   }

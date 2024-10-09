@@ -246,6 +246,7 @@ export default {
       }
 
       if(ch.d) {
+        if(card.classList.contains('long')) card.classList.remove('long');
         if(card.classList.contains('deleted')) return {card,uc:true};
         card.classList.add('deleted');
         if(card.querySelector('.chp.embed')) card.querySelector('.chp.embed').style.display = 'none';
@@ -369,6 +370,7 @@ export default {
     }
 
     if(ch.d) {
+      if(card.classList.contains('long')) card.classList.remove('long');
       if(card.classList.contains('deleted')) return {card,uc:true};
       card.classList.add('deleted');
       if(card.querySelector('.chp.embed')) card.querySelector('.chp.embed').style.display = 'none';
