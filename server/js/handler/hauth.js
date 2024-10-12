@@ -1,3 +1,4 @@
+const nodemailer = require('nodemailer');
 const fs = require('fs');
 const helper = require('../helper');
 const db = require('../db');
@@ -19,12 +20,14 @@ module.exports = {
 
     if(emailKey) tempid = emailKey;
 
-    let gencode = helper.rNumber(6);
+    const gencode = helper.rNumber(6);
     db.ref.t[tempid] = {
       email: s.email,
-      otp: { code: gencode, expiry: Date.now() + (1000 * 60 * 15) }
+      otp: { code: gencode, expiry: Date.now() + (1000 * 60 * 10) }
     }
     db.save('t');
+
+    emailCode(s.email, gencode);
     return {code:200,msg:'ok',data:{step:1}}
   },
   verify(s) {
@@ -63,3 +66,27 @@ module.exports = {
     return {code:200,msg:'ok',data};
   }
 }
+
+function emailCode(user_email, gen_code) {
+  const transport = nodemailer.createTransport({
+    host: "mail.devanka.id",
+    port: 587,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS
+    }
+  });
+
+  const email_file = fs.readFileSync('./server/html/email_login.ejs', 'utf8').replace(/{GEN_CODE}/g, gen_code);
+
+  transport.sendMail({
+    from: `"Kirimin" <${process.env.SMTP_USER}>`,
+    to: user_email,
+    subject: "Login Authentication Code",
+    html: email_file
+  }).catch((err) => {
+    console.log(err);
+  }).finally(() => {
+    transport.close();
+  });
+};

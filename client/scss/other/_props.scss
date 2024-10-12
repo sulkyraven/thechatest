@@ -24,7 +24,6 @@ $bg: #3f464e;
     animation: slide_down_in 0.5s;
     .spinner {
       font-size: 2rem;
-      animation: spinning 1s linear infinite;
     }
     p {
       font-size: 1.5rem;
@@ -178,5 +177,141 @@ $bg: #3f464e;
 .modal.out {
   .box {
     animation: popup_out 0.5s forwards;
+  }
+}
+.notip {
+  position: absolute;
+  top: 20px;right: 20px;
+  width: calc(100% - 40px);
+  max-width: 400px;
+  background-color: $bg;
+  color: v.$white;
+  padding: 20px;
+  border-radius: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  animation: slide_down_in 0.5s;
+  .detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    border-right: 1px solid CurrentColor;
+    padding-right: 10px;
+    .icon {
+      font-size: 2.2rem;
+      img {
+        width: 44px;
+        height: 44px;
+        object-fit: cover;
+        object-position: center;
+        -o-object-fit: cover;
+        -o-object-position: center;
+        border-radius: 50%;
+      }
+    }
+    .text {
+      .top {
+        font-weight: bold;
+      }
+    }
+  }
+  .close {
+    font-size: 2.2rem;
+  }
+}
+.notip.g {
+  background-color: v.$sgreen;
+}
+.notip.y {
+  background-color: v.$black;
+  border: 1px solid v.$yellow;
+  color: v.$yellow;
+}
+.notip.r {
+  background-color: v.$cred;
+}
+.notip.rb {
+  background-color: v.$black;
+  color: v.$cred;
+  border: 1px solid v.$cred;
+}
+.notip.out {
+  animation: slide_down_out 0.5s forwards;
+}
+.callnotip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: $bg;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 0 10px v.$black;
+  width: calc(100% - 20px);
+  max-width: 400px;
+  .caller {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    .img {
+      img {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        object-position: center;
+        -o-object-fit: cover;
+        -o-object-position: center;
+        border-radius: 50%;
+      }
+    }
+    .name {
+      .displayname {
+        font-weight: bold;
+      }
+      .username {
+        font-size: 0.8rem;
+      }
+    }
+  }
+  .calltype {
+    margin: 20px 0;
+    width: 100%;
+    text-align: center;
+  }
+  .callactions {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    .btn {
+      width: calc(100% / 2);
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+      color: v.$black;
+    }
+    .btn-decline {
+      background-color: v.$cred;
+    }
+    .btn-answer {
+      background-color: v.$sgreen;
+    }
+  }
+  .callaction {
+    margin-top: 10px;
+    width: 100%;
+    .btn-ignore {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+      background-color: v.$card_secondary;
+    }
   }
 }

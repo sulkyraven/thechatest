@@ -11,7 +11,7 @@ export default {
     el.innerHTML = `
     <div class="box">
       <div class="spinner">
-        <i class="fa-solid fa-spinner"></i>
+        <i class="fa-solid fa-spinner fa-spin"></i>
       </div>
       <p>${msg}</p>
     </div>`;

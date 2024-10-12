@@ -41,7 +41,7 @@ export default class {
 
       const eloading = document.createElement('div');
       eloading.classList.add('card');
-      eloading.innerHTML = `<div class="getload"><div class="spinner"><i class="fa-solid fa-spinner"></i></div>LOADING</div>`;
+      eloading.innerHTML = `<div class="getload"><div class="spinner"><i class="fa-solid fa-spinner fa-spin"></i></div>LOADING</div>`;
       cardlist.prepend(eloading);
       
       const getSearch = await xhr.get('/find/uwu/search-user?id='+inp.value);
