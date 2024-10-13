@@ -6,6 +6,7 @@ import db from "/js/manager/db.js";
 import userState from "/js/manager/userState.js";
 import Content from "/js/app/pmb/Content.js";
 import * as nrw from "/js/manager/nrw.js";
+import { Call, checkCall } from "/js/app/call/Call.js";
 let lang = {};
 
 export default class {
@@ -180,8 +181,12 @@ export default class {
         this.isLocked = false;
         return;
       }
-      await modal.alert('This -Voice Call- feature is currently under development');
+      if(!checkCall) {
+        await modal.alert('This -Voice Call- feature is currently under development');
+        this.isLocked = false;
+      }
       this.isLocked = false;
+      Call({user:this.user});
     }
     const btnVideo = this.el.querySelector('.actions .btn-video');
     btnVideo.onclick = async() => {

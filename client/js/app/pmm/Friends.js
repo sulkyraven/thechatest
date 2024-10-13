@@ -22,7 +22,7 @@ export default class {
   getFriendlist() {
     this.cardlist = this.el.querySelector('.card-list');
 
-    const ndb = db.ref?.friends || [];
+    const ndb = db.ref.friends || [];
     const odb = this.list || [];
 
     const fdb = ndb.filter(ch => !odb.map(och => och.id).includes(ch.id));

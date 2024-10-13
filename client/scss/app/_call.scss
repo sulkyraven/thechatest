@@ -44,7 +44,7 @@ $bg: #3f464e;
     position: absolute;
     top: 0;left: 0;
     width: 100%;
-    padding: 0;
+    padding: 10px;
     .detail {
       display: flex;
       justify-content: left;
@@ -74,7 +74,7 @@ $bg: #3f464e;
     position: absolute;
     bottom: 0;left: 0;
     width: 100%;
-    padding: 0;
+    padding: 10px;
     .act-list {
       width: 100%;
       display: flex;
@@ -86,7 +86,7 @@ $bg: #3f464e;
         justify-content: center;
         align-items: center;
         gap: 10px;
-        background-color: #3f464eaa;
+        background-color: #3f464e80;
         padding: 10px;
         border-radius: 10px;
         .btn-hangup {
@@ -119,6 +119,7 @@ $bg: #3f464e;
     align-items: center;
     flex-direction: row-reverse;
     gap: 5px;
+    padding: 0;
     .detail {
       .btn-minimize {
         display: none;

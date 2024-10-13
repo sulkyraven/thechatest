@@ -10,10 +10,13 @@ class cloud {
     this.pair = new Map();
   }
   processData(s) {
+    console.log(s);
     if(s.id === 'send-msg') {
       this.peer.socket._socket.send(JSON.stringify({d761: {id:'receivedMsg'}}));
     } else if(s.id === 'read-msg') {
       this.peer.socket._socket.send(JSON.stringify({d761: {id:'receivedMsg'}}));
+    } else if(s.id === 'voice-call') {
+      console.log(s);
     }
   }
   clientData(obj) {
@@ -123,10 +126,6 @@ class cloud {
     return list.filter((id) => id !== this.peerid);
   }
   async send({id,to,data=null}) {
-    // if(typeof to === 'string') to = [to];
-    // this.pair.forEach((conn, _) => {
-    //   conn.send({id,to,from:db.ref.account.id,data});
-    // });
     if(typeof to === "string") to = [to];
     for(const peer of to) {
       if(!this.pair.has(peer)) await this.connectTo(peer);
