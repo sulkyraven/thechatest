@@ -557,3 +557,55 @@
   </div>
 </div>
 ```
+
+
+## CALLS
+```html
+<div class="call">
+  <div class="background">
+    <div class="profpic">
+      <img src="./assets/user.jpg" alt="user" width="100"/>
+    </div>
+  </div>
+  <div class="top">
+    <div class="detail">
+      <div class="btn btn-minimize"><i class="fa-solid fa-chevron-down fa-fw"></i></div>
+      <div class="caller">
+        <div class="displayname">Deva Krista Aranda</div>
+        <div class="user">
+          <span class="username">@dvnkz_</span>
+          <span class="ts">0:02</span>
+        </div>
+      </div>
+    </div>
+    <div class="act-info">
+      <div class="card">
+        <i class="fa-duotone fa-microphone-slash"></i> <span>dvnkz_ muted</span>
+      </div>
+      <div class="card">
+        <i class="fa-duotone fa-volume-slash"></i> <span>dvnkz_ deafen</span>
+      </div>
+    </div>
+  </div>
+  <div class="bottom">
+    <div class="act-list">
+      <div class="call-act">
+        <div class="btn btn-deafen active">
+          <i class="fa-solid fa-volume fa-fw"></i>
+        </div>
+        <div class="btn btn-mute active">
+          <i class="fa-solid fa-microphone fa-fw"></i>
+        </div>
+        <div class="btn btn-video active">
+          <i class="fa-solid fa-video fa-fw"></i>
+        </div>
+      </div>
+      <div class="call-act">
+        <div class="btn btn-hangup">
+          <i class="fa-solid fa-phone-hangup fa-fw"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```

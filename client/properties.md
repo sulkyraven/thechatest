@@ -52,7 +52,7 @@
 
 ## CALLNOTIP
 ```html
-<div class="callnotip">
+<div class="callnotip ignored">
   <div class="caller">
     <div class="img">
       <img src="./assets/user.jpg" alt="user"/>
