@@ -2,6 +2,7 @@ import { Peer } from "https://esm.sh/peerjs@1.5.4?bundle-deps";
 import db from "/js/manager/db.js";
 import xhr from "/js/helper/xhr.js";
 import userState from "/js/manager/userState.js";
+import { ReceiveCall } from "/js/app/call/Call.js";
 
 async function waittime(ms = 200) {return new Promise(resolve => setTimeout(resolve, ms))}
 // this.peer.socket._socket.send(JSON.stringify({selfadded: {data:"aaw"}}));
@@ -10,13 +11,12 @@ class cloud {
     this.pair = new Map();
   }
   processData(s) {
-    console.log(s);
     if(s.id === 'send-msg') {
       this.peer.socket._socket.send(JSON.stringify({d761: {id:'receivedMsg'}}));
     } else if(s.id === 'read-msg') {
       this.peer.socket._socket.send(JSON.stringify({d761: {id:'receivedMsg'}}));
     } else if(s.id === 'voice-call') {
-      console.log(s);
+      ReceiveCall(s.from);
     }
   }
   clientData(obj) {
@@ -131,6 +131,9 @@ class cloud {
       if(!this.pair.has(peer)) await this.connectTo(peer);
       this.pair.get(peer).send({id, from:db.ref.account.id, data});
     }
+  }
+  asend(id, data={}) {
+    this.peer.socket._socket.send(JSON.stringify({d761: {id,data}}));
   }
   async run({ peerKey, peerid }) {
     this.peerid = peerid;

@@ -1,0 +1,148 @@
+import modal from "/js/helper/modal.js";
+import xhr from "/js/helper/xhr.js";
+import { setbadge } from "/js/manager/badge.js";
+import db from "/js/manager/db.js";
+import userState from "/js/manager/userState.js";
+import * as nrw from "/js/manager/nrw.js";
+import cloud from "/js/manager/cloud.js";
+let lang = {};
+
+let repeatSignal = null;
+let maxRepeat = null;
+
+export default class VoiceCall {
+  constructor({callman, user}) {
+    this.callman = callman;
+    this.user = user;
+  }
+  createElement() {
+    this.el = document.createElement('div');
+    this.el.classList.add('call');
+    this.el.innerHTML = `
+    <div class="background">
+      <div class="profpic">
+        <img src="./assets/user.jpg" alt="user"/>
+      </div>
+    </div>
+    <div class="top">
+      <div class="detail">
+        <div class="btn btn-minimize"><i class="fa-solid fa-chevron-down fa-fw"></i></div>
+        <div class="caller">
+          <div class="displayname"></div>
+          <div class="user">
+            <span class="username"></span>
+            <span class="ts">connecting</span>
+          </div>
+        </div>
+      </div>
+      <div class="act-info">
+        <div class="card">
+          <i class="fa-duotone fa-microphone-slash"></i> <span>username muted</span>
+        </div>
+        <div class="card">
+          <i class="fa-duotone fa-volume-slash"></i> <span>username deafen</span>
+        </div>
+      </div>
+    </div>
+    <div class="bottom">
+      <div class="act-list">
+        <div class="call-act">
+          <div class="btn btn-deafen">
+            <i class="fa-solid fa-volume fa-fw"></i>
+          </div>
+          <div class="btn btn-mute">
+            <i class="fa-solid fa-microphone fa-fw"></i>
+          </div>
+          <div class="btn btn-video">
+            <i class="fa-solid fa-video fa-fw"></i>
+          </div>
+        </div>
+        <div class="call-act">
+          <div class="btn btn-hangup">
+            <i class="fa-solid fa-phone-hangup fa-fw"></i>
+          </div>
+        </div>
+      </div>
+    </div>`;
+    const edname = this.el.querySelector('.top .detail .displayname');
+    edname.append(this.user.displayName);
+    const euname = this.el.querySelector('.top .detail .user .username');
+    euname.append('@' + this.user.username);
+    if(this.user.b) {
+      for(const badge of this.user.b.sort((a,b) => b - a)) {
+        edname.append(setbadge(badge));
+      }
+    }
+  }
+  peerUser() {
+    maxRepeat = Date.now() + (1000 * 10);
+    repeatSignal = setInterval(() => this.pingUser(), 1000);
+  }
+  async pingUser() {
+    const fdb = db.ref.friends?.find(usr => usr.id === this.user.id) || null;
+    if(!fdb) {
+      clearInterval(repeatSignal);
+      repeatSignal = null;
+      maxRepeat = null;
+      await modal.alert(lang.PROF_ALR_NOFRIEND_1);
+      return this.destroy();
+    }
+    if(fdb.peer) {
+      clearInterval(repeatSignal);
+      repeatSignal = null;
+      maxRepeat = null;
+      maxRepeat = Date.now() * (1000 * 10);
+      repeatSignal = setInterval(() => this.signalUser(fdb.peer), 1000);
+      return;
+    }
+    if(Date.now() > maxRepeat) {
+      clearInterval(repeatSignal);
+      repeatSignal = null;
+      maxRepeat = null;
+      await modal.alert('lang.CALL_MAX_PING_TRIES_LIMIT');
+      return this.destroy();
+    }
+  }
+  async signalUser(peerid) {
+    const vdb = db.ref.vcall || null;
+    if(vdb && vdb.u?.[this.user.id] && vdb.u?.[db.ref.account.id]) {
+      clearInterval(repeatSignal);
+      repeatSignal = null;
+      maxRepeat = null;
+      await modal.alert('connected all - sent!');
+      this.destroy();
+    }
+    cloud.send({ "id": "voice-call", "to": peerid });
+    cloud.asend('voiceCall', {id:this.user.id});
+  }
+  async follow() {
+    this.init();
+    const updateCall = await xhr.post('/call/uwu/receive', {id:this.user.id});
+    if(updateCall?.code !== 200) {
+      await modal.alert(lang[updateCall.msg] || lang.ERROR);
+      return this.destroy();
+    }
+    cloud.send({ "id": "voice-call-received", "to": this.user.peer });
+    await modal.alert('connected all - receive!');
+    this.destroy();
+  }
+  async run() {
+    this.init();
+    const setCall = await xhr.post('/call/uwu/set', {id:this.user.id});
+    if(setCall?.code !== 200) {
+      await modal.alert(lang[setCall.msg] || lang.ERROR);
+      return this.destroy();
+    }
+    this.peerUser();
+  }
+  destroy() {
+    this.callman(null);
+    this.el.remove();
+  }
+  init() {
+    this.callman(this);
+    lang = userState.langs[userState.lang];
+    this.createElement();
+    document.querySelector('.app').append(this.el);
+  }
+}

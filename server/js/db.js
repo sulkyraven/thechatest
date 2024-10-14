@@ -3,7 +3,7 @@ const fs = require('fs');
 const dirpath = './server/db';
 class DevankaDatabase {
   constructor() {
-    this.ref = {u:{},t:{},c:{},g:{},f:{},p:{}};
+    this.ref = {u:{},t:{},c:{},g:{},f:{},p:{},v:{}};
   }
   load() {
     Object.keys(this.ref).forEach(file => {
@@ -16,6 +16,8 @@ class DevankaDatabase {
         Object.keys(this.ref[file]).forEach(k => {
           if(this.ref[file][k].peer) delete this.ref[file][k].peer;
         });
+      } else if(file == 'v') {
+        this.ref[file] = {};
       }
       console.log(`[${file}] data loaded!`);
     });

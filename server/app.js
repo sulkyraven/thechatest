@@ -11,6 +11,7 @@ const profileRouter = require('./routes/profile');
 const findRouter = require('./routes/find');
 const groupRouter = require('./routes/group');
 const chatRouter = require('./routes/chat');
+const callRouter = require('./routes/call');
 const inviteRouter = require('./routes/invite');
 const { ExpressPeerServer } = require('peer');
 const { peerKey } = require('./js/helper');
@@ -45,6 +46,7 @@ app.use('/find/uwu', findRouter);
 app.use('/profile/uwu', profileRouter);
 app.use('/group/uwu', groupRouter);
 app.use('/chat/uwu', chatRouter);
+app.use('/call/uwu', callRouter);
 app.use('/invite', inviteRouter);
 
 app.get('/app', (req, res) => {
