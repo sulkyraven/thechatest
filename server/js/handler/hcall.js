@@ -13,7 +13,7 @@ module.exports = {
     if(!friendkey) return {code:400};
 
     const callKey = 'vc' + Date.now().toString(32);
-    db.ref.v[callKey] = { t: 0, u: { [uid]: {j:true}, [s.id]: {j:false} } }
+    db.ref.v[callKey] = { t: 0, o: Date.now() + (1000 * 10), u: { [uid]: {j:true}, [s.id]: {j:false} } }
     db.save('v');
 
     return {code:200};

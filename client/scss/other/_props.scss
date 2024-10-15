@@ -243,77 +243,85 @@ $bg: #3f464e;
 }
 .callnotip {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: $bg;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 0 10px v.$black;
-  width: calc(100% - 20px);
-  max-width: 400px;
-  .caller {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    .img {
-      width: 40px;
-      height: 40px;
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center;
-        -o-object-fit: cover;
-        -o-object-position: center;
-        border-radius: 50%;
-      }
-    }
-    .name {
-      .displayname {
-        font-weight: bold;
-      }
-      .username {
-        font-size: 0.8rem;
-      }
-    }
-  }
-  .calltype {
-    margin: 20px 0;
-    width: 100%;
-    text-align: center;
-  }
-  .callactions {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    .btn {
-      width: calc(100% / 2);
-      padding: 10px;
-      border-radius: 10px;
-      text-align: center;
-      color: v.$black;
-    }
-    .btn-decline {
-      background-color: v.$cred;
-    }
-    .btn-answer {
-      background-color: v.$sgreen;
-    }
-  }
-  .callaction {
-    margin-top: 10px;
-    width: 100%;
-    .btn-ignore {
+  top: 0;left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #1E1F2280;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .box {
+    background-color: $bg;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 10px v.$black;
+    width: calc(100% - 20px);
+    max-width: 400px;
+    .caller {
       width: 100%;
-      padding: 10px;
-      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      .img {
+        width: 40px;
+        height: 40px;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
+          -o-object-fit: cover;
+          -o-object-position: center;
+          border-radius: 50%;
+        }
+      }
+      .name {
+        .displayname {
+          font-weight: bold;
+        }
+        .username {
+          font-size: 0.8rem;
+        }
+      }
+    }
+    .calltype {
+      margin: 20px 0;
+      width: 100%;
       text-align: center;
-      background-color: v.$card_secondary;
+    }
+    .callactions {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      .btn {
+        width: calc(100% / 2);
+        padding: 10px;
+        border-radius: 10px;
+        text-align: center;
+        color: v.$black;
+      }
+      .btn-decline {
+        background-color: v.$cred;
+      }
+      .btn-answer {
+        background-color: v.$sgreen;
+      }
+    }
+    .callaction {
+      margin-top: 10px;
+      width: 100%;
+      .btn-ignore {
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        text-align: center;
+        background-color: v.$card_secondary;
+      }
     }
   }
 }

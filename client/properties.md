@@ -53,24 +53,26 @@
 ## CALLNOTIP
 ```html
 <div class="callnotip ignored">
-  <div class="caller">
-    <div class="img">
-      <img src="./assets/user.jpg" alt="user"/>
+  <div class="box">
+    <div class="caller">
+      <div class="img">
+        <img src="./assets/user.jpg" alt="user"/>
+      </div>
+      <div class="name">
+        <div class="displayname">Display Name</div>
+        <div class="username">@username</div>
+      </div>
     </div>
-    <div class="name">
-      <div class="displayname">Display Name</div>
-      <div class="username">@username</div>
+    <div class="calltype fa-bounce" style="--fa-animation-duration:4s">
+      <p><i class="fa-solid fa-video fa-shake" style="--fa-animation-duration:2s"></i> <span>Incoming Video Call</span></p>
     </div>
-  </div>
-  <div class="calltype fa-bounce" style="--fa-animation-duration:4s">
-    <p><i class="fa-solid fa-video fa-shake" style="--fa-animation-duration:2s"></i> <span>Incoming Video Call</span></p>
-  </div>
-  <div class="callactions">
-    <div class="btn btn-decline"><i class="fa-solid fa-phone-hangup fa-fw"></i> Decline</div>
-    <div class="btn btn-answer"><i class="fa-solid fa-phone fa-fw"></i> Answer</div>
-  </div>
-  <div class="callaction">
-    <div class="btn btn-ignore">Ignore</div>
+    <div class="callactions">
+      <div class="btn btn-decline"><i class="fa-solid fa-phone-hangup fa-fw"></i> Decline</div>
+      <div class="btn btn-answer"><i class="fa-solid fa-phone fa-fw"></i> Answer</div>
+    </div>
+    <div class="callaction">
+      <div class="btn btn-ignore">Ignore</div>
+    </div>
   </div>
 </div>
 ```

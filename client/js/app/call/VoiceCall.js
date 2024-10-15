@@ -9,6 +9,32 @@ let lang = {};
 
 let repeatSignal = null;
 let maxRepeat = null;
+let tsTick = {
+  loop: null,
+  start: null
+}
+
+function tsCount(el) {
+  tsTick.start = Date.now();
+
+  tsTick.loop = setInterval(() => {
+    const elapsedTime = Date.now() - tsTick.start;
+    let jj = Math.floor(elapsedTime / (1000 * 60 * 60));
+    let mm = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+    let dd = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+
+    mm = jj > 0 ? String(mm).padStart(2, '0') : mm;
+    dd = String(dd).padStart(2, '0');
+    el.innerHTML = `${jj>0?jj+':':''}${mm}:${dd}`;
+  }, 1000);
+}
+function tsStop() {
+  if(tsTick.loop) {
+    clearInterval(tsTick.loop);
+    tsTick.loop = null;
+  }
+  if(tsTick.start) tsTick.start = null;
+}
 
 export default class VoiceCall {
   constructor({callman, user}) {
@@ -31,7 +57,7 @@ export default class VoiceCall {
           <div class="displayname"></div>
           <div class="user">
             <span class="username"></span>
-            <span class="ts">connecting</span>
+            <span class="ts">preparing</span>
           </div>
         </div>
       </div>
@@ -64,6 +90,7 @@ export default class VoiceCall {
         </div>
       </div>
     </div>`;
+    this.estatus = this.el.querySelector('.top .detail .caller .user .ts');
     const edname = this.el.querySelector('.top .detail .displayname');
     edname.append(this.user.displayName);
     const euname = this.el.querySelector('.top .detail .user .username');
@@ -88,10 +115,11 @@ export default class VoiceCall {
       return this.destroy();
     }
     if(fdb.peer) {
+      this.estatus.innerHTML = 'ringing';
       clearInterval(repeatSignal);
       repeatSignal = null;
       maxRepeat = null;
-      maxRepeat = Date.now() * (1000 * 10);
+      maxRepeat = Date.now() + (1000 * 10);
       repeatSignal = setInterval(() => this.signalUser(fdb.peer), 1000);
       return;
     }
@@ -103,17 +131,27 @@ export default class VoiceCall {
       return this.destroy();
     }
   }
+  async streamNow() {
+    // modal.alert('streaming all');
+    tsCount(this.estatus);
+  }
   async signalUser(peerid) {
     const vdb = db.ref.vcall || null;
-    if(vdb && vdb.u?.[this.user.id] && vdb.u?.[db.ref.account.id]) {
+    if(vdb && vdb.u?.[this.user.id]?.j && vdb.u?.[db.ref.account.id]?.j) {
       clearInterval(repeatSignal);
       repeatSignal = null;
       maxRepeat = null;
-      await modal.alert('connected all - sent!');
-      this.destroy();
+      this.estatus.innerHTML = 'connecting';
+      return this.streamNow();
     }
     cloud.send({ "id": "voice-call", "to": peerid });
     cloud.asend('voiceCall', {id:this.user.id});
+    if(Date.now() > maxRepeat) {
+      clearInterval(repeatSignal);
+      repeatSignal = null;
+      maxRepeat = null;
+      return this.destroy();
+    }
   }
   async follow() {
     this.init();
@@ -122,9 +160,11 @@ export default class VoiceCall {
       await modal.alert(lang[updateCall.msg] || lang.ERROR);
       return this.destroy();
     }
-    cloud.send({ "id": "voice-call-received", "to": this.user.peer });
-    await modal.alert('connected all - receive!');
-    this.destroy();
+    this.estatus.innerHTML = 'connecting';
+    this.streamNow();
+    // cloud.send({ "id": "voice-call-received", "to": this.user.peer });
+    // await modal.alert('connected all - receive!');
+    // this.destroy();
   }
   async run() {
     this.init();
@@ -133,6 +173,7 @@ export default class VoiceCall {
       await modal.alert(lang[setCall.msg] || lang.ERROR);
       return this.destroy();
     }
+    this.estatus.innerHTML = 'calling';
     this.peerUser();
   }
   destroy() {
