@@ -3,7 +3,6 @@ import xhr from "/js/helper/xhr.js";
 import { setbadge } from "/js/manager/badge.js";
 import db from "/js/manager/db.js";
 import userState from "/js/manager/userState.js";
-import * as nrw from "/js/manager/nrw.js";
 import cloud from "/js/manager/cloud.js";
 let lang = {};
 
@@ -13,6 +12,8 @@ let tsTick = {
   loop: null,
   start: null
 }
+
+let mediaStream = null;
 
 function tsCount(el) {
   tsTick.start = Date.now();
@@ -40,6 +41,7 @@ export default class VoiceCall {
   constructor({callman, user}) {
     this.callman = callman;
     this.user = user;
+    this.call = null;
   }
   createElement() {
     this.el = document.createElement('div');
@@ -101,9 +103,21 @@ export default class VoiceCall {
       }
     }
   }
-  peerUser() {
-    maxRepeat = Date.now() + (1000 * 10);
-    repeatSignal = setInterval(() => this.pingUser(), 1000);
+  btnListener() {
+    const btnHangup = this.el.querySelector('.btn-hangup');
+    btnHangup.onclick = () => this.actionHangup();
+  }
+  actionHangup() {
+    if(mediaStream) {
+      mediaStream.pause();
+      mediaStream.remove();
+      mediaStream = null;
+    }
+    if(this.call) {
+      this.call.close();
+      this.call = null;
+    }
+    this.destroy();
   }
   async pingUser() {
     const fdb = db.ref.friends?.find(usr => usr.id === this.user.id) || null;
@@ -115,6 +129,7 @@ export default class VoiceCall {
       return this.destroy();
     }
     if(fdb.peer) {
+      this.user.peer = fdb.peer;
       this.estatus.innerHTML = 'ringing';
       clearInterval(repeatSignal);
       repeatSignal = null;
@@ -131,9 +146,29 @@ export default class VoiceCall {
       return this.destroy();
     }
   }
-  async streamNow() {
-    // modal.alert('streaming all');
-    tsCount(this.estatus);
+  async callUser() {
+    const umedia = await userMedia();
+    if(!umedia) return this.destroy();
+    await modal.waittime(249);
+    console.log(this.user.peer);
+    const call = cloud.call(this.user.peer, umedia);
+    call.on('stream', (remoteStream) => this.streamNow(remoteStream));
+    call.on('close', () => this.actionHangup());
+    this.call = call;
+  }
+  async answerUser(call) {
+    const umedia = await userMedia();
+    if(!umedia) return this.destroy();
+    call.answer(umedia);
+    call.on('stream', (remoteStream) => this.streamNow(remoteStream));
+    call.on('close', () => this.actionHangup());
+    this.call = call;
+  }
+  async streamNow(remoteStream) {
+    if(!tsTick.loop && !tsTick.start) tsCount(this.estatus);
+    mediaStream = new Audio();
+    mediaStream.srcObject = remoteStream;
+    mediaStream.play();
   }
   async signalUser(peerid) {
     const vdb = db.ref.vcall || null;
@@ -142,7 +177,8 @@ export default class VoiceCall {
       repeatSignal = null;
       maxRepeat = null;
       this.estatus.innerHTML = 'connecting';
-      return this.streamNow();
+      return this.callUser();
+      // return this.streamNow();
     }
     cloud.send({ "id": "voice-call", "to": peerid });
     cloud.asend('voiceCall', {id:this.user.id});
@@ -161,10 +197,6 @@ export default class VoiceCall {
       return this.destroy();
     }
     this.estatus.innerHTML = 'connecting';
-    this.streamNow();
-    // cloud.send({ "id": "voice-call-received", "to": this.user.peer });
-    // await modal.alert('connected all - receive!');
-    // this.destroy();
   }
   async run() {
     this.init();
@@ -174,7 +206,8 @@ export default class VoiceCall {
       return this.destroy();
     }
     this.estatus.innerHTML = 'calling';
-    this.peerUser();
+    maxRepeat = Date.now() + (1000 * 10);
+    repeatSignal = setInterval(() => this.pingUser(), 1000);
   }
   destroy() {
     this.callman(null);
@@ -185,5 +218,18 @@ export default class VoiceCall {
     lang = userState.langs[userState.lang];
     this.createElement();
     document.querySelector('.app').append(this.el);
+    this.btnListener();
   }
+}
+
+function userMedia(n = false) {
+  return new Promise(resolve => {
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return resolve(null);
+    navigator.mediaDevices.getUserMedia({audio:true,video:n}).then(stream => {
+      return resolve(stream);
+    }).catch(err => {
+      console.log(err);
+      return resolve(null);
+    })
+  });
 }

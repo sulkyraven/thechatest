@@ -2,7 +2,7 @@ import { Peer } from "https://esm.sh/peerjs@1.5.4?bundle-deps";
 import db from "/js/manager/db.js";
 import xhr from "/js/helper/xhr.js";
 import userState from "/js/manager/userState.js";
-import { ReceiveCall } from "/js/app/call/Call.js";
+import { ReceiveCall, currcall } from "/js/app/call/Call.js";
 
 async function waittime(ms = 200) {return new Promise(resolve => setTimeout(resolve, ms))}
 // this.peer.socket._socket.send(JSON.stringify({selfadded: {data:"aaw"}}));
@@ -44,6 +44,11 @@ class cloud {
     // }
   }
   listenTo() {
+    this.peer.on('call', async call => {
+      console.log('getcall');
+      currcall.answerUser(call);
+    });
+
     this.peer.on('connection', (conn) => {
       conn.on('open', () => {
         console.info('connected_a', conn.peer);
@@ -124,6 +129,12 @@ class cloud {
     const peersArray = await response.json();
     const list = peersArray ?? [];
     return list.filter((id) => id !== this.peerid);
+  }
+  call(peerid, usermedia) {
+    console.log('runnig', peerid);
+    const conncall = this.peer.call(peerid, usermedia);
+    console.log(conncall);
+    return conncall;
   }
   async send({id,to,data=null}) {
     if(typeof to === "string") to = [to];

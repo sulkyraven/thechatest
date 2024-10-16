@@ -1,13 +1,8 @@
-import modal from "/js/helper/modal.js";
-import xhr from "/js/helper/xhr.js";
 import { setbadge } from "/js/manager/badge.js";
 import db from "/js/manager/db.js";
-import userState from "/js/manager/userState.js";
-import * as nrw from "/js/manager/nrw.js";
-import cloud from "/js/manager/cloud.js";
 import VoiceCall from "/js/app/call/VoiceCall.js";
 
-let currcall = null;
+export let currcall = null;
 let currring = null;
 
 export function checkCall() {

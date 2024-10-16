@@ -765,6 +765,7 @@ export default class {
 
     if(!recorder) {
       recorder = await SetupAudioRecorder(this);
+      console.log(recorder);
       if(!recorder) {
         isrecording = false;
         await this.vrecDestroy();
@@ -976,10 +977,7 @@ function chatSelection(obj, conty) {
 function SetupAudioRecorder(content) {
   return new Promise(resolve => {
     navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
-      const newRecorder = new MediaRecorder(stream, {
-        audioBitsPerSecond: 128000,
-        mimeType: 'audio/ogg'
-      });
+      const newRecorder = new MediaRecorder(stream, { audioBitsPerSecond: 128000 });
       newRecorder.onerror = err => {
         // console.log(err);
         this.isLocked = false;
@@ -1003,7 +1001,8 @@ function SetupAudioRecorder(content) {
         stoprecord = false;
       }
       resolve(newRecorder);
-    }).catch(() => {
+    }).catch(err => {
+      console.log(err);
       isrecording = false;
       stoprecord = false;
       resolve(null);
