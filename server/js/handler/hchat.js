@@ -110,7 +110,7 @@ module.exports = {
       if(!fs.existsSync('./server/dbfile')) fs.mkdirSync('./server/dbfile');
       if(!fs.existsSync(`./server/dbfile/content`)) fs.mkdirSync(`./server/dbfile/content`);
       if(!fs.existsSync(`./server/dbfile/content/${ckey}`)) fs.mkdirSync(`./server/dbfile/content/${ckey}`);
-      const filename = `F${Date.now().toString(32)}_${s.file.name}`;
+      const filename = `F${Date.now().toString(32)}_${s.file.name.replace(/\s/g, '_')}`;
       fs.writeFileSync(`./server/dbfile/content/${ckey}/${filename}`, buffer);
       data.i = filename;
     }

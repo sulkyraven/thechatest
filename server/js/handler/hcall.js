@@ -7,6 +7,16 @@ const { validate } = require('../middlewares');
 module.exports = {
   set(uid, s) {
     if(!validate(['id'], s)) return null;
+
+    const oldCallKey = Object.keys(db.ref.v).find(k => {
+      return db.ref.v[k].u?.[s.id] && db.ref.v[k].u?.[uid];
+    });
+    if(oldCallKey) {
+      delete db.ref.v[oldCallKey];
+      db.save('v');
+      return {code:402}
+    }
+
     const friendkey = Object.keys(db.ref.f).find(k => {
       return db.ref.f[k].includes(s.id) && db.ref.f[k].includes(uid);
     });

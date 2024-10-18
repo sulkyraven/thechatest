@@ -17,6 +17,8 @@ class cloud {
       this.peer.socket._socket.send(JSON.stringify({d761: {id:'receivedMsg'}}));
     } else if(s.id === 'voice-call') {
       ReceiveCall(s.from);
+    } else if(s.id.includes('act-call')) {
+      if(currcall) currcall.updateActions(s);
     }
   }
   clientData(obj) {
@@ -45,8 +47,7 @@ class cloud {
   }
   listenTo() {
     this.peer.on('call', async call => {
-      console.log('getcall');
-      currcall.answerUser(call);
+      if(currcall) currcall.answerUser(call);
     });
 
     this.peer.on('connection', (conn) => {
@@ -131,9 +132,7 @@ class cloud {
     return list.filter((id) => id !== this.peerid);
   }
   call(peerid, usermedia) {
-    console.log('runnig', peerid);
     const conncall = this.peer.call(peerid, usermedia);
-    console.log(conncall);
     return conncall;
   }
   async send({id,to,data=null}) {

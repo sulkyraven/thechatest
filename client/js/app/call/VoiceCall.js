@@ -42,6 +42,11 @@ export default class VoiceCall {
     this.callman = callman;
     this.user = user;
     this.call = null;
+    this.stream = null;
+    this.vSource = null;
+    this.micOff = false;
+    this.volumeOff = false;
+    this.videoOff = false;
   }
   createElement() {
     this.el = document.createElement('div');
@@ -63,14 +68,7 @@ export default class VoiceCall {
           </div>
         </div>
       </div>
-      <div class="act-info">
-        <div class="card">
-          <i class="fa-duotone fa-microphone-slash"></i> <span>username muted</span>
-        </div>
-        <div class="card">
-          <i class="fa-duotone fa-volume-slash"></i> <span>username deafen</span>
-        </div>
-      </div>
+      <div class="act-info"></div>
     </div>
     <div class="bottom">
       <div class="act-list">
@@ -93,6 +91,7 @@ export default class VoiceCall {
       </div>
     </div>`;
     this.estatus = this.el.querySelector('.top .detail .caller .user .ts');
+    this.einfo = this.el.querySelector('.top .act-info');
     const edname = this.el.querySelector('.top .detail .displayname');
     edname.append(this.user.displayName);
     const euname = this.el.querySelector('.top .detail .user .username');
@@ -106,18 +105,116 @@ export default class VoiceCall {
   btnListener() {
     const btnHangup = this.el.querySelector('.btn-hangup');
     btnHangup.onclick = () => this.actionHangup();
+    const btnMute = this.el.querySelector('.btn-mute');
+    btnMute.onclick = () => this.actionMic(btnMute);
+    const btnDeafen = this.el.querySelector('.btn-deafen');
+    btnDeafen.onclick = () => this.actionVol(btnDeafen);
+  }
+  updateActions(s) {
+    if(s.from !== this.user.id) return;
+    if(s.id.includes('mic')) {
+      this.infoIsMute(s.id);
+    } else if(s.id.includes('vol')) {
+      this.infoIsDeafen(s.id);
+    }
+  }
+  infoIsMute(sid) {
+    if(sid === 'act-call-mic-off') {
+      if(this.einfo.querySelector('.card.mute')) return;
+      const card = document.createElement('div');
+      card.classList.add('card', 'mute');
+      card.innerHTML = `<i class="fa-solid fa-microphone-slash"></i> <span>${this.user.username} muted</span>`;
+      this.einfo.append(card);
+    } else if(sid === 'act-call-mic-on') {
+      const card = document.querySelector('.card.mute');
+      if(!card) return;
+      card.remove();
+    }
+  }
+  infoIsDeafen(sid) {
+    if(sid === 'act-call-vol-off') {
+      if(this.einfo.querySelector('.card.deafen')) return;
+      const card = document.createElement('div');
+      card.classList.add('card', 'deafen');
+      card.innerHTML = `<i class="fa-solid fa-volume-slash"></i> <span>${this.user.username} is deafen</span>`;
+      this.einfo.append(card);
+    } else if(sid === 'act-call-vol-on') {
+      const card = document.querySelector('.card.deafen');
+      if(!card) return;
+      card.remove();
+    }
   }
   actionHangup() {
-    if(mediaStream) {
-      mediaStream.pause();
-      mediaStream.remove();
-      mediaStream = null;
-    }
-    if(this.call) {
-      this.call.close();
-      this.call = null;
+    if(!this.call) return;
+    this.call.close();
+    this.call = null;
+
+    if(this.stream) {
+      const oldStream = this.stream;
+      for(let i=0;i <= oldStream.getTracks().length - 1;i++) {
+        const track = oldStream.getTracks()[i];
+        track.enabled = false;
+        setTimeout(() => {
+          track.stop();
+          oldStream.removeTrack(track);
+          if(i >= oldStream.getTracks().length - 1) {
+            if(mediaStream) {
+              mediaStream.pause();
+              mediaStream.remove();
+              mediaStream = null;
+            }
+            this.vSource = null;
+            this.stream = null;
+          }
+        }, 495);
+      }
+    } else {
+      if(mediaStream) {
+        mediaStream.pause();
+        mediaStream.remove();
+        mediaStream = null;
+      }
+      this.vSource = null;
     }
     this.destroy();
+  }
+  actionMic(e) {
+    if(this.stream) {
+      this.micOff = !this.micOff;
+      for(const track of this.stream.getAudioTracks()) {
+        track.enabled = !this.micOff;
+      }
+      if(this.micOff) {
+        e.classList.add('active');
+        e.querySelector('i').classList.remove('fa-microphone');
+        e.querySelector('i').classList.add('fa-microphone-slash');
+        cloud.send({id: 'act-call-mic-off', to: this.user.peer});
+        cloud.asend('callMicOff', {id:this.user.id});
+      } else {
+        e.classList.remove('active');
+        e.querySelector('i').classList.remove('fa-microphone-slash');
+        e.querySelector('i').classList.add('fa-microphone');
+        cloud.send({id: 'act-call-mic-on', to: this.user.peer});
+        cloud.asend('callMicOn', {id:this.user.id});
+      }
+    }
+  }
+  actionVol(e) {
+    this.volumeOff = !this.volumeOff;
+    mediaStream.volume = Number(!this.volumeOff);
+    if(this.volumeOff) {
+      e.classList.add('active');
+      e.querySelector('i').classList.remove('fa-volume');
+      e.querySelector('i').classList.add('fa-volume-slash');
+      cloud.send({id: 'act-call-vol-off', to: this.user.peer});
+      cloud.asend('callVolOff', {id:this.user.id});
+    } else {
+      e.classList.remove('active');
+      e.querySelector('i').classList.remove('fa-volume-slash');
+      e.querySelector('i').classList.add('fa-volume');
+      cloud.send({id: 'act-call-vol-on', to: this.user.peer});
+      cloud.asend('callVolOn', {id:this.user.id});
+    }
   }
   async pingUser() {
     const fdb = db.ref.friends?.find(usr => usr.id === this.user.id) || null;
@@ -148,18 +245,25 @@ export default class VoiceCall {
   }
   async callUser() {
     const umedia = await userMedia();
-    if(!umedia) return this.destroy();
+    if(!umedia?.stream) return this.destroy();
+    this.stream = umedia.stream;
+    this.vSource = umedia.kind;
     await modal.waittime(249);
-    console.log(this.user.peer);
-    const call = cloud.call(this.user.peer, umedia);
+    const call = cloud.call(this.user.peer, umedia.stream);
     call.on('stream', (remoteStream) => this.streamNow(remoteStream));
     call.on('close', () => this.actionHangup());
     this.call = call;
   }
   async answerUser(call) {
+    if(call.peer !== this.user.peer) {
+      await modal.alert('CALL_ERROR');
+      this.destroy();
+    }
     const umedia = await userMedia();
-    if(!umedia) return this.destroy();
-    call.answer(umedia);
+    if(!umedia?.stream) return this.destroy();
+    this.stream = umedia.stream;
+    this.vSource = umedia.kind;
+    call.answer(umedia.stream);
     call.on('stream', (remoteStream) => this.streamNow(remoteStream));
     call.on('close', () => this.actionHangup());
     this.call = call;
@@ -226,7 +330,16 @@ function userMedia(n = false) {
   return new Promise(resolve => {
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return resolve(null);
     navigator.mediaDevices.getUserMedia({audio:true,video:n}).then(stream => {
-      return resolve(stream);
+      // stream.getTracks()[0].enabled = false;
+      // stream.getTracks()[0].stop();
+      // stream.removeTrack(track);
+      return resolve({
+        stream,
+        kind: {
+          audio:true,
+          video:n
+        }
+      });
     }).catch(err => {
       console.log(err);
       return resolve(null);

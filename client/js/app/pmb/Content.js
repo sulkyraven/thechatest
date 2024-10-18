@@ -19,6 +19,7 @@ let isrecording = false;
 let stoprecord = false;
 let recordinterval = null;
 let renderedData = false;
+let mediaStream = null;
 
 export default class {
   constructor({ user, conty }) {
@@ -764,8 +765,14 @@ export default class {
     elvoice(btnrec, !isrecording);
 
     if(!recorder) {
-      recorder = await SetupAudioRecorder(this);
-      console.log(recorder);
+      const nRecorder = await SetupAudioRecorder(this);
+      if(!nRecorder || !nRecorder.newRecorder && !nRecorder.stream) {
+        recorder = null;
+        mediaStream = null;
+      } else {
+        recorder = nRecorder.newRecorder;
+        mediaStream = nRecorder.stream;
+      }
       if(!recorder) {
         isrecording = false;
         await this.vrecDestroy();
@@ -805,6 +812,15 @@ export default class {
         } catch {
           recorder = null;
           recorderChunks = [];
+          if(mediaStream) {
+            for(const track of mediaStream.getTracks()) {
+              track.enabled = false;
+              setTimeout(() => {
+                track.stop();
+                mediaStream.removeTrack(track);
+              }, 1000);
+            }
+          }
           isrecording = false;
           this.voiceTimeStamp(ts, false);
           await this.vrecDestroy();
@@ -863,6 +879,15 @@ export default class {
           recordinterval = null;
           recorder = null;
           recorderChunks = [];
+          if(mediaStream) {
+            for(const track of mediaStream.getTracks()) {
+              track.enabled = false;
+              setTimeout(() => {
+                track.stop();
+                mediaStream.removeTrack(track);
+              }, 1000);
+            }
+          }
           isrecording = false;
           stoprecord = false;
           return;
@@ -915,6 +940,15 @@ export default class {
     this.disabelAutoScroll = false;
     recorder = null;
     recorderChunks = [];
+    if(mediaStream) {
+      for(const track of mediaStream.getTracks()) {
+        track.enabled = false;
+        setTimeout(() => {
+          track.stop();
+          mediaStream.removeTrack(track);
+        }, 1000);
+      }
+    }
     isrecording = false;
     stoprecord = false;
     recordinterval = null;
@@ -934,6 +968,15 @@ export default class {
       this.disabelAutoScroll = false;
       recorder = null;
       recorderChunks = [];
+      if(mediaStream) {
+        for(const track of mediaStream.getTracks()) {
+          track.enabled = false;
+          setTimeout(() => {
+            track.stop();
+            mediaStream.removeTrack(track);
+          }, 1000);
+        }
+      }
       isrecording = false;
       stoprecord = false;
       recordinterval = null;
@@ -1000,7 +1043,7 @@ function SetupAudioRecorder(content) {
         }
         stoprecord = false;
       }
-      resolve(newRecorder);
+      resolve({newRecorder, stream});
     }).catch(err => {
       console.log(err);
       isrecording = false;
