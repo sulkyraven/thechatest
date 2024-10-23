@@ -25,4 +25,8 @@ router.get('/isUser', isUser, (req, res) => {
   return res.json({code:200,msg:'ok',data:hcloud.initPeers(req.session.user.id)});
 });
 
+router.get('/stillUser', isUser, (req, res) => {
+  return res.json(hauth.getPeer(req.session.user.id));
+})
+
 module.exports = router;

@@ -1,16 +1,18 @@
 import { Peer } from "https://esm.sh/peerjs@1.5.4?bundle-deps";
 import db from "/js/manager/db.js";
+import xhr from "/js/helper/xhr.js";
 import modal from "/js/helper/modal.js";
 import userState from "/js/manager/userState.js";
 import { ReceiveCall, currcall } from "/js/app/call/Call.js";
+
+let reqtimeout = null;
+const rtime = 7000;
 
 async function waittime(ms = 200) {return new Promise(resolve => setTimeout(resolve, ms))}
 // this.peer.socket._socket.send(JSON.stringify({selfadded: {data:"aaw"}}));
 class cloud {
   constructor() {
     this.pair = new Map();
-    this.lg = null;
-    this.logcd = false;
   }
   processData(s) {
     if(s.id === 'send-msg') {
@@ -86,6 +88,10 @@ class cloud {
     this.peer.once('open', () => {
       this.peer.socket._socket.addEventListener("message", (msg) => {
         if(msg.data) {
+          if(reqtimeout) {
+            clearTimeout(reqtimeout);
+            reqtimeout = setTimeout(() => this.checkuser(), rtime);
+          }
           JSON.parse(msg.data)?.data?.forEach(obj => this.clientData(obj));
           userState.pmbottom?.forceUpdate?.();
           userState.pmmid?.forceUpdate?.();
@@ -124,14 +130,26 @@ class cloud {
     for(const peer of to) {
       if(!this.pair.has(peer)) await this.connectTo(peer);
       this.pair.get(peer).send({id, from:db.ref.account.id, data});
+      await waittime();
     }
   }
   asend(id, data={}) {
     this.peer.socket._socket.send(JSON.stringify({d761: {id,data}}));
   }
+  async checkuser() {
+    const stillUser = await xhr.get('/auth/stillUser');
+    if(!stillUser || stillUser.code !== 200) {
+      clearTimeout(reqtimeout);
+      return this.forceClose();
+    }
+    if(stillUser.data.peer !== this.peerid) {
+      clearTimeout(reqtimeout);
+      return this.forceClose();
+    }
+  }
   async forceClose() {
-    if(!this.lg) return;
-    this.lg = null;
+    if(!reqtimeout) return;
+    reqtimeout = null;
     this.peer.disconnect();
     this.peer.destroy();
     userState.pmbottom?.el?.remove();
@@ -152,6 +170,7 @@ class cloud {
       path: 'cloud',
     });
     this.listenTo();
+    reqtimeout = setTimeout(() => this.checkuser(), rtime);
   }
 }
 

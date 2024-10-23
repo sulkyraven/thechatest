@@ -64,6 +64,13 @@ module.exports = {
 
     data.cloud = hcloud.initPeers(ukey);
     return {code:200,msg:'ok',data};
+  },
+  getPeer(uid) {
+    const udb = db.ref.u[uid];
+    if(!udb) return {code:400};
+    if(!udb.peer) return {code:400};
+    
+    return {code:200,data:{peer:udb.peer}};
   }
 }
 
