@@ -97,6 +97,9 @@ $bg: #3f464e;
           color: v.$sred;
         }
       }
+      .call-act.disabled {
+        opacity: 0;
+      }
     }
   }
 }

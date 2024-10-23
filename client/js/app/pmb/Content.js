@@ -57,7 +57,7 @@ export default class {
         <div class="btn btn-call">
           <i class="fa-solid fa-phone"></i>
         </div>
-        <div class="btn">
+        <div class="btn btn-more">
           <i class="fa-solid fa-ellipsis-vertical"></i>
         </div>
       </div>
@@ -476,6 +476,14 @@ export default class {
         return;
       }
       await modal.alert('This -Video Call- feature is currently under development');
+      this.isLocked = false;
+    }
+    const btnMore = this.el.querySelector('.btn-more');
+    btnMore.onclick = async() => {
+      if(this.isLocked) return;
+      this.isLocked = true;
+      
+      await modal.alert('This -More Options- feature is currently under development');
       this.isLocked = false;
     }
 
@@ -997,7 +1005,6 @@ export default class {
     this.createElement();
     document.querySelector('.app .pm').append(this.el);
     sceneIn(this.el);
-    this.setReadChat();
     this.updateUser();
     this.renderChats();
     this.btnListener();

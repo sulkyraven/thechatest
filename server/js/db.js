@@ -15,6 +15,7 @@ class DevankaDatabase {
       if(file == 'u') {
         Object.keys(this.ref[file]).forEach(k => {
           if(this.ref[file][k].peer) delete this.ref[file][k].peer;
+          if(this.ref[file][k].lg) delete this.ref[file][k].lg;
         });
       } else if(file == 'v') {
         this.ref[file] = {};

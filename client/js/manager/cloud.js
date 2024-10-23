@@ -1,6 +1,6 @@
 import { Peer } from "https://esm.sh/peerjs@1.5.4?bundle-deps";
 import db from "/js/manager/db.js";
-import xhr from "/js/helper/xhr.js";
+import modal from "/js/helper/modal.js";
 import userState from "/js/manager/userState.js";
 import { ReceiveCall, currcall } from "/js/app/call/Call.js";
 
@@ -9,17 +9,23 @@ async function waittime(ms = 200) {return new Promise(resolve => setTimeout(reso
 class cloud {
   constructor() {
     this.pair = new Map();
+    this.lg = null;
+    this.logcd = false;
   }
   processData(s) {
     if(s.id === 'send-msg') {
       this.peer.socket._socket.send(JSON.stringify({d761: {id:'receivedMsg'}}));
     } else if(s.id === 'read-msg') {
       this.peer.socket._socket.send(JSON.stringify({d761: {id:'receivedMsg'}}));
-    } else if(s.id === 'voice-call') {
+    }
+    /*
+    // sabar ya ini masih capekkk
+    else if(s.id === 'voice-call') {
       ReceiveCall(s.from);
     } else if(s.id.includes('act-call')) {
       if(currcall) currcall.updateActions(s);
     }
+    */
   }
   clientData(obj) {
     if(obj.code && obj.code !== 200) return;
@@ -46,8 +52,17 @@ class cloud {
     // }
   }
   listenTo() {
+    /*
+    // aowkwk ini juga belum
     this.peer.on('call', async call => {
       if(currcall) currcall.answerUser(call);
+    });
+    */
+    this.peer.on('error', () => {
+      this.forceClose();
+    });
+    this.peer.on('disconnected', () => {
+      this.forceClose();
     });
 
     this.peer.on('connection', (conn) => {
@@ -100,37 +115,6 @@ class cloud {
       window.addEventListener('unload', () => conn.close());
     });
   }
-  async oldconnectTo({ key = null, peers = null } = {}) {
-    if(!peers) peers = await this.allPeers(key);
-    for (const peer of peers) {
-      const conn = this.peer.connect(peer);
-
-      conn.on('open', () => {
-        console.info('connected_b', conn.peer);
-        this.pair.set(conn.peer, conn);
-      });
-      conn.on('close', () => {
-        console.info('disconnected_b', conn.peer);
-        this.pair.delete(conn.peer);
-      });
-      conn.on('error', () => {
-        console.error('error_b', conn.peer);
-      });
-
-      conn.on('data', (data) => this.processData(data));
-
-      window.addEventListener('unload', () => conn.close());
-
-      await waittime(200);
-    }
-  }
-  async allPeers(key) {
-    const url = `${window.location.origin}/cloud/${key}/peers`;
-    const response = await fetch(url);
-    const peersArray = await response.json();
-    const list = peersArray ?? [];
-    return list.filter((id) => id !== this.peerid);
-  }
   call(peerid, usermedia) {
     const conncall = this.peer.call(peerid, usermedia);
     return conncall;
@@ -145,6 +129,20 @@ class cloud {
   asend(id, data={}) {
     this.peer.socket._socket.send(JSON.stringify({d761: {id,data}}));
   }
+  async forceClose() {
+    if(!this.lg) return;
+    this.lg = null;
+    this.peer.disconnect();
+    this.peer.destroy();
+    userState.pmbottom?.el?.remove();
+    userState.pmmid?.el?.remove();
+    userState.pmtop?.el?.remove();
+    document.querySelector('.appname')?.remove();
+    await modal.alert('You Are Logged In From Another Location');
+    window.close();
+    self.close();
+    close();
+  }
   async run({ peerKey, peerid }) {
     this.peerid = peerid;
     this.peer = new Peer(peerid, {
@@ -154,17 +152,6 @@ class cloud {
       path: 'cloud',
     });
     this.listenTo();
-    const url = `${window.location.origin}/cloud/${peerKey}/peers`;
-
-    const response = await fetch(url);
-    const peersArray = await response.json();
-    const list = peersArray ?? [];
-    const peers = list.filter((id) => id !== peerid);
-
-    for(const id of peers) {
-      this.connectTo(id);
-      await waittime(200);
-    }
   }
 }
 

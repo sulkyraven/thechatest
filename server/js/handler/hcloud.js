@@ -15,16 +15,13 @@ module.exports = {
     if(udb.b) data.b = udb.b;
     if(udb.img) data.img = udb.img;
     if(udb.req) data.req = udb.req.map(k => hprofile.getUser(uid, {id:k}));
+    if(udb.lg) data.lg = udb.lg;
     return {name:'account', data};
   },
   initPeers(uid) {
-    let peerid = null;
-    if(db.ref.u[uid].peer) {
-      peerid = db.ref.u[uid].peer;
-    } else {
-      peerid = genPeer();
-      db.ref.u[uid].peer = peerid;
-    }
+    let peerid = genPeer();
+    db.ref.u[uid].peer = peerid;
+    db.ref.u[uid].lg = Date.now();
 
     return [...this.getAll(uid), {name:'peersinit', data: { peerKey, peerid }}];
   },

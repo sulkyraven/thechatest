@@ -18,7 +18,7 @@ export default class {
     this.el.innerHTML = `
     <div class="search">
       <p>${lang.FIND_RANDOM}</p>
-      <div class="btn"><i class="fa-solid fa-play"></i> ${lang.FIND_START}</div>
+      <div class="btn btn-random"><i class="fa-solid fa-play"></i> ${lang.FIND_START}</div>
     </div>
     <div class="search">
       <form action="/find/uwu/search-user" class="form form-search-user">
@@ -60,6 +60,45 @@ export default class {
       cardlist.innerHTML = '';
       inp.value = '';
       getSearch.data.users.forEach(usr => {
+        const card = elgen.findCard(usr);
+        cardlist.append(card);
+        this.isLocked = false;
+        card.onclick = async() => {
+          if(userState.locked.bottom) return;
+          userState.locked.bottom = true;
+          await userState.pmbottom?.destroy?.();
+          if(isNarrow) {
+            setQueue();
+            await destroyPM();
+            fRemovePM();
+          }
+          new Profile({user:usr}).run();
+          userState.locked.bottom = false;
+        }
+      });
+    }
+    const btnRandom = this.el.querySelector('.btn-random');
+    btnRandom.onclick = async() => {
+      if(this.isLocked === true) return;
+      this.isLocked = true;
+
+      const eloading = document.createElement('div');
+      eloading.classList.add('card');
+      eloading.innerHTML = `<div class="getload"><div class="spinner"><i class="fa-solid fa-spinner fa-spin"></i></div>LOADING</div>`;
+      cardlist.prepend(eloading);
+      
+      await modal.waittime();
+      const getRandom = await xhr.get('/find/uwu/search-random');
+      eloading.remove();
+      if(getRandom?.code !== 200) {
+        await modal.alert(lang[getRandom.msg] || lang.ERROR);
+        this.isLocked = false;
+        return;
+      }
+
+      cardlist.innerHTML = '';
+      inp.value = '';
+      getRandom.data.users.forEach(usr => {
         const card = elgen.findCard(usr);
         cardlist.append(card);
         this.isLocked = false;

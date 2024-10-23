@@ -181,12 +181,18 @@ export default class {
         this.isLocked = false;
         return;
       }
+      
+      await modal.alert('This -Voice Call- feature is currently under development');
+      this.isLocked = false;
+      /*
+      // sabar yakk masih cape ngerjainnya wkwkwk
       if(!checkCall) {
         await modal.alert('This -Voice Call- feature is currently under development');
         this.isLocked = false;
       }
       this.isLocked = false;
       SendCall({user:this.user});
+      */
     }
     const btnVideo = this.el.querySelector('.actions .btn-video');
     btnVideo.onclick = async() => {
@@ -197,7 +203,7 @@ export default class {
         this.isLocked = false;
         return;
       }
-      await modal.alert('This -Voice Call- feature is currently under development');
+      await modal.alert('This -Video Call- feature is currently under development');
       this.isLocked = false;
     }
   }

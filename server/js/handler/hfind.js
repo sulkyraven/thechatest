@@ -15,6 +15,25 @@ module.exports = {
     });
     return {code:200,msg:'ok',data:{users}};
   },
+  searchRandom(uid) {
+    const udb = db.ref.u;
+    const users = Object.keys(udb).filter(key => {
+      return key !== uid;
+    });
+    const findArr = [];
+    const randomUser = () => {
+      const nwUser = users.filter(k => !findArr.includes(k));
+      return nwUser[Math.floor(Math.random() * nwUser.length)];
+    }
+    const maxLength = users.length >= 3 ? 3 : users.length;
+    for(let i=0;i<maxLength;i++) {
+      findArr.push(randomUser());
+    }
+    const findUser = findArr.map(k => {
+      return hprofile.getUser(uid, {id:k});
+    });
+    return {code:200,msg:'ok',data:{users:findUser}};
+  },
   groupInvite(uid, p = null) {
     if(!p) return {code:400};
 

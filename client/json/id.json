@@ -77,6 +77,7 @@
   "GRPS_LEAVE_CONFIRM": "Keluar dari grup?",
   "GRPS_KICK_CONFIRM": "Keluarkan @<b>{uname}</b> dari grup?",
   "GRPS_TYPE_PRIVATE": "Tipe grup ini adalah pribadi. Kamu harus punya link undangan buat masuk.",
+  "GRPS_404": "Grup tidak ditemukan",
   "CONTENT_NO_MEDIA_DEVICES": "Gada akses",
   "CONTENT_SENDING": "Mengirim",
   "CONTENT_EDITED": "Diedit",

@@ -10,6 +10,25 @@
   justify-content: center;
   align-items: center;
   background-color: v.$bg;
+  .top {
+    position: absolute;
+    top: 0;left: 0;
+    width: 100%;
+    background-color: v.$bar_bg;
+    color: v.$white;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.25rem;
+    .btn {
+      position: absolute;
+      left: 10px;
+    }
+    .sec-title {
+      font-weight: bold;
+    }
+  }
   .title {
     display: flex;
     align-items: center;

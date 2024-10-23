@@ -72,7 +72,7 @@ export default class VoiceCall {
     </div>
     <div class="bottom">
       <div class="act-list">
-        <div class="call-act">
+        <div class="call-act disabled">
           <div class="btn btn-deafen">
             <i class="fa-solid fa-volume fa-fw"></i>
           </div>
@@ -179,6 +179,7 @@ export default class VoiceCall {
     this.destroy();
   }
   actionMic(e) {
+    if(!tsTick.loop) return;
     if(this.stream) {
       this.micOff = !this.micOff;
       for(const track of this.stream.getAudioTracks()) {
@@ -270,6 +271,8 @@ export default class VoiceCall {
   }
   async streamNow(remoteStream) {
     if(!tsTick.loop && !tsTick.start) tsCount(this.estatus);
+    const ecallacts = this.el.querySelectorAll('.call-act.disabled');
+    ecallacts.forEach(ecall => ecall.classList.remove('disabled'));
     mediaStream = new Audio();
     mediaStream.srcObject = remoteStream;
     mediaStream.play();
@@ -314,6 +317,7 @@ export default class VoiceCall {
     repeatSignal = setInterval(() => this.pingUser(), 1000);
   }
   destroy() {
+    db.ref.vcall = null;
     this.callman(null);
     this.el.remove();
   }
@@ -330,9 +334,6 @@ function userMedia(n = false) {
   return new Promise(resolve => {
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return resolve(null);
     navigator.mediaDevices.getUserMedia({audio:true,video:n}).then(stream => {
-      // stream.getTracks()[0].enabled = false;
-      // stream.getTracks()[0].stop();
-      // stream.removeTrack(track);
       return resolve({
         stream,
         kind: {

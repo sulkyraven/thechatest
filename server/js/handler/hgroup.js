@@ -139,7 +139,7 @@ module.exports = {
     if(!validate(['id'], s)) return {code:400};
     s.id = s.id.toLowerCase();
     const gdb = db.ref.g[s.id];
-    if(!gdb) return {code:400};
+    if(!gdb) return {code:404,msg:"GRPS_404"};
     if(gdb.u.includes(uid)) return {code:200, data:this.getGroup(uid, {id:s.id})};
     if(gdb.t === '1') return {code:402,msg:"GRPS_TYPE_PRIVATE"}
     db.ref.g[s.id].u.push(uid);

@@ -8,5 +8,8 @@ router.use(isUser, express.json({limit:'100kb'}));
 router.get('/search-user', (req, res) => {
   return res.json(hfind.searchUsers(req.session.user.id, req.query?.id || null));
 });
+router.get('/search-random', (req, res) => {
+  return res.json(hfind.searchRandom(req.session.user.id));
+});
 
 module.exports = router;

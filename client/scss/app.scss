@@ -48,6 +48,9 @@ input[type=number] {
   appearance: textfield;
   -moz-appearance: textfield;
 }
+.btn-back {
+  display: none;
+}
 .app {
   position: relative;
   width: 100%;
