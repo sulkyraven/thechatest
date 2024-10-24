@@ -39,11 +39,11 @@ module.exports = {
     return {name:'chats',data:myChats}
   },
   getFriends(uid) {
-    const fdb = db.ref.f;
+    const fdb = db.ref.c;
     const myFriends = Object.keys(fdb).filter(k => {
-      return fdb[k].includes(uid);
+      return fdb[k].u.includes(uid) && fdb[k].f;
     }).map(k => {
-      return hprofile.getUser(uid,{id:fdb[k].find(ck => ck !== uid)});
+      return hprofile.getUser(uid,{id:fdb[k].u.find(ck => ck !== uid)});
     });
     return {name:'friends',data:myFriends}
   },

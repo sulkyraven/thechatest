@@ -18,8 +18,8 @@ module.exports = {
     if(udb.req && udb.req.includes(uid)) data.myreq = true;
     const mdb = db.ref.u[uid];
     if(mdb.req && mdb.req.includes(s.id)) data.theirreq = true;
-    const isFriend = Object.keys(db.ref.f).find(k => {
-      return db.ref.f[k].includes(s.id) && db.ref.f[k].includes(uid);
+    const isFriend = Object.keys(db.ref.c).find(k => {
+      return db.ref.c[k].u.includes(s.id) && db.ref.c[k].u.includes(uid) && db.ref.c[k].f;
     });
     if(isFriend) data.isfriend = true;
     return data;
@@ -46,12 +46,12 @@ module.exports = {
     const mdb = db.ref.u[uid];
     if(mdb.req?.includes(s.id)) db.ref.u[uid].req = mdb.req.filter(key => key !== s.id);
 
-    const friendkey = Object.keys(db.ref.f).find(k => {
-      return db.ref.f[k].includes(s.id) && db.ref.f[k].includes(uid);
+    const friendkey = Object.keys(db.ref.c).find(k => {
+      return db.ref.c[k].u.includes(s.id) && db.ref.c[k].u.includes(uid) && db.ref.c[k].f;
     });
-    if(friendkey) delete db.ref.f[friendkey];
+    if(friendkey) delete db.ref.c[friendkey].f;
 
-    db.save('u','f');
+    db.save('c','u');
     return {code:200,data:{user:this.getUser(uid,s)}};
   },
   acceptFriend(uid, s) {
@@ -65,19 +65,18 @@ module.exports = {
     if(!udb) return {code:400};
     if(udb.req?.includes(uid)) db.ref.u[s.id].req = udb.req.filter(key => key !== uid);
 
-    const friendkey = Object.keys(db.ref.f).find(k => {
-      return db.ref.f[k].includes(s.id) && db.ref.f[k].includes(uid);
+    const chatkey = Object.keys(db.ref.c).find(k => {
+      return db.ref.c[k].u.includes(s.id) && db.ref.c[k].u.includes(uid);
     });
-    if(friendkey) {
-      db.ref.u[uid].req = mdb.req.filter(key => key !== s.id);
-      return {code:400,data:{user:this.getUser(uid,s)}}
+    if(chatkey) {
+      db.ref.c[chatkey].f = 1;
+    } else {
+      db.ref.c['m' + Date.now().toString(32)] = { u: [s.id, uid], f: 1 }
     }
 
-    const newfriendkey = 'D' + Date.now().toString(32);
-    db.ref.f[newfriendkey] = [ s.id, uid ];
     db.ref.u[uid].req = mdb.req.filter(key => key !== s.id);
+    db.save('c', 'u');
 
-    db.save('f','u');
     return {code:200,data:{user:this.getUser(uid, s)}};
   },
   ignoreFriend(uid, s) {

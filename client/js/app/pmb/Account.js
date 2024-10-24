@@ -5,6 +5,7 @@ import { setbadge } from "/js/manager/badge.js";
 import db from "/js/manager/db.js";
 import userState from "/js/manager/userState.js";
 import * as nrw from "/js/manager/nrw.js";
+import cloud from "/js/manager/cloud.js";
 const langlist = [
   {id: 'lang-id', val: 'id', label: 'Bahasa Indonesia'},
   {id: 'lang-en', val: 'en', label: 'English'},
@@ -293,7 +294,15 @@ export default class {
       userState.pmtop?.el?.remove();
       document.querySelector('.appname')?.remove();
       await modal.alert(lang.ACC_CHOOSE_LANG_DONE);
-      window.location.reload();
+      cloud.isStopped = 1;
+      await modal.loading(new Promise(async resolve => {
+          window.location.reload();
+          self.location.reload();
+          location.reload();
+          await waittime(1000 * 60);
+          resolve();
+        }), 'RELOADING'
+      )
 
       this.isLocked = false;
     }

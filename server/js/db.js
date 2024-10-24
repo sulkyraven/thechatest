@@ -3,7 +3,7 @@ const fs = require('fs');
 const dirpath = './server/db';
 class DevankaDatabase {
   constructor() {
-    this.ref = {u:{},t:{},c:{},g:{},f:{},p:{},v:{}};
+    this.ref = {u:{},t:{},c:{},g:{},p:{},v:{}};
   }
   load() {
     Object.keys(this.ref).forEach(file => {

@@ -13,6 +13,7 @@ async function waittime(ms = 200) {return new Promise(resolve => setTimeout(reso
 class cloud {
   constructor() {
     this.pair = new Map();
+    this.isStopped = 0;
   }
   processData(s) {
     if(s.id === 'send-msg') {
@@ -61,10 +62,10 @@ class cloud {
     });
     */
     this.peer.on('error', () => {
-      this.forceClose();
+      this.forceClose('Timeout: failed to connect to the server',1);
     });
     this.peer.on('disconnected', () => {
-      this.forceClose();
+      this.forceClose('Disconnected from the server',1);
     });
 
     this.peer.on('connection', (conn) => {
@@ -140,15 +141,15 @@ class cloud {
     const stillUser = await xhr.get('/auth/stillUser');
     if(!stillUser || stillUser.code !== 200) {
       clearTimeout(reqtimeout);
-      return this.forceClose();
+      return this.forceClose('Connection Error',1);
     }
     if(stillUser.data.peer !== this.peerid) {
       clearTimeout(reqtimeout);
-      return this.forceClose();
+      return this.forceClose('You Are Logged In From Another Location');
     }
   }
-  async forceClose() {
-    if(!reqtimeout) return;
+  async forceClose(msg='',tp=0) {
+    if(!reqtimeout || this.isStopped) return;
     reqtimeout = null;
     this.peer.disconnect();
     this.peer.destroy();
@@ -156,10 +157,22 @@ class cloud {
     userState.pmmid?.el?.remove();
     userState.pmtop?.el?.remove();
     document.querySelector('.appname')?.remove();
-    await modal.alert('You Are Logged In From Another Location');
-    window.close();
-    self.close();
-    close();
+    document.querySelector('.app .pm').innerHTML = `<p class="doublelogin">${msg}</p>`;
+    if(tp) {
+      const chooseReconnect = await modal.confirm({ msg, okx: 'Reconnect'});
+      if(chooseReconnect) {
+        await modal.loading(new Promise(async resolve => {
+            window.location.reload();
+            self.location.reload();
+            location.reload();
+            await waittime(1000 * 60);
+            resolve();
+          }), 'RECONNECTING'
+        )
+      }
+    } else {
+      await modal.alert(msg);
+    }
   }
   async run({ peerKey, peerid }) {
     this.peerid = peerid;

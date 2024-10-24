@@ -17,8 +17,8 @@ module.exports = {
       return {code:402}
     }
 
-    const friendkey = Object.keys(db.ref.f).find(k => {
-      return db.ref.f[k].includes(s.id) && db.ref.f[k].includes(uid);
+    const friendkey = Object.keys(db.ref.c).find(k => {
+      return db.ref.c[k].u.includes(s.id) && db.ref.c[k].u.includes(uid) && db.ref.c[k].f;
     });
     if(!friendkey) return {code:400};
 
