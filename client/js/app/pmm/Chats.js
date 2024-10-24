@@ -20,8 +20,8 @@ export default class {
   }
   getChatList() {
     const cdb = (db.ref.chats || []).sort((a, b) => {
-      if(a.chats?.[a.chats?.length - 1]?.ts < b.chats?.[b.chats?.length - 1]?.ts) return 1;
-      if(a.chats?.[a.chats?.length - 1]?.ts > b.chats?.[b.chats?.length - 1]?.ts) return -1;
+      if(a.chats?.[a.chats?.length - 1]?.ts > b.chats?.[b.chats?.length - 1]?.ts) return 1;
+      if(a.chats?.[a.chats?.length - 1]?.ts < b.chats?.[b.chats?.length - 1]?.ts) return -1;
       return 0;
     });
 
@@ -31,7 +31,7 @@ export default class {
     cdb.forEach(ch => {
       const user = ch.users.find(k => k.id !== db.ref.account.id);
       const {card, uc} = elgen.chatCard(user);
-      if(!uc) this.cardlist.append(card);
+      if(!uc) this.cardlist.prepend(card);
       card.onclick = async() => {
         if(userState.locked.bottom) return;
         userState.locked.bottom = true;
@@ -45,6 +45,25 @@ export default class {
         userState.locked.bottom = false;
       }
     });
+  }
+  btnListener() {
+    const btnGlobal = document.createElement('div');
+    btnGlobal.classList.add('btn', 'global-btn');
+    btnGlobal.innerHTML = '<i class="fa-solid fa-earth-asia"></i> <span>Global Chat</span>';
+    this.el.append(btnGlobal);
+    btnGlobal.onclick = async() => {
+      if(userState.locked.bottom) return;
+      userState.locked.bottom = true;
+      await userState.pmbottom?.destroy?.();
+      if(isNarrow) {
+        setQueue();
+        await destroyPM();
+        fRemovePM();
+      }
+      const user = db.ref.groups?.find(ch => ch.id === 'zzz');
+      new Content({user, conty:2}).run();
+      userState.locked.bottom = false;
+    };
   }
   forceUpdate() {
     this.getChatList();
@@ -77,5 +96,6 @@ export default class {
     document.querySelector('.app .pm').append(this.el);
     sceneIn(this.el);
     this.getChatList();
+    this.btnListener();
   }
 }

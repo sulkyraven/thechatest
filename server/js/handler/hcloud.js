@@ -50,7 +50,7 @@ module.exports = {
   getGroups(uid) {
     const gdb = db.ref.g;
     const myGroups = Object.keys(gdb).filter(k => {
-      return gdb[k].u.includes(uid) && !hgroup.getGroup(uid, {id:k})?.code;
+      return (gdb[k].u.includes(uid) && !hgroup.getGroup(uid, {id:k})?.code) || k === 'zzz'
     }).map(k => {
       return hgroup.getGroup(uid, {id:k});
     });

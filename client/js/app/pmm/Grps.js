@@ -89,9 +89,9 @@ export default class {
     }
   }
   getGroupList() {
-    const cdb = (db.ref.groups || []).sort((a, b) => {
-      if(a.chats?.[a.chats?.length - 1]?.ts < b.chats?.[b.chats?.length - 1]?.ts) return 1;
-      if(a.chats?.[a.chats?.length - 1]?.ts > b.chats?.[b.chats?.length - 1]?.ts) return -1;
+    const cdb = (db.ref.groups || []).filter(ch => ch.id !== 'zzz').sort((a, b) => {
+      if(a.chats?.[a.chats?.length - 1]?.ts > b.chats?.[b.chats?.length - 1]?.ts) return 1;
+      if(a.chats?.[a.chats?.length - 1]?.ts < b.chats?.[b.chats?.length - 1]?.ts) return -1;
       return 0;
     });
 
@@ -100,7 +100,7 @@ export default class {
     if(cdb.length > 0) this.cardlist.querySelector('.nomore')?.remove();
     cdb.forEach(ch => {
       const {card, uc} = elgen.groupCard(ch);
-      if(!uc) this.cardlist.append(card);
+      if(!uc) this.cardlist.prepend(card);
       card.onclick = async() => {
         if(userState.locked.bottom) return;
         userState.locked.bottom = true;

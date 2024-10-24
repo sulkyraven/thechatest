@@ -130,6 +130,9 @@
       </div>
     </div>
   </div>
+  <div class="btn global-btn">
+    <i class="fa-solid fa-earth-asia"></i> <span>Global Chat</span>
+  </div>
 </div>
 ```
 ### PM - EMPTY

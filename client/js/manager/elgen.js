@@ -128,7 +128,7 @@ export default {
         if(this.ss(lastObj.txt.replace(/\s/g, ' '), 20).trim() === elLastText.innerText.trim()) return {card,uc:true};
         elLastText.innerText = this.ss(lastObj.txt.replace(/\s/g, ' '), 20);
       }
-      return {card,uc:true}
+      return {card}
     }
     if(lastObj.d) {
       if(elLastText.classList.contains('deleted')) return {card,uc:true};

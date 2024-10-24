@@ -421,6 +421,7 @@ export default class {
   btnListener() {
     const eluser = document.querySelector('.top .left .user');
     eluser.onclick = async() => {
+      if(this.user.id === 'zzz') return;
       if(this.user.code || !this.user.id) return modal.alert(lang.PROF_DELETED_USER);
       if(userState.locked.bottom) return;
       userState.locked.bottom = true;
@@ -452,7 +453,6 @@ export default class {
     }
   }
   formListener() {
-
     const btnCall = this.el.querySelector('.btn-call');
     btnCall.onclick = async() => {
       if(this.isLocked) return;
@@ -465,7 +465,6 @@ export default class {
       await modal.alert('This -Voice Call- feature is currently under development');
       this.isLocked = false;
     }
-    
     const btnVideo = this.el.querySelector('.btn-video');
     btnVideo.onclick = async() => {
       if(this.isLocked) return;
@@ -477,6 +476,10 @@ export default class {
       }
       await modal.alert('This -Video Call- feature is currently under development');
       this.isLocked = false;
+    }
+    if(this.conty > 1) {
+      btnCall.remove();
+      btnVideo.remove();
     }
     const btnMore = this.el.querySelector('.btn-more');
     btnMore.onclick = async() => {
